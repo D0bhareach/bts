@@ -1,6 +1,9 @@
 package com.github.zxxz_ru.command;
 
-public class HelpCommand {
+import org.springframework.stereotype.Component;
+
+@Component
+class HelpCommand {
     private final StringBuilder bld =  new StringBuilder();
     private String composeAdvise() {
         bld.append("[-h; --help] print this help;\n\n")
