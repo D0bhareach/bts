@@ -1,17 +1,15 @@
 package com.github.zxxz_ru.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name="TASK")
+@Table(name = "TASK")
 public class Task {
     @Id
     @Column(name = "TASK_ID")
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @Column(name = "THEMA")
@@ -23,31 +21,38 @@ public class Task {
     @Column(name = "TASK_TYPE")
     private String taskType;
 
-    @Column(name = "PROJECT_ID")
-    private Integer projectId;
-
     @Column(name = "DESCRIPTION")
     private String description;
 
-    protected Task(){}
+    @OneToMany(targetEntity = User.class)
+    private List<User> userList;
 
-    public Task(Integer id, String thema, String priority, String taskType, Integer projectId, String description) {
+    public Task() {
+    }
+
+    public Task(Integer id, String thema, String priority, String taskType, String description) {
         this.id = id;
         this.thema = thema;
         this.priority = priority;
         this.taskType = taskType;
-        this.projectId = projectId;
         this.description = description;
     }
 
+    public Task from(String thema, String priority, String taskType, String description){
+        this.thema = thema;
+        this.priority = priority;
+        this.taskType = taskType;
+        this.description = description;
+        return this;
+    }
+
     @Override
-    public String toString(){
+    public String toString() {
         return new StringBuilder()
                 .append("\nTask ID: ").append(this.id)
                 .append("\nTask Thema: ").append(this.thema)
                 .append("\nPriority: ").append(this.priority)
                 .append("\nTask Type: ").append(this.taskType)
-                .append("\nProjectId: ").append(this.projectId)
                 .append("\nDescription: ").append(this.description)
                 .append("\n").substring(0);
     }
@@ -86,19 +91,19 @@ public class Task {
         this.taskType = taskType;
     }
 
-    public Integer getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Integer projectId) {
-        this.projectId = projectId;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<User> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
     }
 }

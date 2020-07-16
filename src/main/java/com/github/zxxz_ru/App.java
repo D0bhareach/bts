@@ -3,6 +3,7 @@
  */
 package com.github.zxxz_ru;
 import com.github.zxxz_ru.command.Dispatcher;
+import com.github.zxxz_ru.dao.InitialDataInserter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -10,13 +11,21 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class App implements CommandLineRunner {
-    @Autowired
     Dispatcher disp;
+    InitialDataInserter inserter;
+
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
+    @Autowired
+    public App(Dispatcher d, InitialDataInserter i){
+        this.disp = d;
+        this.inserter = i;
+    }
     @Override
     public void run(String... args){
+        inserter.insert();
         disp.dispatch(args);
+
     }
 }

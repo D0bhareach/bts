@@ -20,6 +20,7 @@ public class Dispatcher {
     }
 
     public void dispatch(String... args) {
+        System.out.println("Start dispatching");
         String command;
         if (args.length == 1) {
             command = args[0];

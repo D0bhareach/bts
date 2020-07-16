@@ -1,17 +1,13 @@
 package com.github.zxxz_ru.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name="USER")
 public class User {
     @Id
     @Column(name = "USER_ID")
-    @GeneratedValue
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
 
     @Column(name = "FIRST_NAME")
@@ -23,8 +19,13 @@ public class User {
     @Column(name = "USER_ROLE")
     private String role;
 
-    protected User(){}
+    public User(){}
 
+    public User(String firstname, String lastname, String role) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.role = role;
+    }
     public User(Integer id, String firstname, String lastname, String role) {
         this.id = id;
         this.firstname = firstname;

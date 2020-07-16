@@ -1,17 +1,14 @@
 package com.github.zxxz_ru.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="PROJECT")
 public class Project {
     @Id
     @Column(name = "PROJECT_ID")
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer id;
 
     @Column(name = "PROJECT_NAME")
@@ -20,12 +17,21 @@ public class Project {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    protected Project(){}
+    @OneToMany(targetEntity = Task.class)
+    private List taskList;
+
+    public Project(){}
 
     public Project(Integer id, String projectName, String description) {
         this.id = id;
         this.projectName = projectName;
         this.description = description;
+    }
+
+    public  Project from(String projectName, String description){
+        this.setProjectName(projectName);
+        this.setDescription(description);
+        return this;
     }
 
     @Override
@@ -62,5 +68,13 @@ public class Project {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List getTaskList() {
+        return taskList;
+    }
+
+    public void setTaskList(List taskList) {
+        this.taskList = taskList;
     }
 }

@@ -17,9 +17,13 @@ class HelpCommand {
             .append("\tIf user id missing or  incorrect and if task id missing or incorrect - print message.\n\n")
             .append("task [-p id; --project id]\t\tprint all tasks for project with id.\n")
             .append("task [-u id; --user-id id]\t\tprint all tasks for user with id.\n\n")
+
             .append("Save new or update existing user:\n")
-            .append("user --put \n\tid=user id (optional parameter use for update)\n\tfirstname=user first name")
-            .append("\n\tlastname=user last name\n\trole=user role\n\n")
+            .append("user --update \n\tid=user id (require parameter)\n\tfirstname=user first name")
+            .append("\n\tlastname=user last name\n\trole=user role(default \"Developer\", single word)\n\n")
+            .append("user --save \n\tid=user id\n\tfirstname=user first name (require parameter)")
+            .append("\n\tlastname=user last name (require parameter)\n\trole=user role(default \"Developer\", single word)\n\n")
+
             .append("Save new or update existing task:\n")
             .append("task --put \n\tthema=\"thema/name\" \n\tproject=project id \n\ttype=\"type of task\"\n\t")
             .append("description=\"description of task\" \n\tpriority=[normal, high, done, canceled]\n")
