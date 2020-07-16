@@ -5,7 +5,7 @@ import java.util.List;
 
 @Entity
 @Table(name="PROJECT")
-public class Project {
+public class Project implements StoreUnit {
     @Id
     @Column(name = "PROJECT_ID")
     @GeneratedValue(strategy=GenerationType.AUTO)

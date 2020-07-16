@@ -1,12 +1,11 @@
 package com.github.zxxz_ru.entity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "TASK")
-public class Task {
+public class Task implements StoreUnit{
     @Id
     @Column(name = "TASK_ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,6 +44,16 @@ public class Task {
         this.description = description;
         return this;
     }
+    public Task from(int id, String thema, String priority, String taskType, String description){
+        this.id = id;
+        this.thema = thema;
+        this.priority = priority;
+        this.taskType = taskType;
+        this.description = description;
+        Task t = this.from(thema, priority, taskType,description);
+        t.setId(id);
+        return t;
+    }
 
     @Override
     public String toString() {
@@ -57,6 +66,21 @@ public class Task {
                 .append("\n").substring(0);
     }
 
+    public String getAsString(){
+        return new StringBuilder()
+                .append(this.id).append(",")
+                .append(this.thema).append(",")
+                .append(this.priority).append(",")
+                .append(this.taskType).append(",")
+                .append(this.description)
+                .substring(0);
+    }
+    public Task fromString(String str){
+        String[] arr = str.split(",");
+        Task task = new Task();
+        task = task.from(Integer.parseInt(arr[0]),arr[1], arr[2], arr[3], arr[4] );
+        return task;
+    }
     // setters & getters
 
     public Integer getId() {
