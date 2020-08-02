@@ -7,6 +7,5 @@ public interface Commander {
                 System.out.println("\t> " + str);
             }
         }
-        System.exit(0);
     }
 }

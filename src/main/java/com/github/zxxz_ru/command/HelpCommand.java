@@ -19,10 +19,10 @@ class HelpCommand {
             .append("task [-u id; --user-id id]\t\tprint all tasks for user with id.\n\n")
 
             .append("Save new or update existing user:\n")
-            .append("user --update \n\tid=user id (require parameter)\n\tfirstname=user first name")
+            .append("user --update \n\tid=user id (required parameter)\n\tfirstname=user first name")
             .append("\n\tlastname=user last name\n\trole=user role(default \"Developer\", single word)\n\n")
-            .append("user --save \n\tid=user id\n\tfirstname=user first name (require parameter)")
-            .append("\n\tlastname=user last name (require parameter)\n\trole=user role(default \"Developer\", single word)\n\n")
+            .append("user --save \n\tid=user id\n\tfirstname=user first name (required parameter)")
+            .append("\n\tlastname=user last name (required parameter)\n\trole=user role(default \"Developer\", single word)\n\n")
 
             .append("Save new or update existing task:\n")
             .append("task --put \n\tthema=\"thema/name\" \n\tproject=project id \n\ttype=\"type of task\"\n\t")
@@ -34,6 +34,5 @@ class HelpCommand {
 
     public void printAdvise (){
         System.out.print(composeAdvise());
-        System.exit(0);
     }
 }

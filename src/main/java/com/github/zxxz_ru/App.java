@@ -9,6 +9,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.Scanner;
+
 @SpringBootApplication
 public class App implements CommandLineRunner {
     Dispatcher disp;
@@ -24,8 +26,12 @@ public class App implements CommandLineRunner {
     }
     @Override
     public void run(String... args){
-        inserter.insert();
-        disp.dispatch(args);
-
+        // inserter.insert();
+        System.out.println("Use -h or --help for advice. To exit type Ctrl-C.");
+        while(true) {
+            Scanner scan = new Scanner(System.in);
+            String str = scan.next();
+            disp.dispatch(str);
+        }
     }
 }

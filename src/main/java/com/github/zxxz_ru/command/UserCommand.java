@@ -150,6 +150,5 @@ class UserCommand implements Commander {
                 }
 
         }
-        System.exit(0);
     }
 }

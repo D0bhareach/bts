@@ -18,14 +18,21 @@ public class Dispatcher {
         this.userCommand = uc;
         this.helpCommand = hc;
     }
+    final String advice = "Use -h or --help for advice.";
 
     public void dispatch(String... args) {
-        System.out.println("Start dispatching");
         String command;
         if (args.length == 1) {
             command = args[0];
             if (command.equals("-h") || command.equals("--help")) {
                 helpCommand.printAdvise();
+            }
+            else if(command.equals("quit")){
+                System.exit(0);
+            }
+            else {
+                System.out.println(advice);
+                System.exit(1);
             }
         } else if (args.length >= 2) {
         command = args[0];
@@ -43,7 +50,7 @@ public class Dispatcher {
     }
 
         else{
-            helpCommand.printAdvise();
+            System.out.println(advice);
         }
     }
 

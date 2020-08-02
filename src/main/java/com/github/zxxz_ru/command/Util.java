@@ -23,15 +23,12 @@ public class Util<T> {
         for (T ent : list){
             out.print(ent.toString());
         }
-        System.exit(0);
     }
     public void printMessage(String s){
         out.println(s);
-        System.exit(0);
     }
     public void printError(String s){
         err.println(s);
-        System.exit(1);
     }
     private String parseSingleParameter(String pair) throws NoSuchElementException {
         int index = pair.lastIndexOf("=");
