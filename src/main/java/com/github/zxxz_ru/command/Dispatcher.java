@@ -1,38 +1,36 @@
 package com.github.zxxz_ru.command;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.context.WebApplicationContextServletContextAwareProcessor;
 import org.springframework.stereotype.Component;
+
 
 @Component
 public class Dispatcher {
-    private HelpCommand helpCommand;
     private ProjectCommand projectCommand;
     private TaskCommand taskCommand;
     private UserCommand userCommand;
+    private Messenger msg;
 
     @Autowired
-    Dispatcher(HelpCommand hc, ProjectCommand pc, TaskCommand tc, UserCommand uc){
+    Dispatcher(ProjectCommand pc, TaskCommand tc, UserCommand uc, Messenger ms){
         this.projectCommand = pc;
         this.taskCommand = tc;
         this.userCommand = uc;
-        this.helpCommand = hc;
+        this.msg = ms;
     }
-    final String advice = "Use -h or --help for advice.";
 
     public void dispatch(String... args) {
         String command;
         if (args.length == 1) {
             command = args[0];
             if (command.equals("-h") || command.equals("--help")) {
-                helpCommand.printAdvise();
+                msg.printHelp();
             }
             else if(command.equals("quit")){
                 System.exit(0);
             }
             else {
-                System.out.println(advice);
-                System.exit(1);
+                msg.printAdvice();
             }
         } else if (args.length >= 2) {
         command = args[0];
@@ -50,7 +48,7 @@ public class Dispatcher {
     }
 
         else{
-            System.out.println(advice);
+            msg.printAdvice();
         }
     }
 

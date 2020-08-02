@@ -3,9 +3,9 @@ package com.github.zxxz_ru.command;
 import org.springframework.stereotype.Component;
 
 @Component
-class HelpCommand {
+class HelpCommandBuilder {
     private final StringBuilder bld =  new StringBuilder();
-    private String composeAdvise() {
+    public String composeHelpMessage() {
         bld.append("[-h; --help] print this help;\n\n")
             .append("<project, task, user> [-a; --all]\t\tprint all <projects, tasks,users>;\n")
             .append("<project, task, user> [-d id; --delete id]\t\tdelete <project, task, user> by id.\n\t")
@@ -30,9 +30,5 @@ class HelpCommand {
             .append("Save new or update existing project:\n")
             .append("project --put project_name description\n\n");
         return bld.substring(0);
-    }
-
-    public void printAdvise (){
-        System.out.print(composeAdvise());
     }
 }

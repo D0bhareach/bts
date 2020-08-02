@@ -16,6 +16,8 @@ class UserCommand implements Commander {
     private UserRepository re;
     @Autowired
     private Util<User> util;
+    @Autowired
+    private Messenger messenger;
 
     private List<User> getAll() {
         return (List<User>) re.findAll();
@@ -77,13 +79,13 @@ class UserCommand implements Commander {
         List<User> list = new ArrayList<>();
         User user;
         // no more fun!
-        if (!isPresent("id", args)) util.printError("user --put id is required parameter.");
+        if (!isPresent("id", args)) messenger.printError("user --put id is required parameter.");
         int userId;
         // get userId from parameters or create new.
             userId = Integer.parseInt(util.getParameter("id", args));
             Optional<User> userOption = re.findById(userId);
             if (userOption.isEmpty()) {
-                util.printMessage("No user with id: " + userId);
+                messenger.printMessage("No user with id: " + userId);
             }
             user = userOption.get();
             if (isPresent("firstname", args)) {
@@ -117,36 +119,36 @@ class UserCommand implements Commander {
         switch (z) {
             case "-a":
             case "--all":
-                util.print(getAll());
+                messenger.print(getAll());
             case "-d":
             case "--delete":
                 try {
                     int id = Integer.parseInt(util.getParameter("id", args));
-                    util.print(deleteUser(id));
+                    messenger.print(deleteUser(id));
                 } catch (Exception e) {
-                    util.printError("Error while deleting user.");
+                    messenger.printError("Error while deleting user.");
                 }
             case "-id":
                 try {
                     int id = Integer.parseInt(util.getParameter("id", args));
-                    util.print(getUser(id));
+                    messenger.print(getUser(id));
                 } catch (Exception e) {
                     e.printStackTrace();
-                    util.printError("Error while searching for user.");
+                    messenger.printError("Error while searching for user.");
                 }
             case "--save":
                 try {
-                    util.print(saveUser(args));
+                    messenger.print(saveUser(args));
                 } catch (NoSuchElementException e) {
-                    util.printError(wrongParameter);
+                    messenger.printError(wrongParameter);
                 } catch (IllegalArgumentException e) {
-                    util.printError(e.getMessage());
+                    messenger.printError(e.getMessage());
                 }
             case "--update":
                 try {
-                    util.print(updateUser(args));
+                    messenger.print(updateUser(args));
                 } catch (NoSuchElementException e){
-                    util.printError(wrongParameter);
+                    messenger.printError(wrongParameter);
                 }
 
         }

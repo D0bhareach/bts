@@ -14,20 +14,20 @@ import java.util.Scanner;
 @SpringBootApplication
 public class App implements CommandLineRunner {
     Dispatcher disp;
-    InitialDataInserter inserter;
+    // InitialDataInserter inserter;
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
     @Autowired
-    public App(Dispatcher d, InitialDataInserter i){
+    public App(Dispatcher d/*, InitialDataInserter i*/){
         this.disp = d;
-        this.inserter = i;
+       //  this.inserter = i;
     }
     @Override
     public void run(String... args){
         // inserter.insert();
-        System.out.println("Use -h or --help for advice. To exit type Ctrl-C.");
+        System.out.println("sjadfdafsdf");
         while(true) {
             Scanner scan = new Scanner(System.in);
             String str = scan.next();

@@ -12,24 +12,6 @@ import java.util.stream.Stream;
 
 @Component
 public class Util<T> {
-    private final PrintStream out = System.out;
-    private final PrintStream err = System.err;
-
-     public <T>void print(List<T> list){
-        if (list.size() == 0){
-            out.println("No Result.");
-            return;
-        }
-        for (T ent : list){
-            out.print(ent.toString());
-        }
-    }
-    public void printMessage(String s){
-        out.println(s);
-    }
-    public void printError(String s){
-        err.println(s);
-    }
     private String parseSingleParameter(String pair) throws NoSuchElementException {
         int index = pair.lastIndexOf("=");
         if (index < 0) throw new NoSuchElementException("Incorrect usage [ = ] is missing.");
