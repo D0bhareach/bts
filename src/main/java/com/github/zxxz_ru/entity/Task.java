@@ -130,4 +130,20 @@ public class Task implements StoreUnit{
     public void setUserList(List<User> userList) {
         this.userList = userList;
     }
+    @Override
+    public boolean equals(Object o){
+        if(this == o){return true;}
+        if(!(o instanceof Task)){return false;}
+        Task t = (Task)o;
+        return this.id.equals(t.getId()) && this.thema.equals(t.getThema()) &&
+                this.taskType.equals(t.getTaskType()) && this.priority.equals(t.getPriority()) &&
+                this.description.equals(t.getDescription());
+    }
+
+    @Override
+    public int hashCode(){
+        int id = this.id == null ? 1: this.id;
+        return 8 * (this.thema.hashCode() + this.taskType.hashCode()+ this.priority.hashCode()+
+                this.description.hashCode()) + id;
+    }
 }

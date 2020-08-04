@@ -77,4 +77,19 @@ public class Project implements StoreUnit {
     public void setTaskList(List taskList) {
         this.taskList = taskList;
     }
+    @Override
+    public boolean equals(Object o){
+        if(this == o){return true;}
+        if(!(o instanceof Project)){return false;}
+        Project t = (Project) o;
+        return this.id.equals(t.getId()) && this.projectName.equals(t.getProjectName()) &&
+                this.description.equals(t.getDescription());
+    }
+
+    @Override
+    public int hashCode(){
+        int id = this.id == null ? 1: this.id;
+        return 9 * (this.projectName.hashCode()+
+                this.description.hashCode()) + id;
+    }
 }
