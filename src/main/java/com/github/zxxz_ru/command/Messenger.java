@@ -1,17 +1,19 @@
 package com.github.zxxz_ru.command;
 
+import org.springframework.stereotype.Component;
+
 import java.io.PrintStream;
 import java.util.List;
 
+@Component
 public class Messenger {
     private final PrintStream out = System.out;
     private final PrintStream err = System.err;
     private final String advice =
-        "Use -h or --help for advice.\nTo exit type: quit or Ctrl-C.";
+        "Use -h or --help for advice. To exit type: quit or Ctrl-C.";
     private String help;
 
     public Messenger(){
-        System.out.println("Got to messenger constructor");
         HelpCommandBuilder hcb = new HelpCommandBuilder();
         this.help = hcb.composeHelpMessage();
     }

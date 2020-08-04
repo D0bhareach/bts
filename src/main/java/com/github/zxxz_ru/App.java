@@ -3,6 +3,7 @@
  */
 package com.github.zxxz_ru;
 import com.github.zxxz_ru.command.Dispatcher;
+import com.github.zxxz_ru.command.Messenger;
 import com.github.zxxz_ru.dao.InitialDataInserter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -14,20 +15,22 @@ import java.util.Scanner;
 @SpringBootApplication
 public class App implements CommandLineRunner {
     Dispatcher disp;
+    Messenger messenger;
     // InitialDataInserter inserter;
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
     @Autowired
-    public App(Dispatcher d/*, InitialDataInserter i*/){
+    public App(Dispatcher d/*, InitialDataInserter i*/, Messenger msg){
         this.disp = d;
+        this.messenger = msg;
        //  this.inserter = i;
     }
     @Override
     public void run(String... args){
         // inserter.insert();
-        System.out.println("sjadfdafsdf");
+        messenger.printAdvice();
         while(true) {
             Scanner scan = new Scanner(System.in);
             String str = scan.next();
