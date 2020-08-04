@@ -4,7 +4,6 @@
 package com.github.zxxz_ru;
 import com.github.zxxz_ru.command.Dispatcher;
 import com.github.zxxz_ru.command.Messenger;
-import com.github.zxxz_ru.dao.InitialDataInserter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

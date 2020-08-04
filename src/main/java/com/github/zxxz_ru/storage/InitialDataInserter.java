@@ -1,5 +1,8 @@
-package com.github.zxxz_ru.dao;
+package com.github.zxxz_ru.storage;
 
+import com.github.zxxz_ru.storage.dao.ProjectRepository;
+import com.github.zxxz_ru.storage.dao.TaskRepository;
+import com.github.zxxz_ru.storage.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.github.zxxz_ru.entity.*;

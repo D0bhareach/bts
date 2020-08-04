@@ -10,3 +10,4 @@
 [X] 2.2 Make Application wait for User Input util quit.
 [] 2.3 Make optional for Application to use DB or File System. Default is file.
 [X] 2.4 Create Messenger for printing needs.
+[X] 2.5 Refactor source's packages, make storage package for Db and for File System.

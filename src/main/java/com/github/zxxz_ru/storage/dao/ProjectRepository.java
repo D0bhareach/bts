@@ -1,4 +1,4 @@
-package com.github.zxxz_ru.dao;
+package com.github.zxxz_ru.storage.dao;
 
 import com.github.zxxz_ru.entity.Project;
 import org.springframework.data.repository.CrudRepository;

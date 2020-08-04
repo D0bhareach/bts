@@ -1,4 +1,4 @@
-package com.github.zxxz_ru.storage;
+package com.github.zxxz_ru.storage.file;
 
 import com.github.zxxz_ru.entity.StoreUnit;
 

@@ -1,13 +1,12 @@
 package com.github.zxxz_ru.command;
 
-import com.github.zxxz_ru.dao.UserRepository;
+import com.github.zxxz_ru.storage.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.github.zxxz_ru.entity.User;
 
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 @Component
 class UserCommand implements Commander {
