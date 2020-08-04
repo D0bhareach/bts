@@ -1,12 +1,12 @@
 # TODO:
-[] Write tests.  
-[X] Make Entities connected(one-to-many, many-to-many ect.)  
-[] Finish rough implementation of Commands.  
-[X] Make Component to insert table if table is empty.   
-[] Make tables insertion work only when on development mode.  
-[] Fix Transient Errors.
+[] 1.1 Write tests.  
+[X] 1.2 Make Entities connected(one-to-many, many-to-many ect.)  
+[] 1.3 Finish rough implementation of Commands.  
+[X] 1.4 Make Component to insert table if table is empty.   
+[] 1.5 Make tables insertion work only when on development mode.  
+[] 1.6 Fix Transient Errors.
 # File Storage TODO
-[] Create Generic Class implementing CrudRepository for File Storage usage.
-[X] Make Application wait for User Input util quit.
-[] Make optional for Application to use DB or File System. Default is file.
-[] Create Messenger for printing needs.
+[] 2.1 Create Generic Class implementing CrudRepository for File Storage usage.
+[X] 2.2 Make Application wait for User Input util quit.
+[] 2.3 Make optional for Application to use DB or File System. Default is file.
+[X] 2.4 Create Messenger for printing needs.
