@@ -2,8 +2,10 @@ package com.github.zxxz_ru.command;
 
 import com.github.zxxz_ru.storage.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import com.github.zxxz_ru.entity.User;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -12,20 +14,20 @@ import java.util.regex.Pattern;
 class UserCommand implements Commander {
 
     @Autowired
-    private UserRepository re;
+    private CrudRepository repository;
     @Autowired
     private Util<User> util;
     @Autowired
     private Messenger messenger;
 
     private List<User> getAll() {
-        return (List<User>) re.findAll();
+        return (List<User>)repository.findAll();
     }
 
 
     private List<User> getUser(int id) throws NoSuchElementException {
         List<User> res = new ArrayList<>();
-        Optional<User> opt = re.findById(id);
+        Optional<User> opt =repository.findById(id);
         opt.ifPresent(user -> res.add((User) user));
         return res;
     }
@@ -33,7 +35,7 @@ class UserCommand implements Commander {
     private List<User> deleteUser(int id) {
         List<User> list = getUser(id);
         if (list.size() != 0) {
-            re.delete(list.get(0));
+           repository.delete(list.get(0));
         }
         return list;
     }
@@ -76,13 +78,13 @@ class UserCommand implements Commander {
     // return updated user for reference.
     private List<User> updateUser(String... args) throws NoSuchElementException{
         List<User> list = new ArrayList<>();
-        User user;
+        User user = new User();
         // no more fun!
         if (!isPresent("id", args)) messenger.printError("user --put id is required parameter.");
         int userId;
         // get userId from parameters or create new.
             userId = Integer.parseInt(util.getParameter("id", args));
-            Optional<User> userOption = re.findById(userId);
+            Optional<User> userOption =repository.findById(userId);
             if (userOption.isEmpty()) {
                 messenger.printMessage("No user with id: " + userId);
             }
@@ -98,11 +100,11 @@ class UserCommand implements Commander {
             // Role Parameter not null and will be either default value or value provided in parameters.
             String role = getRoleParameter(args);
             user.setRole(role);
-            user = re.save(user);
+            user = (User) repository.save(user);
             list.add(user);
         return list;
     }
-// TODO: When inserting witout id id is null!!!!
+// TODO: When inserting without id id is null!!!!
     private List<User> saveUser(String... args) throws NoSuchElementException, IllegalArgumentException {
         List<User> list = new ArrayList<>();
         User user = createNewUser(args);
