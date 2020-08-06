@@ -14,7 +14,8 @@ import java.util.regex.Pattern;
 class UserCommand implements Commander {
 
     @Autowired
-    private CrudRepository repository;
+    private UserRepository repository;
+    // TODO: Must set repository according to AppState. Database of File.
     @Autowired
     private Util<User> util;
     @Autowired
