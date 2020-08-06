@@ -14,3 +14,5 @@
 [] 2.6 Need some Sort of Application Closer. Must write Data to File System before the Exit.
 [X] 2.7 Need Component to read and write data to File System.
 [] 2.8 Need Counter to increase Entities indexes.
+[] 2.9 Update Application Dispatcher to work with user input.
+[X] 3.0 Need Central Component to set, hold, return Application State Values.

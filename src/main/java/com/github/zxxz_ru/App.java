@@ -30,10 +30,9 @@ public class App implements CommandLineRunner {
     public void run(String... args){
         // inserter.insert();
         messenger.printAdvice();
+        disp.dispatch(args);
         while(true) {
-            Scanner scan = new Scanner(System.in);
-            String str = scan.next();
-            disp.dispatch(str);
+            disp.dispatch();
         }
     }
 }
