@@ -29,7 +29,6 @@ public class App implements CommandLineRunner {
     @Override
     public void run(String... args){
         // inserter.insert();
-        messenger.printAdvice();
         disp.dispatch(args);
         while(true) {
             disp.dispatch();

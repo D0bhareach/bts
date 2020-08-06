@@ -18,7 +18,7 @@ public class Dispatcher {
     private AppState appState;
 
     @Autowired
-    Dispatcher(ProjectCommand pc, TaskCommand tc, UserCommand uc, Messenger ms, AppState appst){
+    Dispatcher(ProjectCommand pc, TaskCommand tc, UserCommand uc, Messenger ms, AppState appst) {
         this.projectCommand = pc;
         this.taskCommand = tc;
         this.userCommand = uc;
@@ -26,7 +26,7 @@ public class Dispatcher {
         this.appState = appst;
     }
 
-    public void dispatch(){
+    public void dispatch() {
         Scanner scan = new Scanner(System.in);
         String str = scan.nextLine();
         System.out.println("Scanned: " + str);
@@ -36,60 +36,72 @@ public class Dispatcher {
     /**
      * Maps commands recognized by double dash (--), makes dashes obligatory for parameters at
      * Application start time.
+     *
      * @param args String[]
      * @return HashMap  which is mapping command to it's value as String, numerical values may require parsing.
      */
-    public HashMap<String, String> getArgsMap(String... args){
+    public HashMap<String, String> getArgsMap(String... args) {
         HashMap<String, String> map = new HashMap<>();
         String command = "";
-        for(int i = 0; i < args.length; ++i){
+        for (int i = 0; i < args.length; ++i) {
             String str = args[i];
-            if(str.contains("--")){
-                command= str;
+            if (str.contains("--")) {
+                command = str;
+                // Put default empty string in case of value is not required or missing
+                map.put(command, "");
                 continue;
             }
-            if(i%2 != 0 && ! command.equals("") && !str.equals("")) {
+            if (i % 2 != 0 && !command.equals("") && !str.equals("")) {
                 map.put(command, str);
+                // ignore double arguments separated with space
+                command = "";
             }
         }
         return map;
     }
 
+    public void processCommandMap(Map<String, String> map) {
+        if (map.containsKey("--filepath")) {
+            // even if it's empty parameter --filepath File System is about to be used with default file
+            appState.setMode(AppState.AppMode.FILESYSTEM);
+            String path = map.get("--filepath");
+            if (!path.equals("")) {
+                appState.setPath(path);
+            }
+        }
+        if (map.containsKey("--database")) {
+            appState.setMode(AppState.AppMode.DATABASE);
+            // do db stuff
+        }
+    }
+
     /**
      * Used to dispatch user input when Application is started.
+     *
      * @param args String Array
      */
     public void dispatch(String... args) {
-        for (String s : args){
-            String command = "";
-            if(s.contains("--")){
-                command = s;
-                break;
-            }
-            if(command.equals("--mode") ){
-                if(s.equals("file")) {
-                    appState.setMode(AppState.AppMode.FILESYSTEM);
-                } else if (s.equals("database")){
-                    appState.setMode(AppState.AppMode.DATABASE);
-                }
-            }else if(command.equals("--path")){
-                // appState.setPath();
-            }
-            System.out.println(s);
+        if (args.length == 0) {
+            messenger.printAdvice();
+            return;
         }
-        // TODO: need to get parameters out from args
         String command;
+        // One argument it's either help or quit.
         if (args.length == 1) {
             command = args[0];
-            if (command.equals("-h") || command.equals("--help")) {
+            if (command.equals("-h") || command.equals("--help") || command.equals("help")) {
                 messenger.printHelp();
+                // TODO: here must be AppCloser Component.
             }
-            else if(command.equals("quit")){
+            // no short for exit command.
+            else if (command.equals("quit") || command.equals("--quit")) {
+                // TODO: here must be AppCloser Component.
                 System.exit(0);
             }
-            else {
-                messenger.printAdvice();
-            }
+        } else if (args.length > 1) {
+            Map<String, String> map = getArgsMap(args);
+            processCommandMap(map);
+            messenger.printAdvice();
         }
         /*
         else if (args.length >= 2) {
