@@ -11,7 +11,7 @@
 [] 2.3 Make optional for Application to use DB or File System. Default is file.
 [X] 2.4 Create Messenger for printing needs.
 [X] 2.5 Refactor source's packages, make storage package for Db and for File System.
-[] 2.6 Need some Sort of Application Closer. Must write Data to File System before the Exit.
+[X] 2.6 Need some Sort of Application Closer. Must write Data to File System before the Exit.
 [X] 2.7 Need Component to read and write data to File System.
 [] 2.8 Need Counter to increase Entities indexes.
 [] 2.9 Update Application Dispatcher to work with user input.

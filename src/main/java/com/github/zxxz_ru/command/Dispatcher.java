@@ -1,6 +1,7 @@
 package com.github.zxxz_ru.command;
 
 import com.github.zxxz_ru.AppState;
+import com.github.zxxz_ru.ApplicationCloser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,22 +17,18 @@ public class Dispatcher {
     private UserCommand userCommand;
     private Messenger messenger;
     private AppState appState;
+    private ApplicationCloser closer;
 
     @Autowired
-    Dispatcher(ProjectCommand pc, TaskCommand tc, UserCommand uc, Messenger ms, AppState appst) {
+    Dispatcher(ProjectCommand pc, TaskCommand tc, UserCommand uc, Messenger ms, AppState appst, ApplicationCloser closer) {
         this.projectCommand = pc;
         this.taskCommand = tc;
         this.userCommand = uc;
         this.messenger = ms;
         this.appState = appst;
+        this.closer = closer;
     }
 
-    public void dispatch() {
-        Scanner scan = new Scanner(System.in);
-        String str = scan.nextLine();
-        System.out.println("Scanned: " + str);
-
-    }
 
     /**
      * Maps commands recognized by double dash (--), makes dashes obligatory for parameters at
@@ -90,13 +87,12 @@ public class Dispatcher {
         if (args.length == 1) {
             command = args[0];
             if (command.equals("-h") || command.equals("--help") || command.equals("help")) {
-                messenger.printHelp();
-                // TODO: here must be AppCloser Component.
+                closer.closeApp(0);
             }
             // no short for exit command.
+            // keep it for consistency, although it's kinda stupid here.
             else if (command.equals("quit") || command.equals("--quit")) {
-                // TODO: here must be AppCloser Component.
-                System.exit(0);
+                closer.closeApp(0);
             }
         } else if (args.length > 1) {
             Map<String, String> map = getArgsMap(args);
@@ -127,6 +123,12 @@ public class Dispatcher {
         }
 
          */
+    }
+    public void dispatch() {
+        Scanner scan = new Scanner(System.in);
+        String str = scan.nextLine();
+        System.out.println("Scanned: " + str);
+
     }
 
 }
