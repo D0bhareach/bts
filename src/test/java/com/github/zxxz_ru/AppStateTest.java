@@ -30,7 +30,7 @@ public class AppStateTest {
     @Test
     public void testPathValue(){
         logger.info("path is: " + state.getPath());
-        assertEquals("AppState has not default path value.", state.getPath(),  "~/opt/storage/epam/epam");
+        assertEquals("AppState has not default path value.", state.getPath(),  "opt/storage/epam/epam");
     }
 
     @Test

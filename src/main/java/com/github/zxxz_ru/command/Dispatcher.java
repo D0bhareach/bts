@@ -119,6 +119,7 @@ public class Dispatcher {
         Scanner sc = new Scanner(str).useDelimiter("\\s++");
         // search for dash commands
         command = sc.findInLine("^\\p{Blank}*?-{1,}+\\w++");
+            System.out.println("Command line 122:" + command);
             if (command.equals("-h") || command.equals("--help")) {
                 messenger.printHelp();
                 sc.close();

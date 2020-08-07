@@ -1,10 +1,6 @@
 package com.github.zxxz_ru;
 import com.github.zxxz_ru.command.Dispatcher;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
@@ -27,7 +23,7 @@ public class DispatcherTest {
     Dispatcher dispatcher;
 
     @Test
-    public void testArgsMaping(){
+    public void testArgsMapping(){
         String[] args = {"--filepath", "/root/home/dir/file"};
         Map<String, String> map = dispatcher.getArgsMap(args);
         // assertTrue(map.containsKey("--filepath"));
