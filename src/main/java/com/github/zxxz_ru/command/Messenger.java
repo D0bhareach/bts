@@ -10,7 +10,7 @@ public class Messenger {
     private final PrintStream out = System.out;
     private final PrintStream err = System.err;
     private final String advice =
-        "Use -h or --help for advice. To exit type: quit or Ctrl-C.";
+        "Use -h or help for advice. To exit type: quit or Ctrl-C.";
     private String help;
 
     public Messenger(){
