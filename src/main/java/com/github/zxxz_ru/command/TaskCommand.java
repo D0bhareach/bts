@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 class TaskCommand implements Commander {
 @Override
     public void execute(String s){
-    System.out.println(s);
+    System.out.println("TaskCommander receive command: " + s);
 }
 }

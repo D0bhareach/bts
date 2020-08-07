@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Component
@@ -112,53 +114,45 @@ public class Dispatcher {
     public void dispatch() {
         Scanner scan = new Scanner(System.in);
         String str = scan.nextLine();
-        if(str.equals("")) {
+        if(str.trim().equals("")) {
             return;
         }else{
-            String command;
-        Scanner sc = new Scanner(str).useDelimiter("\\s++");
         // search for dash commands
-        command = sc.findInLine("^\\p{Blank}*?-{1,}+\\w++");
-            System.out.println("Command line 122:" + command);
-            if (command.equals("-h") || command.equals("--help")) {
-                messenger.printHelp();
-                sc.close();
-                scan.close();
-                closer.closeApp(0);
-                return;
+            Pattern pattern = Pattern.compile("^\\p{Blank}*?-{1,2}+\\w++");
+            Matcher matcher = pattern.matcher(str);
+            while(matcher.find()){
+                String command;
+                command = matcher.group().trim();
+                if (command.equals("-h") || command.equals("--help")) {
+                    messenger.printHelp();
+                }
+                else if (command.equals("--quit")) {
+                    scan.close();
+                    closer.closeApp(0);
+                }
             }
-            // no short for exit command.
-            // keep it for consistency, although it's kinda stupid here.
-            else if (command.equals("--quit")) {
-                sc.close();
-                scan.close();
-                closer.closeApp(0);
-                return;
+            // commands without dashes
+            pattern = Pattern.compile("^\\p{Blank}*?\\w++");
+            matcher = pattern.matcher(str);
+            while(matcher.find()){
+               switch (matcher.group().trim()){
+                   case "user":
+                       userCommand.execute(str);
+                       break;
+                   case "task":
+                      taskCommand.execute(str);
+                       break;
+                   case "project":
+                    projectCommand.execute(str);
+                       break;
+                   case "help":
+                       messenger.printHelp();
+                       break;
+                   case "quit":
+                       scan.close();
+                       closer.closeApp(0);
+               }
             }
-            sc.close();
-            System.out.println("Got to line 138");
-            System.out.println(str);
-        Scanner sc2 = new Scanner(str).useDelimiter("\\s++");
-        command = sc2.findInLine("^\\p{Blank}*?\\w++").trim();
-        System.out.println("Command " + command);
-        if(command.equals("user")){
-            userCommand.execute(str);
-        }else if(command.equals("task")){
-            taskCommand.execute(str);
-        }else if(command.equals("project")){
-            projectCommand.execute(str);
-        }else if(command.equals("help")){
-            messenger.printHelp();
-            sc2.close();
-            closer.closeApp(0);
-            return;
-        }else if(command.equals("quit")){
-            sc2.close();
-            scan.close();
-            closer.closeApp(0);
-            return;
-        }
-        // sc.close();
         }
     }
 
