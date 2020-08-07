@@ -9,9 +9,7 @@ import java.util.List;
 public class Messenger {
     private final PrintStream out = System.out;
     private final PrintStream err = System.err;
-    private final String advice =
-        "Use -h or help for advice. To exit type: quit or Ctrl-C.";
-    private String help;
+    private final String help;
 
     public Messenger(){
         HelpCommandBuilder hcb = new HelpCommandBuilder();
@@ -32,6 +30,7 @@ public class Messenger {
     }
 
     public void printAdvice(){
+        String advice = "Use -h or help for advice. To exit type: quit or Ctrl-C.";
         out.println(advice);
     }
 

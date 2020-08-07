@@ -20,8 +20,7 @@ public class StorageFileCreator {
     Messenger messenger;
 
     private Path createAbsolutePath(){
-        Path path = Paths.get(System.getProperty("user.home"), state.getPath());
-        return path;
+        return Paths.get(System.getProperty("user.home"), state.getPath());
     }
 
     private void createDir(Path path){

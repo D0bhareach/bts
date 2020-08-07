@@ -79,7 +79,7 @@ public class Storage<T> {
             } catch (IOException e) {
                 e.printStackTrace();
                 messenger.printError("Error reading Data from: " + file.getPath());
-                // TODO: Need to exit application.
+                System.exit(1);
             }
         }
     }

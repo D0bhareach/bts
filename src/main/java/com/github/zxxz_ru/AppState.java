@@ -37,7 +37,4 @@ public class AppState {
     public void setPath(String path) {
         this.path = path;
     }
-
-    // TODO: Use this class to hold Paths to database and Synchronized File.
-    // It must get it from properties.
 }
