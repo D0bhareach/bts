@@ -12,12 +12,12 @@ import java.util.Scanner;
 
 @Component
 public class Dispatcher {
-    private ProjectCommand projectCommand;
-    private TaskCommand taskCommand;
-    private UserCommand userCommand;
-    private Messenger messenger;
-    private AppState appState;
-    private ApplicationCloser closer;
+    private final ProjectCommand projectCommand;
+    private final TaskCommand taskCommand;
+    private final UserCommand userCommand;
+    private final Messenger messenger;
+    private final AppState appState;
+    private final ApplicationCloser closer;
 
     @Autowired
     Dispatcher(ProjectCommand pc, TaskCommand tc, UserCommand uc, Messenger ms, AppState appst, ApplicationCloser closer) {
@@ -87,6 +87,7 @@ public class Dispatcher {
         if (args.length == 1) {
             command = args[0];
             if (command.equals("-h") || command.equals("--help") || command.equals("help")) {
+                messenger.printHelp();
                 closer.closeApp(0);
             }
             // no short for exit command.
@@ -99,36 +100,65 @@ public class Dispatcher {
             processCommandMap(map);
             messenger.printAdvice();
         }
-        /*
-        else if (args.length >= 2) {
-        command = args[0];
-        String[] a = new String[args.length - 1];
-        System.arraycopy(args, 1, a, 0, a.length);
-        if(command.equals("project")){
-           projectCommand.execute(a);
-        }
-        if(command.equals("task")){
-           taskCommand.execute(a);
-        }
-        if(command.equals("user")){
-            userCommand.execute(a);
-        }
-        if(command.contains("--mode") || command.contains("--path")){
-           //  stateCommand.execute(args);
-        }
     }
 
-        else{
-            messenger.printAdvice();
-        }
+    //    \w{2,}\s*=\s*\w++
+    // aa=bb
+    //aa = bb
+    //id=1 firstname  = Slavka
+    // --{1,2}\w++
+    // search for command with dashes
 
-         */
-    }
     public void dispatch() {
         Scanner scan = new Scanner(System.in);
         String str = scan.nextLine();
-        System.out.println("Scanned: " + str);
-
+        if(str.equals("")) {
+            return;
+        }else{
+            String command;
+        Scanner sc = new Scanner(str).useDelimiter("\\s++");
+        // search for dash commands
+        command = sc.findInLine("^\\p{Blank}*?-{1,}+\\w++");
+            if (command.equals("-h") || command.equals("--help")) {
+                messenger.printHelp();
+                sc.close();
+                scan.close();
+                closer.closeApp(0);
+                return;
+            }
+            // no short for exit command.
+            // keep it for consistency, although it's kinda stupid here.
+            else if (command.equals("--quit")) {
+                sc.close();
+                scan.close();
+                closer.closeApp(0);
+                return;
+            }
+            sc.close();
+            System.out.println("Got to line 138");
+            System.out.println(str);
+        Scanner sc2 = new Scanner(str).useDelimiter("\\s++");
+        command = sc2.findInLine("^\\p{Blank}*?\\w++").trim();
+        System.out.println("Command " + command);
+        if(command.equals("user")){
+            userCommand.execute(str);
+        }else if(command.equals("task")){
+            taskCommand.execute(str);
+        }else if(command.equals("project")){
+            projectCommand.execute(str);
+        }else if(command.equals("help")){
+            messenger.printHelp();
+            sc2.close();
+            closer.closeApp(0);
+            return;
+        }else if(command.equals("quit")){
+            sc2.close();
+            scan.close();
+            closer.closeApp(0);
+            return;
+        }
+        // sc.close();
+        }
     }
 
 }

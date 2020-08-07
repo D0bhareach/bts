@@ -115,8 +115,8 @@ class UserCommand implements Commander {
 
 
     @Override
-    public void execute(String... args) {
-        String z = args[0];
+    public void execute(String args) {
+        /* String z = args[0];
         String wrongParameter = "Wrong usage! See help. [-h; --help]";
         switch (z) {
             case "-a":
@@ -154,5 +154,6 @@ class UserCommand implements Commander {
                 }
 
         }
+    */
     }
 }

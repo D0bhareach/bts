@@ -4,5 +4,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 class TaskCommand implements Commander {
-
+@Override
+    public void execute(String s){
+    System.out.println(s);
+}
 }
