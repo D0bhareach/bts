@@ -118,31 +118,8 @@ class UserCommand implements Commander {
 
     @Override
     public void execute(String args) {
-        String wrongParameter = "Wrong usage! See help. [-h; help]";
-        Pattern pattern = Pattern.compile("(-{1,2}\\w+)(\\s(\\d+))?");
-        Matcher matcher = pattern.matcher(args);
-        String command="";
-        int value=0;
-        if (matcher.find()) {
-            for (int i = 1; i <= 2; i++) {
-                if (i == 1) {
-                    command = matcher.group(1);
-                } else if(i == 2){
-                    try {
-                        String tmp = matcher.group(2);
-                        tmp = tmp != null? tmp.trim(): "No integer!"; // do not pass null to parser
-                        value = Integer.parseInt(tmp);
-                    }catch (NumberFormatException e){
-                        // do not want to fall will ask user to check input.
-                    }
-                    if(value == 0){
-                        messenger.printError(wrongParameter);
-                        messenger.printError("Check parameter's value");
-                        return;
-                    }
-                }
-            }
-        }
+        String command = getCommand(args, messenger);
+        int value = getId(args, messenger);
         System.out.println("Command: "+command+". Value: "+value);
         // Check if command is id send input to handleIdCommand(String str)
         // If command is update send input to handleUpdate(String str)
