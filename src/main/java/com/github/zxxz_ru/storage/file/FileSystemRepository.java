@@ -11,23 +11,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class FileSystemRepository implements CrudRepository<StoreUnit, Integer> {
+public abstract  class FileSystemRepository<S extends  StoreUnit> implements CrudRepository<S, Integer>{
 
     @Autowired
     private  Storage storage;
-    private List list;
-    private EntityMode mode;
-
+    private List<S> list;
+    private final EntityMode mode;
+// TODO: Do I really need mode at all?
     @SuppressWarnings("unchecked")
     public FileSystemRepository(EntityMode mode) {
         this.mode = mode;
         switch (mode){
             case USER:
-                list = (List<User>)storage.getUsers();
+                list = (List<S>)storage.getUsers();
+                break;
             case TASK:
-                list = (List<Task>) storage.getTasks();
+                list = (List<S>) storage.getTasks();
+                break;
             case PROJECT:
-                list = (List<Project>) storage.getProjects();
+                list = (List<S>) storage.getProjects();
+                break;
         }
 
     }
@@ -36,11 +39,11 @@ public class FileSystemRepository implements CrudRepository<StoreUnit, Integer> 
     private void updateStorage(){
         switch (mode){
             case USER:
-                storage.setUsers(list);
+                storage.setUsers((List<User>) list);
             case TASK:
-                storage.setTasks(list);
+                storage.setTasks((List<Task>) list);
             case PROJECT:
-                storage.setProjects(list);
+                storage.setProjects((List<Project>) list);
         }
     }
 
@@ -56,7 +59,7 @@ public class FileSystemRepository implements CrudRepository<StoreUnit, Integer> 
         updateStorage();
 
     }
-    public void	deleteAll(Iterable<? extends StoreUnit> entities){
+    public void	deleteAll(List<S> entities){
         entities.forEach(e ->{
             delete(e);
         });
@@ -81,28 +84,26 @@ public class FileSystemRepository implements CrudRepository<StoreUnit, Integer> 
 
         return false;
     }
-    public Iterable<StoreUnit>	findAll(){
+    public Iterable<S> findAll(){
         return list;
     }
 
-    public Iterable <StoreUnit> findAllById(Iterable<Integer> ids) {
-        ArrayList<StoreUnit> res = new ArrayList();
-        for (Object e : list) {
-            StoreUnit ent = (StoreUnit) e;
-            Integer id = ent.getId();
-            for (Integer i : ids) {
-                if (id.equals(i)) {
-                    res.add(ent);
+    public Iterable <S> findAllById(Iterable<Integer> ids) {
+        ArrayList<S> res = new ArrayList();
+        for (S e : list) {
+            int id = ((StoreUnit) e).getId();
+            for (int i : ids) {
+                if (id == i) {
+                    res.add(e);
                 }
             }
         }
         return res;
     }
 
-    public Optional<StoreUnit> findById(Integer id){
-        StoreUnit res = null;
-        for(Object o : list){
-            StoreUnit e = (StoreUnit) o;
+    public Optional<S> findById(Integer id){
+        S res = null;
+        for(S e : list){
             if(e.getId().equals(id)){
                 res = e;
             }
@@ -110,21 +111,30 @@ public class FileSystemRepository implements CrudRepository<StoreUnit, Integer> 
         return Optional.ofNullable(res);
     }
 
-    public <S extends StoreUnit> S	save(S entity){
-        int idx = list.indexOf(entity);
-        if(idx >=0){
-            list.set(idx, entity);
-
-        } else {
-            list.add(entity);
+    public S save(S entity){
+        int counter = entity.getId();
+        if (counter <= 0) {
+            switch (mode) {
+                case USER:
+                    counter = storage.getNextUserId();
+                    break;
+                case TASK:
+                    counter = storage.getNextTaskId();
+                    break;
+                case PROJECT:
+                    counter = storage.getNextProjectId();
+                    break;
+            }
+            entity.setId(counter);
         }
+        list.add(entity);
         updateStorage();
         return entity;
     }
 
-    public <S extends StoreUnit>Iterable<S>	saveAll(Iterable<S> entities){
-        entities.forEach(e->{save(e);});
-        updateStorage();
+
+    public List<S>	saveAll(List<S> entities){
+        // entities.forEach(e->{this.save(e);});
         return list;
     }
 

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,11 +21,10 @@ import java.util.List;
  * It it must have methods to return each ArrayList of Entities and method to replace ArrayList of
  * Entity when List has changed.
  *
- * @param <T>
  */
 @Component
-public class Storage<T> {
-    enum Mode {USER, TASK, PROJECT}
+public class Storage {
+    // enum Mode {USER, TASK, PROJECT}
 
     ;
     /**
@@ -38,7 +36,7 @@ public class Storage<T> {
     private final AppState state;
     private final StorageFileCreator creator;
     private final ObjectMapper mapper = new ObjectMapper();
-    private final List<List> data = new ArrayList<>();
+    private Data data = new Data();
 
     @Autowired
     public Storage(AppState state, Messenger messenger, StorageFileCreator creator) {
@@ -72,10 +70,8 @@ public class Storage<T> {
         }
         if (file.length() > 0) {
             try {
-                List<List> d = mapper.readValue(file, new TypeReference<List<List>>() {
+                this.data = mapper.readValue(file, new TypeReference<>() {
                 });
-                this.data.clear();
-                this.data.addAll(d);
             } catch (IOException e) {
                 e.printStackTrace();
                 messenger.printError("Error reading Data from: " + file.getPath());
@@ -85,42 +81,41 @@ public class Storage<T> {
     }
 
     // Methods to get specific List from
-    @SuppressWarnings("unchecked")
     public List<User> getUsers() {
-        if (data.size() == 3) {
-            return (List<User>) data.get(2);
-        }
-        return new ArrayList<>();
+            return data.getUsers();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Task> getTasks() {
-        if (data.size() == 3) {
-            return (List<Task>) data.get(1);
-        }
-        return new ArrayList<>();
+        return data.getTasks();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Project> getProjects() {
-        if (data.size() == 3) {
-            return (List<Project>) data.get(0);
-        }
-        return new ArrayList<>();
+        return getProjects();
     }
 
     // Methods to set specific List of Entities
     public void setProjects(List<Project> projects) {
-        this.data.set(0, projects);
+        this.data.setProjects(projects);
     }
 
     public void setTasks(List<Task> tasks) {
-        this.data.set(1, tasks);
+        this.data.setTasks(tasks);
     }
 
     public void setUsers(List<User> users) {
-        this.data.set(2, users);
+        this.data.setUsers(users);
     }
+
+    public int getNextProjectId(){
+        return data.projectCounter.addAndGet(1);
+    }
+    public int getNextTaskId(){
+        return data.taskCounter.addAndGet(1);
+    }
+    public int getNextUserId(){
+        return data.userCounter.addAndGet(1);
+    }
+
 
 
     /*
