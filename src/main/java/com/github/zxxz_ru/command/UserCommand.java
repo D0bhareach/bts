@@ -1,26 +1,36 @@
 package com.github.zxxz_ru.command;
 
-import com.github.zxxz_ru.storage.dao.UserRepository;
+import com.github.zxxz_ru.storage.file.EntityMode;
+import com.github.zxxz_ru.storage.file.FileSystemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import com.github.zxxz_ru.entity.User;
-import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
 class UserCommand implements Commander {
 
-    @Autowired
-    private UserRepository repository;
-    // TODO: Must set repository according to AppState. Database of File.
+    private final CrudRepository<User, Integer> repository;
     @Autowired
     private Util<User> util;
     @Autowired
     private Messenger messenger;
+
+    public UserCommand() {
+        // TODO: It must be database UserRepository if user choose to use database.
+        this.repository = new FileSystemRepository<User>(EntityMode.USER);
+    }
+
+    public <S extends User> Iterable<S> saveAll(Iterable<S> entities) {
+        return null;
+    }
+
+    public void deleteAll(Iterable<? extends User> entities) {
+
+    }
 
     private List<User> getAll() {
         return (List<User>) repository.findAll();
@@ -120,7 +130,7 @@ class UserCommand implements Commander {
     public void execute(String args) {
         String command = getCommand(args, messenger);
         int value = getId(args, messenger);
-        System.out.println("Command: "+command+". Value: "+value);
+        System.out.println("Command: " + command + ". Value: " + value);
         // Check if command is id send input to handleIdCommand(String str)
         // If command is update send input to handleUpdate(String str)
 

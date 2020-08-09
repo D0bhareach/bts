@@ -11,19 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public abstract  class FileSystemRepository<S extends  StoreUnit> implements CrudRepository<S, Integer>{
+public class FileSystemRepository<S extends StoreUnit> implements CrudRepository<S, Integer> {
 
     @Autowired
-    private  Storage storage;
+    private Storage storage;
     private List<S> list;
     private final EntityMode mode;
-// TODO: Do I really need mode at all?
+
     @SuppressWarnings("unchecked")
     public FileSystemRepository(EntityMode mode) {
         this.mode = mode;
-        switch (mode){
+        switch (mode) {
             case USER:
-                list = (List<S>)storage.getUsers();
+                list = (List<S>) storage.getUsers();
                 break;
             case TASK:
                 list = (List<S>) storage.getTasks();
@@ -32,12 +32,11 @@ public abstract  class FileSystemRepository<S extends  StoreUnit> implements Cru
                 list = (List<S>) storage.getProjects();
                 break;
         }
-
     }
 
-
-    private void updateStorage(){
-        switch (mode){
+    @SuppressWarnings("unchecked")
+    private void updateStorage() {
+        switch (mode) {
             case USER:
                 storage.setUsers((List<User>) list);
             case TASK:
@@ -47,49 +46,59 @@ public abstract  class FileSystemRepository<S extends  StoreUnit> implements Cru
         }
     }
 
-    public long	count(){return  list.size();}
-    public void	delete(StoreUnit entity){
-        if(list.contains(entity)){
+    public long count() {
+        return list.size();
+    }
+
+    public void delete(S entity) {
+        if (list.contains(entity)) {
             list.remove(entity);
             updateStorage();
         }
     }
-    public void	deleteAll(){
-        list = new ArrayList();
+
+    @Override
+    public void deleteAll(Iterable<? extends S> entities) {
+
+    }
+
+    public void deleteAll() {
+        list = new ArrayList<>();
         updateStorage();
 
     }
-    public void	deleteAll(List<S> entities){
-        entities.forEach(e ->{
-            delete(e);
-        });
+
+    public void deleteAll(List<S> entities) {
+        entities.forEach(this::delete);
         updateStorage();
     }
-    public void	deleteById(Integer id){
-        for(Object e : list){
-            StoreUnit ent = (StoreUnit)e;
-            if(ent.getId().equals(id)){
+
+    public void deleteById(Integer id) {
+        for (S e : list) {
+            if (e.getId().equals(id)) {
                 list.remove(e);
                 updateStorage();
             }
         }
     }
-    public boolean	existsById(Integer id){
-        for( Object e : list){
+
+    public boolean existsById(Integer id) {
+        for (Object e : list) {
             StoreUnit ent = (StoreUnit) e;
-            if(ent.getId().equals(id)){
+            if (ent.getId().equals(id)) {
                 return true;
             }
-                }
+        }
 
         return false;
     }
-    public Iterable<S> findAll(){
+
+    public Iterable<S> findAll() {
         return list;
     }
 
-    public Iterable <S> findAllById(Iterable<Integer> ids) {
-        ArrayList<S> res = new ArrayList();
+    public Iterable<S> findAllById(Iterable<Integer> ids) {
+        ArrayList<S> res = new ArrayList<>();
         for (S e : list) {
             int id = ((StoreUnit) e).getId();
             for (int i : ids) {
@@ -101,17 +110,18 @@ public abstract  class FileSystemRepository<S extends  StoreUnit> implements Cru
         return res;
     }
 
-    public Optional<S> findById(Integer id){
+
+    public Optional<S> findById(Integer id) {
         S res = null;
-        for(S e : list){
-            if(e.getId().equals(id)){
+        for (S e : list) {
+            if (e.getId().equals(id)) {
                 res = e;
             }
         }
         return Optional.ofNullable(res);
     }
 
-    public S save(S entity){
+    public <S1 extends S>S1 save(S1 entity) {
         int counter = entity.getId();
         if (counter <= 0) {
             switch (mode) {
@@ -132,10 +142,10 @@ public abstract  class FileSystemRepository<S extends  StoreUnit> implements Cru
         return entity;
     }
 
-
-    public List<S>	saveAll(List<S> entities){
-        // entities.forEach(e->{this.save(e);});
-        return list;
+    @Override
+    public <S1 extends S> Iterable<S1> saveAll(Iterable<S1> entities) {
+        for (S1 e : entities) save(e);
+        return (List<S1>)list;
     }
 
 }

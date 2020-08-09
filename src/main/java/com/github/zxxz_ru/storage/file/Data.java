@@ -33,7 +33,7 @@ public class Data {
     @SuppressWarnings("unchecked")
     public List<User> getUsers() {
         if (data.size() == 3) {
-            return (List<User>) data.get(2);
+                return (List<User>) data.get(2);
         }
         return new ArrayList<>();
     }
