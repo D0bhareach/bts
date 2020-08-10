@@ -3,11 +3,11 @@ package com.github.zxxz_ru.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name="USER")
-public class User implements StoreUnit{
+@Table(name = "USER")
+public class User implements StoreUnit {
     @Id
     @Column(name = "USER_ID")
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @Column(name = "FIRST_NAME")
@@ -19,13 +19,9 @@ public class User implements StoreUnit{
     @Column(name = "USER_ROLE")
     private String role;
 
-    public User(){}
-
-    public User(String firstname, String lastname, String role) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.role = role;
+    public User() {
     }
+
     public User(Integer id, String firstname, String lastname, String role) {
         this.id = id;
         this.firstname = firstname;
@@ -34,13 +30,13 @@ public class User implements StoreUnit{
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return new StringBuilder()
-        .append("\nUser ID: ").append(this.id)
-        .append("\nFirst Name: ").append(this.firstname)
-        .append("\nLast Name: ").append(this.lastname)
-        .append("\nUser Role: ").append(this.role)
-        .append("\n").substring(0);
+                .append("\nUser ID: ").append(this.id)
+                .append("\nFirst Name: ").append(this.firstname)
+                .append("\nLast Name: ").append(this.lastname)
+                .append("\nUser Role: ").append(this.role)
+                .append("\n").substring(0);
     }
 
     // setters & getters
@@ -77,17 +73,21 @@ public class User implements StoreUnit{
     }
 
     @Override
-    public boolean equals(Object o){
-        if(this == o){return true;}
-        if(!(o instanceof User)){return false;}
-        User u = (User)o;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof User)) {
+            return false;
+        }
+        User u = (User) o;
         return this.id.equals(u.getId()) && this.firstname.equals(u.getFirstName()) &&
-        this.lastname.equals(u.getLastName()) && this.role.equals(u.getRole());
+                this.lastname.equals(u.getLastName()) && this.role.equals(u.getRole());
     }
 
     @Override
-    public int hashCode(){
-        int id = this.id == null ? 1: this.id;
-        return 7 * (this.role.hashCode() + this.lastname.hashCode()+ this.firstname.hashCode()) + id;
+    public int hashCode() {
+        int id = this.id == null ? 1 : this.id;
+        return 7 * (this.role.hashCode() + this.lastname.hashCode() + this.firstname.hashCode()) + id;
     }
 }

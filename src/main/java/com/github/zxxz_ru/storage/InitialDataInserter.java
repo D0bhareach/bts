@@ -26,40 +26,11 @@ public class InitialDataInserter {
 
     public List<User> createUserList(){
         List<User> list = new ArrayList<>(5);
-        User u = new User();
-        u.setId(1);
-        u.setFirstName("Александр");
-        u.setLastName("Иванов");
-        u.setRole("Developer");
-        list.add(u);
-
-        u = new User();
-        u.setId(2);
-        u.setFirstName("Василий");
-        u.setLastName("Петров");
-        u.setRole("Developer");
-        list.add(u);
-
-        u = new User();
-        u.setId(3);
-        u.setFirstName("Роман");
-        u.setLastName("Володин");
-        u.setRole("Developer");
-        list.add(u);
-
-        u = new User();
-        u.setId(4);
-        u.setFirstName("Владимир");
-        u.setLastName("Сердюк");
-        u.setRole("Project Manager");
-        list.add(u);
-
-        u = new User();
-        u.setId(5);
-        u.setFirstName("Олег");
-        u.setLastName("Торшин");
-        u.setRole("CTO");
-        list.add(u);
+        list.add(new User(1,"Александр","Иванов", "Developer"));
+        list.add(new User(2, "Василий", "Петров", "Developer"));
+        list.add(new User(3,"Роман","Володин", "Developer"));
+        list.add(new User(4,"Владимир","Сердюк","Project Manager"));
+        list.add(new User(5,"Олег","Торшин","CTO"));
         return list;
     }
 
@@ -73,28 +44,15 @@ public class InitialDataInserter {
 
     public List<Project> createProjectList(List tasks){
         List<Project> list = new ArrayList<>();
-        Project project;
-        project = new Project();
-        project = project.from("BTS", "Bug tracking System");
+        Project project = new Project(1,"BTS", "Bug tracking System");
         project.setTaskList(List.of(tasks.get(0),tasks.get(1),tasks.get(2)));
-        project.setId(1);
         list.add(project);
-
-        project = new Project();
-        project = project.from("Project_1", "Good Idea Project");
+        project = new Project(2,"Project_1", "Good Idea Project");
         project.setTaskList(List.of(tasks.get(3)));
-        project.setId(2);
         list.add(project);
-
-        project = new Project();
-        project = project.from("Enigma", "SecretProject");
+        project = new Project(3,"Enigma", "SecretProject");
         project.setTaskList(List.of(tasks.get(2)));
-        project.setId(3);
-        list.add(project);
-
-        project = new Project();
-        project = project.from("Project_2", "Very important Project");
-        project.setId(4);
+        project = new Project(4,"Project_2", "Very important Project");
         list.add(project);
             return  list;
     }
