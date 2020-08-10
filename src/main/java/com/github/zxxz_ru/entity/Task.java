@@ -1,5 +1,7 @@
 package com.github.zxxz_ru.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -37,22 +39,15 @@ public class Task implements StoreUnit{
         this.description = description;
     }
 
-    public Task from(String thema, String priority, String taskType, String description){
-        this.thema = thema;
-        this.priority = priority;
-        this.taskType = taskType;
-        this.description = description;
+    public Task from(Task t){
+        this.thema = t.thema;
+        this.priority = t.priority;
+        this.taskType = t.taskType;
+        this.description = t.description;
         return this;
     }
     public Task from(int id, String thema, String priority, String taskType, String description){
-        this.id = id;
-        this.thema = thema;
-        this.priority = priority;
-        this.taskType = taskType;
-        this.description = description;
-        Task t = this.from(thema, priority, taskType,description);
-        t.setId(id);
-        return t;
+        return new Task(id,thema,priority,taskType,description);
     }
 
     @Override

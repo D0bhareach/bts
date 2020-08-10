@@ -2,6 +2,7 @@ package com.github.zxxz_ru.storage.file;
 
 import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.command.Messenger;
+import com.github.zxxz_ru.storage.InitialDataInserter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,17 +1,20 @@
 package com.github.zxxz_ru.storage.file;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.command.Messenger;
 import com.github.zxxz_ru.entity.Project;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
+import com.github.zxxz_ru.storage.InitialDataInserter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Storage Class is utility class for all File Repositories Classes.
@@ -35,16 +38,31 @@ public class Storage {
     private final Messenger messenger;
     private final AppState state;
     private final StorageFileCreator creator;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper().
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private Data data;
 
     @Autowired
-    public Storage(AppState state, Messenger messenger, StorageFileCreator creator) {
+    public Storage(AppState state, Messenger messenger, StorageFileCreator creator, InitialDataInserter inserter) {
         this.creator = creator;
         this.state = state;
         this.messenger = messenger;
         file = creator.createStorageFile();
-        this.data = readData();
+        // insert data in file change it when find how to use profiles.
+        if(file.length() <= 0){
+            List users = inserter.createUserList();
+            List tasks = inserter.createTaskList(users);
+            List projects = inserter.createProjectList(tasks);
+            this.data = new Data();
+            this.data.setUsers(users);
+            this.data.setUserCounter(new AtomicInteger(users.size()));
+            this.data.setTasks(tasks);
+            this.data.setTaskCounter(new AtomicInteger(tasks.size()));
+            this.data.setProjects(projects);
+            this.data.setProjectCounter(new AtomicInteger(projects.size()));
+        } else {
+            this.data = readData();
+        }
     }
 
     // Since I do not want use map must keep inner Lists order constant
