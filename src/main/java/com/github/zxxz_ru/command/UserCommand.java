@@ -129,11 +129,16 @@ class UserCommand implements Commander {
     @Override
     public void execute(String args) {
         String command = getCommand(args, messenger);
-        int value = getId(args, messenger);
-        System.out.println("Command: " + command + ". Value: " + value);
-        // Check if command is id send input to handleIdCommand(String str)
-        // If command is update send input to handleUpdate(String str)
-
+        int id = getId(args, messenger);
+        switch (command){
+            case "-a": case"--all":
+                messenger.print((List<User>)repository.findAll());
+                break;
+            case "-d":
+                if(id != 0){
+                    repository.deleteById(id);
+                }
+        }
         /* String z = args[0];
         switch (z) {
             case "-a":
