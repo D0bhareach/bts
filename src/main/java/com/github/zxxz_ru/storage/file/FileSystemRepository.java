@@ -11,12 +11,13 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class FileSystemRepository<S extends StoreUnit> implements CrudRepository<S, Integer> {
 
     @Autowired
-    private Storage storage;
+    public Storage storage;
     private List<S> list;
     private  EntityMode mode;
 
@@ -126,22 +127,40 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
     }
 
     public <S1 extends S>S1 save(S1 entity) {
-        int counter = entity.getId();
-        if (counter <= 0) {
+        int id = entity.getId();
+        // add new Entity
+        if (id <= 0) {
             switch (mode) {
                 case USER:
-                    counter = storage.getNextUserId();
+                    id = storage.getNextUserId();
                     break;
                 case TASK:
-                    counter = storage.getNextTaskId();
+                    id = storage.getNextTaskId();
                     break;
                 case PROJECT:
-                    counter = storage.getNextProjectId();
+                    id = storage.getNextProjectId();
                     break;
             }
-            entity.setId(counter);
+            entity.setId(id);
+            list.add(entity);
+        }else {
+            // must replace
+            int finalId = id;
+            int idx = 0;
+            List<S> filtered = list.stream().filter(e->e.getId() == finalId).collect(Collectors.toList());
+            try {
+                idx = list.indexOf(filtered.get(0));
+            } catch (IndexOutOfBoundsException e){
+                idx = -1;
+            }
+            if(idx>=0){
+                S e = list.get(idx);
+                e =  e.from(entity);
+                list.set(idx, e);
+            } else {
+                list.add(entity);
+            }
         }
-        list.add(entity);
         updateStorage();
         return entity;
     }

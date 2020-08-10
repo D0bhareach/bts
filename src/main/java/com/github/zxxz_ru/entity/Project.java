@@ -39,6 +39,10 @@ public class Project implements StoreUnit {
                 .substring(0);
     }
 
+    @Override
+    public <T extends StoreUnit> T from(T t) {
+        return null;
+    }
     // setters & getters
 
     public Integer getId() {
@@ -48,6 +52,7 @@ public class Project implements StoreUnit {
     public void setId(Integer id) {
         this.id = id;
     }
+
 
     public String getProjectName() {
         return projectName;

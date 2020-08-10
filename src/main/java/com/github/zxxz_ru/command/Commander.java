@@ -48,4 +48,19 @@ public interface Commander {
         }
         return value;
     }
+
+    String end = ")\\s?=\\s?('(\\w+\\s?\\w+)')";
+    String idEnd = ")\\s?=\\s?((\\d+))";
+    default Pattern preparePattern(String parameter){
+        // id firstname ...
+        StringBuilder builder = new StringBuilder("(");
+        if (parameter.equals("id")){
+            builder.append("id").append(idEnd);
+            return Pattern.compile(builder.substring(0));
+        }
+        builder.append(parameter).append(end);
+        return Pattern.compile(builder.substring(0));
+    }
+
+
 }

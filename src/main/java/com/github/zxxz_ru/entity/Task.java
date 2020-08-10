@@ -48,6 +48,10 @@ public class Task implements StoreUnit {
                 .append("\n").substring(0);
     }
 
+    @Override
+    public <T extends StoreUnit> T from(T t) {
+        return null;
+    }
     // setters & getters
 
     public Integer getId() {
@@ -57,6 +61,7 @@ public class Task implements StoreUnit {
     public void setId(Integer id) {
         this.id = id;
     }
+
 
     public String getThema() {
         return thema;

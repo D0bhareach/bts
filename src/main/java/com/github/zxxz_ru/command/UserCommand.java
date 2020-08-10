@@ -12,6 +12,7 @@ import com.github.zxxz_ru.entity.User;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
@@ -125,6 +126,44 @@ class UserCommand implements Commander {
         return list;
     }
 
+    /**
+     * get parameters from arguments, create new user and set fields to argument's values
+     * Does not set id if it's not provided, affectively new user
+     * FileSystemRepository save(S entity) method will check for existence and availability if
+     * id in saved Entities.
+     * @param args command line
+     * @return
+     */
+    private User setUserForUpdate(String args){
+        List<String> parameters = List.of("id","firstname","lastname","role");
+        User user = new User();
+        for (String parameter : parameters){
+            Pattern pattern= preparePattern(parameter);
+            Matcher matcher = pattern.matcher(args);
+            if(matcher.find()){
+                switch (parameter){
+                    case "id":
+                        String id = matcher.group(3);
+                        if(id != null) {
+                            user.setId(Integer.parseInt(id));
+                        }
+                        break;
+                    case "firstname":
+                        user.setFirstName(matcher.group(3));
+                        break;
+                    case "lastname":
+                        user.setLastName(matcher.group(3));
+                        break;
+                    case "role":
+                        user.setRole(matcher.group(3));
+                        break;
+                }
+            }
+
+        }
+        return user;
+    }
+
 
     @Override
     public void execute(String args) {
@@ -138,6 +177,11 @@ class UserCommand implements Commander {
                 if(id != 0){
                     repository.deleteById(id);
                 }
+                break;
+            case "--update":
+                User user = setUserForUpdate(args);
+                repository.save(user);
+
         }
         /* String z = args[0];
         switch (z) {
