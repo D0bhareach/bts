@@ -3,6 +3,7 @@ package com.github.zxxz_ru.command;
 import com.github.zxxz_ru.storage.file.EntityMode;
 import com.github.zxxz_ru.storage.file.FileSystemRepository;
 import com.github.zxxz_ru.storage.file.Storage;
+import com.github.zxxz_ru.storage.file.UserFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.data.repository.CrudRepository;
@@ -17,18 +18,11 @@ import java.util.regex.Pattern;
 class UserCommand implements Commander {
 
     @Autowired
-    private CrudRepository<User, Integer> repository;
+    private UserFileRepository repository;
     @Autowired
     private Util<User> util;
     @Autowired
     private Messenger messenger;
-
-
-    // @Required
-    // public void setRepository () {
-    //     // TODO: It must be database UserRepository if user choose to use database.
-    //     this.repository = new FileSystemRepository<>(EntityMode.USER);
-    // }
 
     public <S extends User> Iterable<S> saveAll(Iterable<S> entities) {
         return null;

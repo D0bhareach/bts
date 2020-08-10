@@ -24,18 +24,19 @@ public interface Commander {
     }
 
     /**
+     * Used to get id parameter as integer when commands are (id|d)
      * Can return 0 must check for it before use result of this method.
      * @param args
      * @param messenger must pass Messenger to use it.
      * @return POSSIBLE ZERO check function result before use!
      */
     default int getId(String args, Messenger messenger) {
-        Pattern pattern = Pattern.compile("(-{1,2}id)(\\s(\\d+))?");
+        Pattern pattern = Pattern.compile("(-{1,2}(id|d))(\\s(\\d+))?");
         Matcher matcher = pattern.matcher(args);
         int value = 0;
         if (matcher.find()) {
             try {
-                String tmp = matcher.group(2);
+                String tmp = matcher.group(3);
                 tmp = tmp != null ? tmp.trim() : "No integer!"; // do not pass null to parser
                 value = Integer.parseInt(tmp);
             } catch (RuntimeException e) {
