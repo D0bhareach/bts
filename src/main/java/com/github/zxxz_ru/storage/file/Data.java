@@ -13,59 +13,75 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Class to hold App's data
  */
 public class Data {
-    List<List<? extends StoreUnit>> data = new ArrayList<>();
-    AtomicInteger userCounter = new AtomicInteger(0);
-    AtomicInteger taskCounter = new AtomicInteger(0);
-    AtomicInteger projectCounter = new AtomicInteger(0);
+    List<User> users;
+    List<Task> tasks;
+    List<Project> projects;
+    AtomicInteger userCounter;
+    AtomicInteger taskCounter;
+    AtomicInteger projectCounter;
 
-    public void clear(){
-        this.data = new ArrayList<>();
+    public Data(){
+        clear();
+        userCounter = new AtomicInteger(0);
+        taskCounter = new AtomicInteger(0);
+        projectCounter = new AtomicInteger(0);
     }
 
-    public List<List<? extends StoreUnit>> getData() {
-        return this.data;
+    public final void clear(){
+        projects = new ArrayList<Project>();
+        tasks = new ArrayList<Task>();
+        users = new ArrayList<User>();
     }
 
-    public void setData(List<List<? extends StoreUnit>> d) {
-        this.data = d;
-    }
-    // Methods to get specific List from
-    @SuppressWarnings("unchecked")
-    public List<User> getUsers() {
-        if (data.size() == 3) {
-                return (List<User>) data.get(2);
-        }
-        return new ArrayList<>();
+
+    public List<User> getUsers(){
+        return users;
     }
 
     @SuppressWarnings("unchecked")
     public List<Task> getTasks() {
-        if (data.size() == 3) {
-            return (List<Task>) data.get(1);
-        }
-        return new ArrayList<>();
+        return tasks;
     }
 
     @SuppressWarnings("unchecked")
     public List<Project> getProjects() {
-        if (data.size() == 3) {
-            return (List<Project>) data.get(0);
-        }
-        return new ArrayList<>();
+        return projects;
     }
 
     // Methods to set specific List of Entities
     public void setProjects(List<Project> projects) {
-        this.data.set(0, projects);
+        this.projects = projects;
     }
 
     public void setTasks(List<Task> tasks) {
-        this.data.set(1, tasks);
+        this.tasks = tasks;
     }
 
     public void setUsers(List<User> users) {
-        this.data.set(2, users);
+        this.users = users;
     }
 
+    public AtomicInteger getUserCounter() {
+        return userCounter;
+    }
 
+    public void setUserCounter(AtomicInteger userCounter) {
+        this.userCounter = userCounter;
+    }
+
+    public AtomicInteger getTaskCounter() {
+        return taskCounter;
+    }
+
+    public void setTaskCounter(AtomicInteger taskCounter) {
+        this.taskCounter = taskCounter;
+    }
+
+    public AtomicInteger getProjectCounter() {
+        return projectCounter;
+    }
+
+    public void setProjectCounter(AtomicInteger projectCounter) {
+        this.projectCounter = projectCounter;
+    }
 }

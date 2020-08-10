@@ -2,27 +2,33 @@ package com.github.zxxz_ru.command;
 
 import com.github.zxxz_ru.storage.file.EntityMode;
 import com.github.zxxz_ru.storage.file.FileSystemRepository;
+import com.github.zxxz_ru.storage.file.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import com.github.zxxz_ru.entity.User;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.regex.Pattern;
 
 @Component
 class UserCommand implements Commander {
 
-    private final CrudRepository<User, Integer> repository;
+    @Autowired
+    private CrudRepository<User, Integer> repository;
     @Autowired
     private Util<User> util;
     @Autowired
     private Messenger messenger;
 
-    public UserCommand() {
-        // TODO: It must be database UserRepository if user choose to use database.
-        this.repository = new FileSystemRepository<User>(EntityMode.USER);
-    }
+
+    // @Required
+    // public void setRepository () {
+    //     // TODO: It must be database UserRepository if user choose to use database.
+    //     this.repository = new FileSystemRepository<>(EntityMode.USER);
+    // }
 
     public <S extends User> Iterable<S> saveAll(Iterable<S> entities) {
         return null;

@@ -6,17 +6,21 @@ import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class FileSystemRepository<S extends StoreUnit> implements CrudRepository<S, Integer> {
 
     @Autowired
     private Storage storage;
     private List<S> list;
-    private final EntityMode mode;
+    private  EntityMode mode;
+
+    public FileSystemRepository(){}
 
     @SuppressWarnings("unchecked")
     public FileSystemRepository(EntityMode mode) {

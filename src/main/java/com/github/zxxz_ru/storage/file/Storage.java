@@ -36,7 +36,7 @@ public class Storage {
     private final AppState state;
     private final StorageFileCreator creator;
     private final ObjectMapper mapper = new ObjectMapper();
-    private Data data = new Data();
+    private Data data;
 
     @Autowired
     public Storage(AppState state, Messenger messenger, StorageFileCreator creator) {
@@ -44,7 +44,7 @@ public class Storage {
         this.state = state;
         this.messenger = messenger;
         file = creator.createStorageFile();
-        readData();
+        this.data = readData();
     }
 
     // Since I do not want use map must keep inner Lists order constant
@@ -63,14 +63,14 @@ public class Storage {
     }
 
 
-    private void readData() {
+    private Data readData() {
         if (!file.exists()) {
             messenger.printError("Cannot read Storage File. File not exists.");
-            return;
+            return null;
         }
         if (file.length() > 0) {
             try {
-                this.data = mapper.readValue(file, new TypeReference<>() {
+                return  mapper.readValue(file, new TypeReference<>() {
                 });
             } catch (IOException e) {
                 e.printStackTrace();
@@ -78,6 +78,7 @@ public class Storage {
                 System.exit(1);
             }
         }
+        return  new Data();
     }
 
     // Methods to get specific List from
