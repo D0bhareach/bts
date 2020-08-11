@@ -1,5 +1,6 @@
 package com.github.zxxz_ru.command;
 
+import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.storage.file.EntityMode;
 import com.github.zxxz_ru.storage.file.FileSystemRepository;
 import com.github.zxxz_ru.storage.file.Storage;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.github.zxxz_ru.entity.User;
 
+import java.io.File;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,6 +18,7 @@ class UserCommand implements Commander {
 
     private FileSystemRepository<User> repository;
     private Messenger messenger;
+    private Storage storage;
 
     @Autowired
     public UserCommand(Storage storage, Messenger messenger){
@@ -176,16 +179,39 @@ class UserCommand implements Commander {
         return user;
     }
 
+    // TODO: Make it return boolean finish method.
+    private boolean processTaskCommand(String args, String prefix, int id){
+        String pattern = new StringBuilder(prefix).append("-task\\s+(\\d+)").substring(0);
+        Pattern p1 = Pattern.compile(pattern);
+
+        Matcher m1 = p1.matcher(args);
+        if(m1.find()){
+            String IdString = m1.group(1);
+            try {
+                int taskId = Integer.parseInt(IdString.trim());
+            } catch (NumberFormatException e){
+                messenger.print(4, "Check task id value.");
+                return false;
+            }
+            FileSystemRepository<Task> taskRepository =
+                    new FileSystemRepository<Task>(storage, messenger, storage.getTasks(), EntityMode.TASK);
+            if(prefix.equals("assign")){}else if(prefix.equals("drop")){}
+        }
+        return false;
+    }
+
+    private void processFindUserCommand(String argsk){}
 
     @Override
     public void execute(String args) {
+        int id = -1;
         String command = getCommand(args, messenger);
-        int id = getId(args, messenger);
         switch (command){
             case "-a": case"--all":
                 messenger.print((List<User>)repository.findAll());
                 break;
             case "-d":
+                id = getId(args, messenger);
                 if(id != 0){
                     repository.deleteById(id);
                 }
@@ -193,7 +219,27 @@ class UserCommand implements Commander {
             case "--update":
                 User user = setUserForUpdate(args);
                 repository.save(user);
+            case "-id":
+                id = getId(args, messenger);
+                Matcher mtchr = Pattern.compile("^user\\s+-id\\s+(\\d+)$").matcher(args.trim());
+                if(mtchr.find()){
+                    Optional opti = repository.findById(id);
+                    if(opti.isPresent()){
+                        messenger.print(List.of(opti.get()));
+                        break;
+                    }
+                }
+                if(processTaskCommand(args,"--assign", id)){break;}
+                else if(processTaskCommand(args, "--drop", id)){break;}
+                else{break;}
 
+
+                // check for drop-task
+                    // process
+                // check for assign-task
+                    //process
+                // else findById
+                // print result.
         }
         /* String z = args[0];
         switch (z) {
