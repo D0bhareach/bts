@@ -3,14 +3,10 @@ package com.github.zxxz_ru.command;
 import com.github.zxxz_ru.storage.file.EntityMode;
 import com.github.zxxz_ru.storage.file.FileSystemRepository;
 import com.github.zxxz_ru.storage.file.Storage;
-import com.github.zxxz_ru.storage.file.UserFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import com.github.zxxz_ru.entity.User;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,12 +14,14 @@ import java.util.regex.Pattern;
 @Component
 class UserCommand implements Commander {
 
-    @Autowired
-    private UserFileRepository repository;
-    @Autowired
-    private Util<User> util;
-    @Autowired
+    private FileSystemRepository<User> repository;
     private Messenger messenger;
+
+    @Autowired
+    public UserCommand(Storage storage, Messenger messenger){
+        this.messenger = messenger;
+        repository = new FileSystemRepository<User>(storage, messenger, storage.getUsers(), EntityMode.USER);
+    }
 
     public <S extends User> Iterable<S> saveAll(Iterable<S> entities) {
         return null;
@@ -58,7 +56,7 @@ class UserCommand implements Commander {
 
     private void dropTask(int userId, int taskId) {
     }
-
+/*
     private String getRoleParameter(String... args) throws NoSuchElementException {
         if (Arrays.stream(args).anyMatch(s -> Pattern.matches("role(=){1}.*", s))) {
             return util.getParameter("role", args);
@@ -66,11 +64,13 @@ class UserCommand implements Commander {
         return "Developer";
     }
 
+ */
+
     private boolean isPresent(String param, String... args) {
         String rex = param + "(=){1}.*";
         return Arrays.stream(args).anyMatch((a) -> Pattern.matches(rex, a));
     }
-
+/*
     private User createNewUser(String... args) throws IllegalArgumentException, NoSuchElementException {
         if (!isPresent("firstname", args))
             throw new IllegalArgumentException("user --put firstname is required parameter to create new  user.");
@@ -86,9 +86,12 @@ class UserCommand implements Commander {
         return user;
     }
 
+ */
+
     // Update method only one required parameter id.
     // Must get user from Db if not print message that user do not exists.
     // return updated user for reference.
+    /*
     private List<User> updateUser(String... args) throws NoSuchElementException {
         List<User> list = new ArrayList<>();
         User user = new User();
@@ -118,6 +121,8 @@ class UserCommand implements Commander {
         return list;
     }
 
+     */
+/*
     // TODO: When inserting without id id is null!!!!
     private List<User> saveUser(String... args) throws NoSuchElementException, IllegalArgumentException {
         List<User> list = new ArrayList<>();
@@ -125,6 +130,8 @@ class UserCommand implements Commander {
         list.add(user);
         return list;
     }
+
+ */
 
     /**
      * get parameters from arguments, create new user and set fields to argument's values
@@ -146,6 +153,9 @@ class UserCommand implements Commander {
                         String id = matcher.group(3);
                         if(id != null) {
                             user.setId(Integer.parseInt(id));
+                        } else {
+                            // in save method it will trigger new User
+                            user.setId(-1);
                         }
                         break;
                     case "firstname":
@@ -161,6 +171,8 @@ class UserCommand implements Commander {
             }
 
         }
+        // trigger new user in save method
+        if(user.getId() == null) user.setId(-1);
         return user;
     }
 
@@ -180,8 +192,6 @@ class UserCommand implements Commander {
                 break;
             case "--update":
                 User user = setUserForUpdate(args);
-                messenger.print(4, "User after set user for update:");
-                messenger.print(List.of(user));
                 repository.save(user);
 
         }
@@ -211,7 +221,8 @@ class UserCommand implements Commander {
                     messenger.print(saveUser(args));
                 } catch (NoSuchElementException e) {
                     messenger.printError(wrongParameter);
-                } catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException    @Autowired
+    Messenger messenger; e) {
                     messenger.printError(e.getMessage());
                 }
             case "--update":

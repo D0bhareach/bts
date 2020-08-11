@@ -14,21 +14,33 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Component
 public class FileSystemRepository<S extends StoreUnit> implements CrudRepository<S, Integer> {
 
-    @Autowired
-    public Storage storage;
-    @Autowired
-    Messenger messenger;
+    private Messenger messenger;
+    private Storage storage;
     private List<S> list;
-    private  EntityMode mode;
+    private EntityMode mode;
 
-    public FileSystemRepository(){}
+    public List<S> getList() {
+        return list;
+    }
 
-    @SuppressWarnings("unchecked")
-    public FileSystemRepository(EntityMode mode) {
+    public FileSystemRepository setList(List<S> list) {
+        this.list = list;
+        return this;
+    }
+    public FileSystemRepository setMode(EntityMode mode){
         this.mode = mode;
+        return this;
+    }
+
+    // public FileSystemRepository(){}
+    public FileSystemRepository(Storage storage, Messenger messenger, List list, EntityMode mode) {
+        this.storage =storage;
+        this.messenger = messenger;
+        this.list = list;
+        this.mode = mode;
+        /*
         switch (mode) {
             case USER:
                 list = (List<S>) storage.getUsers();
@@ -40,8 +52,9 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
                 list = (List<S>) storage.getProjects();
                 break;
         }
-    }
 
+ */
+    }
     @SuppressWarnings("unchecked")
     private void updateStorage() {
         switch (mode) {
@@ -82,11 +95,10 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
     }
 
     public void deleteById(Integer id) {
-        for (S e : list) {
-            if (e.getId().equals(id)) {
-                list.remove(e);
-                updateStorage();
-            }
+        Optional<S> opti = findById(id);
+        if(opti.isPresent()) {
+            S s = opti.get();
+            list.remove(s);
         }
     }
 
@@ -108,7 +120,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
     public Iterable<S> findAllById(Iterable<Integer> ids) {
         ArrayList<S> res = new ArrayList<>();
         for (S e : list) {
-            int id = ((StoreUnit) e).getId();
+            int id = e.getId();
             for (int i : ids) {
                 if (id == i) {
                     res.add(e);
@@ -120,25 +132,23 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
 
 
     public Optional<S> findById(Integer id) {
+        Optional<S> opti = Optional.empty();
         S res = null;
         for (S e : list) {
             if (e.getId().equals(id)) {
-                res = e;
+                opti = Optional.of(e);
             }
         }
-        return Optional.ofNullable(res);
+        return opti;
     }
 
     public <S1 extends S>S1 save(S1 entity) {
-        messenger.print(4,"Got to save method");
-        int id = entity.getId();
-        messenger.print(4,"Entity id is "+ id);
+            int id = entity.getId();
         // add new Entity
         if (id <= 0) {
             switch (mode) {
                 case USER:
                     id = storage.getNextUserId();
-                    System.out.println("User id in save is "+id);
                     break;
                 case TASK:
                     id = storage.getNextTaskId();
@@ -161,8 +171,6 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
             }
             if(idx>=0){
                 S e = list.get(idx);
-                messenger.print(4, "e from list:");
-                messenger.print(List.of(e));
                 e =  e.from(entity);
                 list.set(idx, e);
             } else {
