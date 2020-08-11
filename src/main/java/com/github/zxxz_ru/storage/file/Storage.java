@@ -132,6 +132,7 @@ public class Storage {
         return data.taskCounter.addAndGet(1);
     }
     public int getNextUserId(){
+        messenger.print(4, "USER COUNTER IN STORGE:" + data.getUserCounter().get());
         return data.userCounter.addAndGet(1);
     }
 

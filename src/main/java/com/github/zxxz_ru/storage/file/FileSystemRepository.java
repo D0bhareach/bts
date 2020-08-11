@@ -1,5 +1,6 @@
 package com.github.zxxz_ru.storage.file;
 
+import com.github.zxxz_ru.command.Messenger;
 import com.github.zxxz_ru.entity.Project;
 import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
@@ -18,6 +19,8 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
 
     @Autowired
     public Storage storage;
+    @Autowired
+    Messenger messenger;
     private List<S> list;
     private  EntityMode mode;
 
@@ -127,12 +130,15 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
     }
 
     public <S1 extends S>S1 save(S1 entity) {
+        messenger.print(4,"Got to save method");
         int id = entity.getId();
+        messenger.print(4,"Entity id is "+ id);
         // add new Entity
         if (id <= 0) {
             switch (mode) {
                 case USER:
                     id = storage.getNextUserId();
+                    System.out.println("User id in save is "+id);
                     break;
                 case TASK:
                     id = storage.getNextTaskId();
@@ -155,6 +161,8 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
             }
             if(idx>=0){
                 S e = list.get(idx);
+                messenger.print(4, "e from list:");
+                messenger.print(List.of(e));
                 e =  e.from(entity);
                 list.set(idx, e);
             } else {

@@ -180,6 +180,8 @@ class UserCommand implements Commander {
                 break;
             case "--update":
                 User user = setUserForUpdate(args);
+                messenger.print(4, "User after set user for update:");
+                messenger.print(List.of(user));
                 repository.save(user);
 
         }
