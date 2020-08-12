@@ -50,9 +50,9 @@ public class Storage {
         file = creator.createStorageFile();
         // insert data in file change it when find how to use profiles.
         if (file.length() <= 0) {
-            List users = inserter.createUserList();
-            List tasks = inserter.createTaskList(users);
-            List projects = inserter.createProjectList(tasks);
+            List<User> users = inserter.createUserList();
+            List<Task> tasks = inserter.createTaskList(users);
+            List<Project> projects = inserter.createProjectList(tasks);
             this.data = new Data();
             this.data.setUsers(users);
             this.data.setUserCounter(new AtomicInteger(users.size()));

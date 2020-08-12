@@ -23,6 +23,7 @@ class TaskCommand implements Commander {
         this.messenger = messenger;
         repository = new FileSystemRepository<Task>(storage, messenger, storage.getTasks(), EntityMode.TASK);
     }
+
     @Override
     public void execute(String args) {
         int id = -1;
@@ -38,6 +39,29 @@ class TaskCommand implements Commander {
                     repository.deleteById(id);
                 }
                 break;
+            case "--update":
+                //    User user = setUserForUpdate(args);
+                //  repository.save(user);
+            case "-id":
+                id = getId(args, messenger);
+                Matcher mtchr = Pattern.compile("^task\\s+-id\\s+(\\d+)$").matcher(args.trim());
+                if (mtchr.find()) {
+                    Optional opti = repository.findById(id);
+                    if (opti.isPresent()) {
+                        messenger.print(List.of(opti.get()));
+                    }
+                    break;
+                }
+                /*
+                if (processTaskCommand(args, "--assign", id)) {
+                    break;
+                } else if (processTaskCommand(args, "--drop", id)) {
+                    break;
+                } else {
+                    break;
+                }
+
+                 */
         }
     }
 }

@@ -72,19 +72,19 @@ public class InitialDataInserter {
         list.add(task);
 
         task = new Task(2, "Bug 235 in BTS",
-                "normal", "",
+                "normal", "Development",
                 "Null Pointer in Spring Boot.");
         task.setUserList(List.of(users.get(0), users.get(3)));
         list.add(task);
 
-        task = new Task(3, "Bug 239 in BTS", "done", "", "Simple typos in HelpCommand.");
+        task = new Task(3, "Bug 239 in BTS", "done", "Black Box Testing", "Simple typos in HelpCommand.");
         list.add(task);
 
-        task = new Task(4, "Project_1 start", "normal", "", "Good Idea Project Start and Git init.");
+        task = new Task(4, "Project_1 start", "normal", "Development", "Good Idea Project Start and Git init.");
         task.setUserList(List.of(users.get(1), users.get(3)));
         list.add(task);
 
-        task = new Task(5, "Enigma", "normal", "secret", "VIP for FBI.");
+        task = new Task(5, "Enigma", "normal", "Testing", "VIP for FBI.");
         task.setUserList(List.of(users.get(2), users.get(4)));
         list.add(task);
         return list;
