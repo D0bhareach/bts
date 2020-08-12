@@ -1,7 +1,6 @@
 package com.github.zxxz_ru.storage.file;
 
 import com.github.zxxz_ru.entity.Project;
-import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
 
@@ -20,21 +19,21 @@ public class Data {
     AtomicInteger taskCounter;
     AtomicInteger projectCounter;
 
-    public Data(){
+    public Data() {
         clear();
         userCounter = new AtomicInteger(0);
         taskCounter = new AtomicInteger(0);
         projectCounter = new AtomicInteger(0);
     }
 
-    public final void clear(){
+    public final void clear() {
         projects = new ArrayList<Project>();
         tasks = new ArrayList<Task>();
         users = new ArrayList<User>();
     }
 
 
-    public List<User> getUsers(){
+    public List<User> getUsers() {
         return users;
     }
 

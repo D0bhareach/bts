@@ -114,19 +114,18 @@ public class Dispatcher {
     public void dispatch() {
         Scanner scan = new Scanner(System.in);
         String str = scan.nextLine();
-        if(str.trim().equals("")) {
+        if (str.trim().equals("")) {
             return;
-        }else{
-        // search for dash commands
+        } else {
+            // search for dash commands
             Pattern pattern = Pattern.compile("^\\p{Blank}*?-{1,2}+\\w++");
             Matcher matcher = pattern.matcher(str);
-            while(matcher.find()){
+            while (matcher.find()) {
                 String command;
                 command = matcher.group().trim();
                 if (command.equals("-h") || command.equals("--help")) {
                     messenger.printHelp();
-                }
-                else if (command.equals("--quit")) {
+                } else if (command.equals("--quit")) {
                     scan.close();
                     closer.closeApp(0);
                 }
@@ -134,24 +133,24 @@ public class Dispatcher {
             // commands without dashes
             pattern = Pattern.compile("^\\p{Blank}*?\\w++");
             matcher = pattern.matcher(str);
-            while(matcher.find()){
-               switch (matcher.group().trim()){
-                   case "user":
-                       userCommand.execute(str);
-                       break;
-                   case "task":
-                      taskCommand.execute(str);
-                       break;
-                   case "project":
-                    projectCommand.execute(str);
-                       break;
-                   case "help":
-                       messenger.printHelp();
-                       break;
-                   case "quit":
-                       scan.close();
-                       closer.closeApp(0);
-               }
+            while (matcher.find()) {
+                switch (matcher.group().trim()) {
+                    case "user":
+                        userCommand.execute(str);
+                        break;
+                    case "task":
+                        taskCommand.execute(str);
+                        break;
+                    case "project":
+                        projectCommand.execute(str);
+                        break;
+                    case "help":
+                        messenger.printHelp();
+                        break;
+                    case "quit":
+                        scan.close();
+                        closer.closeApp(0);
+                }
             }
         }
     }

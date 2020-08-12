@@ -22,7 +22,7 @@ public class User implements StoreUnit {
     public User() {
     }
 
-    public User (Integer id, String firstname, String lastname, String role) {
+    public User(Integer id, String firstname, String lastname, String role) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -30,7 +30,7 @@ public class User implements StoreUnit {
     }
 
     @Override
-    public <T extends StoreUnit> T from(T u){
+    public <T extends StoreUnit> T from(T u) {
         User n = new User();
         User usr = (User) u;
         if ((usr.getId() != null)) {
@@ -38,16 +38,22 @@ public class User implements StoreUnit {
         } else {
             n.setId(this.id);
         }
-        if(usr.getFirstName() != null && !usr.getFirstName().equals("")){n.setFirstName(usr.getFirstName());} else {
+        if (usr.getFirstName() != null && !usr.getFirstName().equals("")) {
+            n.setFirstName(usr.getFirstName());
+        } else {
             n.setFirstName(this.firstname);
         }
-        if(usr.getLastName() != null && ! usr.getLastName().equals("")){n.setLastName(usr.getLastName());} else {
+        if (usr.getLastName() != null && !usr.getLastName().equals("")) {
+            n.setLastName(usr.getLastName());
+        } else {
             n.setLastName(this.lastname);
         }
-        if(usr.getRole() != null && ! usr.getRole().equals("")){n.setRole(usr.getRole());} else {
+        if (usr.getRole() != null && !usr.getRole().equals("")) {
+            n.setRole(usr.getRole());
+        } else {
             n.setRole(this.role);
         }
-        return (T)n;
+        return (T) n;
     }
 
     @Override

@@ -12,7 +12,8 @@ import com.github.zxxz_ru.storage.InitialDataInserter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,13 +34,13 @@ public class Storage {
      * Path to Storage File. Path is either default value or can be set from
      * Application Parameters.
      */
-    private File file;
+    private final File file;
     private final Messenger messenger;
     private final AppState state;
     private final StorageFileCreator creator;
     private final ObjectMapper mapper = new ObjectMapper().
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    private Data data;
+    private final Data data;
 
     @Autowired
     public Storage(AppState state, Messenger messenger, StorageFileCreator creator, InitialDataInserter inserter) {

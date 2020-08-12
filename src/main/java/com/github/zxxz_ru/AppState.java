@@ -15,7 +15,8 @@ import org.springframework.stereotype.Component;
 @Component
 @PropertySource("classpath:/application.properties")
 public class AppState {
-    public enum AppMode{DATABASE, FILESYSTEM}
+    public enum AppMode {DATABASE, FILESYSTEM}
+
     // Application Storage Mode. App can use Database ar File System.
     // Default is File System
     private AppMode mode = AppMode.FILESYSTEM;

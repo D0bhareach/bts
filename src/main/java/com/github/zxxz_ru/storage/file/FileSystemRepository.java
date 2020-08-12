@@ -5,9 +5,7 @@ import com.github.zxxz_ru.entity.Project;
 import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +14,8 @@ import java.util.stream.Collectors;
 
 public class FileSystemRepository<S extends StoreUnit> implements CrudRepository<S, Integer> {
 
-    private Messenger messenger;
-    private Storage storage;
+    private final Messenger messenger;
+    private final Storage storage;
     private List<S> list;
     private EntityMode mode;
 
@@ -29,32 +27,20 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         this.list = list;
         return this;
     }
-    public FileSystemRepository setMode(EntityMode mode){
+
+    public FileSystemRepository setMode(EntityMode mode) {
         this.mode = mode;
         return this;
     }
 
     // public FileSystemRepository(){}
     public FileSystemRepository(Storage storage, Messenger messenger, List list, EntityMode mode) {
-        this.storage =storage;
+        this.storage = storage;
         this.messenger = messenger;
         this.list = list;
         this.mode = mode;
-        /*
-        switch (mode) {
-            case USER:
-                list = (List<S>) storage.getUsers();
-                break;
-            case TASK:
-                list = (List<S>) storage.getTasks();
-                break;
-            case PROJECT:
-                list = (List<S>) storage.getProjects();
-                break;
-        }
-
- */
     }
+
     @SuppressWarnings("unchecked")
     private void updateStorage() {
         switch (mode) {
@@ -96,7 +82,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
 
     public void deleteById(Integer id) {
         Optional<S> opti = findById(id);
-        if(opti.isPresent()) {
+        if (opti.isPresent()) {
             S s = opti.get();
             list.remove(s);
         }
@@ -124,6 +110,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
             for (int i : ids) {
                 if (id == i) {
                     res.add(e);
+
                 }
             }
         }
@@ -142,7 +129,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         return opti;
     }
 
-    private int getNextCounter(){
+    private int getNextCounter() {
         int id = -1;
         switch (mode) {
             case USER:
@@ -155,47 +142,47 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
                 id = storage.getNextProjectId();
                 break;
         }
-      return id;
+        return id;
     }
 
-    private int getNextCounter(int id){
+    private int getNextCounter(int id) {
         int counter = -1;
         switch (mode) {
             case USER:
                 counter = storage.getUserCounter();
-                if(id >= counter + 1) storage.setUserCounter(id);
+                if (id >= counter + 1) storage.setUserCounter(id);
                 break;
             case TASK:
                 counter = storage.getTaskCounter();
-                if(id >= counter + 1) storage.setTaskCounter(id);
+                if (id >= counter + 1) storage.setTaskCounter(id);
                 break;
             case PROJECT:
                 counter = storage.getProjectCounter();
-                if(id >= counter + 1) storage.setProjectCounter(id);
+                if (id >= counter + 1) storage.setProjectCounter(id);
                 break;
         }
         return id;
     }
 
-    public <S1 extends S>S1 save(S1 entity) {
-            int id = entity.getId();
+    public <S1 extends S> S1 save(S1 entity) {
+        int id = entity.getId();
         // add new Entity
         if (id <= 0) {
             entity.setId(getNextCounter());
             list.add(entity);
-        }else {
+        } else {
             // must replace
             int finalId = id;
             int idx = 0;
-            List<S> filtered = list.stream().filter(e->e.getId() == finalId).collect(Collectors.toList());
+            List<S> filtered = list.stream().filter(e -> e.getId() == finalId).collect(Collectors.toList());
             try {
                 idx = list.indexOf(filtered.get(0));
-            } catch (IndexOutOfBoundsException e){
+            } catch (IndexOutOfBoundsException e) {
                 idx = -1;
             }
-            if(idx>=0){
+            if (idx >= 0) {
                 S e = list.get(idx);
-                e =  e.from(entity);
+                e = e.from(entity);
                 list.set(idx, e);
             } else {
                 id = getNextCounter(id);
@@ -206,10 +193,11 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         return entity;
     }
 
+
     @Override
     public <S1 extends S> Iterable<S1> saveAll(Iterable<S1> entities) {
         for (S1 e : entities) save(e);
-        return (List<S1>)list;
+        return (List<S1>) list;
     }
 
 }

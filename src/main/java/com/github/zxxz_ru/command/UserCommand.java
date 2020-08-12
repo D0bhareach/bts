@@ -1,25 +1,26 @@
 package com.github.zxxz_ru.command;
 
 import com.github.zxxz_ru.entity.Task;
+import com.github.zxxz_ru.entity.User;
 import com.github.zxxz_ru.storage.file.EntityMode;
 import com.github.zxxz_ru.storage.file.FileSystemRepository;
 import com.github.zxxz_ru.storage.file.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.github.zxxz_ru.entity.User;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
 class UserCommand implements Commander {
 
-    private FileSystemRepository<User> repository;
-    private Messenger messenger;
+    private final FileSystemRepository<User> repository;
+    private final Messenger messenger;
     private Storage storage;
 
-   @Autowired
+    @Autowired
     public UserCommand(Storage storage, Messenger messenger) {
         this.messenger = messenger;
         repository = new FileSystemRepository<User>(storage, messenger, storage.getUsers(), EntityMode.USER);
@@ -73,10 +74,9 @@ class UserCommand implements Commander {
     // TODO: Make it return boolean finish method.
 
     /**
-     *
-     * @param args command line
+     * @param args   command line
      * @param prefix prefix to regexp for finding task part in user's command line
-     * @param id  id extracted from user's command line
+     * @param id     id extracted from user's command line
      * @return true if all goes well, false otherwise
      */
     private boolean processTaskCommand(String args, String prefix, int id) {
@@ -104,6 +104,7 @@ class UserCommand implements Commander {
 
     /**
      * Goes through cases of command line commands. Resolve each case, perform actions.
+     *
      * @param args command line
      */
     @Override

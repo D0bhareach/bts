@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 @Component
 class ProjectCommand implements Commander {
     @Override
-    public void execute(String s){}
+    public void execute(String s) {
+    }
 
 }

@@ -2,7 +2,6 @@ package com.github.zxxz_ru.storage.file;
 
 import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.command.Messenger;
-import com.github.zxxz_ru.storage.InitialDataInserter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,24 +19,25 @@ public class StorageFileCreator {
     @Autowired
     Messenger messenger;
 
-    private Path createAbsolutePath(){
+    private Path createAbsolutePath() {
         return Paths.get(System.getProperty("user.home"), state.getPath());
     }
 
-    private void createDir(Path path){
+    private void createDir(Path path) {
         Path dir = path.getParent();
-        if(Files.exists(dir)) return;
+        if (Files.exists(dir)) return;
         try {
-            Files.createDirectories(dir,PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-----")));
+            Files.createDirectories(dir, PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-----")));
         } catch (IOException e) {
-            messenger.printError("Error during creating directory: "+ dir.toString());
+            messenger.printError("Error during creating directory: " + dir.toString());
             e.printStackTrace();
         }
     }
-    public File createStorageFile(){
+
+    public File createStorageFile() {
         Path path = createAbsolutePath();
         File file = null;
-        if(!Files.exists(path)) {
+        if (!Files.exists(path)) {
             Path filePath;
             createDir(path);
             try {
@@ -46,7 +46,9 @@ public class StorageFileCreator {
             } catch (IOException e) {
                 messenger.printError("Error while creating file: " + path);
             }
-        }else if(Files.exists(path)){file = new File(path.toUri());}
+        } else if (Files.exists(path)) {
+            file = new File(path.toUri());
+        }
         return file;
     }
 }

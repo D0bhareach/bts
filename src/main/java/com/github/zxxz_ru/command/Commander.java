@@ -1,7 +1,5 @@
 package com.github.zxxz_ru.command;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,7 +13,7 @@ public interface Commander {
         if (matcher.find()) {
             try {
                 res = matcher.group(1);
-            }catch (IndexOutOfBoundsException e){
+            } catch (IndexOutOfBoundsException e) {
                 messenger.print(3);
             }
         }
@@ -26,6 +24,7 @@ public interface Commander {
     /**
      * Used to get id parameter as integer when commands are (id|d)
      * Can return 0 must check for it before use result of this method.
+     *
      * @param args
      * @param messenger must pass Messenger to use it.
      * @return POSSIBLE ZERO check function result before use!
@@ -51,10 +50,11 @@ public interface Commander {
 
     String end = ")\\s?=\\s?('(\\w+\\s?\\w+)')";
     String idEnd = ")\\s?=\\s?((\\d+))";
-    default Pattern preparePattern(String parameter){
+
+    default Pattern preparePattern(String parameter) {
         // id firstname ...
         StringBuilder builder = new StringBuilder("(");
-        if (parameter.equals("id")){
+        if (parameter.equals("id")) {
             builder.append("id").append(idEnd);
             return Pattern.compile(builder.substring(0));
         }

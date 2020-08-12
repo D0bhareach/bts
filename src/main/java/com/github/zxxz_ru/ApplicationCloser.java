@@ -15,7 +15,8 @@ public class ApplicationCloser {
     AppState state;
     @Autowired
     Storage storage;
-    public void closeApp(int status){
+
+    public void closeApp(int status) {
         storage.writeData();
         System.exit(status);
     }
