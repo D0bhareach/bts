@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Storage Class will write data back to File System.
  * It it must have methods to return each ArrayList of Entities and method to replace ArrayList of
  * Entity when List has changed.
- *
  */
 @Component
 public class Storage {
@@ -49,7 +48,7 @@ public class Storage {
         this.messenger = messenger;
         file = creator.createStorageFile();
         // insert data in file change it when find how to use profiles.
-        if(file.length() <= 0){
+        if (file.length() <= 0) {
             List users = inserter.createUserList();
             List tasks = inserter.createTaskList(users);
             List projects = inserter.createProjectList(tasks);
@@ -88,7 +87,7 @@ public class Storage {
         }
         if (file.length() > 0) {
             try {
-                return  mapper.readValue(file, new TypeReference<>() {
+                return mapper.readValue(file, new TypeReference<>() {
                 });
             } catch (IOException e) {
                 e.printStackTrace();
@@ -96,12 +95,12 @@ public class Storage {
                 System.exit(1);
             }
         }
-        return  new Data();
+        return new Data();
     }
 
     // Methods to get specific List from
     public List<User> getUsers() {
-            return data.getUsers();
+        return data.getUsers();
     }
 
     public List<Task> getTasks() {
@@ -125,51 +124,48 @@ public class Storage {
         this.data.setUsers(users);
     }
 
-    public int getNextProjectId(){
+    /**
+     * @return next user id.
+     */
+    public int getNextProjectId() {
         return data.projectCounter.addAndGet(1);
     }
-    public int getNextTaskId(){
+
+    public int getNextTaskId() {
         return data.taskCounter.addAndGet(1);
     }
-    public int getNextUserId(){
-        messenger.print(4, "USER COUNTER IN STORGE:" + data.getUserCounter().get());
+
+    public int getNextUserId() {
         return data.userCounter.addAndGet(1);
     }
 
-
-
-    /*
-    public void store(List<T> list){
-        final String storageDir = "~/opt/storage/epam/";
-        final String userFile = storageDir+"users";
-        final String taskFile = storageDir+"tasks";
-        final String projectFile = storageDir+"projects";
-        try(
-            FileOutputStream fileOut =
-                    new FileOutputStream(path);
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            ){
-         out.writeObject(list);
-      }  catch (IOException i) {
-         i.printStackTrace();
-      }
+    // need this methods in FileSystemRepository save method for cases
+    // when user --update id is bigger than counter + 1.
+    public int getProjectCounter() {
+        return data.projectCounter.get();
     }
 
-    @SuppressWarnings("unchecked")
-    public List<T> get(Mode mode){
-        List<T> list = new ArrayList<>();
-        try (
-                FileInputStream fileIn = new FileInputStream(path);
-                ObjectInputStream in = new ObjectInputStream(fileIn)){
-             list = (List<T>) in.readObject();
-        } catch (IOException i) {
-            i.printStackTrace();
-        } catch (ClassNotFoundException c) {
-            System.out.println("Employee class not found");
-            c.printStackTrace();
-        }
-        return list;
+    public int getTaskCounter() {
+        return data.taskCounter.get();
     }
 
-     */
+    public int getUserCounter() {
+        return data.userCounter.get();
+    }
+
+    // need this methods to set counters for Entities in data. User in save
+    // method of FileSystemRepository in cases when --update command pass
+    // id value bigger than counter + 1
+
+    public void setProjectCounter(int i) {
+        data.setProjectCounter(new AtomicInteger(i));
+    }
+
+    public void setTaskCounter(int i) {
+        data.setTaskCounter(new AtomicInteger(i));
+    }
+
+    public void setUserCounter(int i) {
+        data.setUserCounter(new AtomicInteger(i));
+    }
 }

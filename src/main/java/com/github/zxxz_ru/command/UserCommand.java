@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.github.zxxz_ru.entity.User;
 
-import java.io.File;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,141 +19,33 @@ class UserCommand implements Commander {
     private Messenger messenger;
     private Storage storage;
 
-    @Autowired
-    public UserCommand(Storage storage, Messenger messenger){
+   @Autowired
+    public UserCommand(Storage storage, Messenger messenger) {
         this.messenger = messenger;
         repository = new FileSystemRepository<User>(storage, messenger, storage.getUsers(), EntityMode.USER);
     }
 
-    public <S extends User> Iterable<S> saveAll(Iterable<S> entities) {
-        return null;
-    }
-
-    public void deleteAll(Iterable<? extends User> entities) {
-
-    }
-
-    private List<User> getAll() {
-        return (List<User>) repository.findAll();
-    }
-
-
-    private List<User> getUser(int id) throws NoSuchElementException {
-        List<User> res = new ArrayList<>();
-        Optional<User> opt = repository.findById(id);
-        opt.ifPresent(user -> res.add((User) user));
-        return res;
-    }
-
-    private List<User> deleteUser(int id) {
-        List<User> list = getUser(id);
-        if (list.size() != 0) {
-            repository.delete(list.get(0));
-        }
-        return list;
-    }
-
-    private void assignTask(int userId, int taskId) {
-    }
-
-    private void dropTask(int userId, int taskId) {
-    }
-/*
-    private String getRoleParameter(String... args) throws NoSuchElementException {
-        if (Arrays.stream(args).anyMatch(s -> Pattern.matches("role(=){1}.*", s))) {
-            return util.getParameter("role", args);
-        }
-        return "Developer";
-    }
-
- */
-
-    private boolean isPresent(String param, String... args) {
-        String rex = param + "(=){1}.*";
-        return Arrays.stream(args).anyMatch((a) -> Pattern.matches(rex, a));
-    }
-/*
-    private User createNewUser(String... args) throws IllegalArgumentException, NoSuchElementException {
-        if (!isPresent("firstname", args))
-            throw new IllegalArgumentException("user --put firstname is required parameter to create new  user.");
-        if (!isPresent("lastname", args))
-            throw new IllegalArgumentException("user --put lastname is required parameter to create new  user.");
-        User user = new User();
-        String firstName = util.getParameter("firstname", args);
-        String lastName = util.getParameter("lastname", args);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        String role = getRoleParameter(args);
-        user.setRole(role);
-        return user;
-    }
-
- */
-
-    // Update method only one required parameter id.
-    // Must get user from Db if not print message that user do not exists.
-    // return updated user for reference.
-    /*
-    private List<User> updateUser(String... args) throws NoSuchElementException {
-        List<User> list = new ArrayList<>();
-        User user = new User();
-        // no more fun!
-        if (!isPresent("id", args)) messenger.printError("user --put id is required parameter.");
-        int userId;
-        // get userId from parameters or create new.
-        userId = Integer.parseInt(util.getParameter("id", args));
-        Optional<User> userOption = repository.findById(userId);
-        if (userOption.isEmpty()) {
-            messenger.printMessage("No user with id: " + userId);
-        }
-        user = userOption.get();
-        if (isPresent("firstname", args)) {
-            String firstName = util.getParameter("firstname", args);
-            user.setFirstName(firstName);
-        }
-        if (isPresent("lastname", args)) {
-            String lastName = util.getParameter("lastname", args);
-            user.setLastName(lastName);
-        }
-        // Role Parameter not null and will be either default value or value provided in parameters.
-        String role = getRoleParameter(args);
-        user.setRole(role);
-        user = (User) repository.save(user);
-        list.add(user);
-        return list;
-    }
-
-     */
-/*
-    // TODO: When inserting without id id is null!!!!
-    private List<User> saveUser(String... args) throws NoSuchElementException, IllegalArgumentException {
-        List<User> list = new ArrayList<>();
-        User user = createNewUser(args);
-        list.add(user);
-        return list;
-    }
-
- */
-
     /**
-     * get parameters from arguments, create new user and set fields to argument's values
-     * Does not set id if it's not provided, affectively new user
+     * Get parameters from --update command arguments, create new user and set fields to argument's values
+     * Does not set id if it's not provided instead it set id to -1 affectively creating new user.
      * FileSystemRepository save(S entity) method will check for existence and availability if
-     * id in saved Entities.
+     * id in saved Entities and change fields that provided.
+     *
      * @param args command line
-     * @return
+     * @return new User fields that not set have null value. Except id it either -1 or real id from command.
+     * See save method from  FileSystemRepository.
      */
-    private User setUserForUpdate(String args){
-        List<String> parameters = List.of("id","firstname","lastname","role");
+    private User setUserForUpdate(String args) {
+        List<String> parameters = List.of("id", "firstname", "lastname", "role");
         User user = new User();
-        for (String parameter : parameters){
-            Pattern pattern= preparePattern(parameter);
+        for (String parameter : parameters) {
+            Pattern pattern = preparePattern(parameter);
             Matcher matcher = pattern.matcher(args);
-            if(matcher.find()){
-                switch (parameter){
+            if (matcher.find()) {
+                switch (parameter) {
                     case "id":
                         String id = matcher.group(3);
-                        if(id != null) {
+                        if (id != null) {
                             user.setId(Integer.parseInt(id));
                         } else {
                             // in save method it will trigger new User
@@ -175,44 +66,58 @@ class UserCommand implements Commander {
 
         }
         // trigger new user in save method
-        if(user.getId() == null) user.setId(-1);
+        if (user.getId() == null) user.setId(-1);
         return user;
     }
 
     // TODO: Make it return boolean finish method.
-    private boolean processTaskCommand(String args, String prefix, int id){
+
+    /**
+     *
+     * @param args command line
+     * @param prefix prefix to regexp for finding task part in user's command line
+     * @param id  id extracted from user's command line
+     * @return true if all goes well, false otherwise
+     */
+    private boolean processTaskCommand(String args, String prefix, int id) {
         String pattern = new StringBuilder(prefix).append("-task\\s+(\\d+)").substring(0);
         Pattern p1 = Pattern.compile(pattern);
 
         Matcher m1 = p1.matcher(args);
-        if(m1.find()){
+        if (m1.find()) {
             String IdString = m1.group(1);
             try {
                 int taskId = Integer.parseInt(IdString.trim());
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 messenger.print(4, "Check task id value.");
                 return false;
             }
             FileSystemRepository<Task> taskRepository =
                     new FileSystemRepository<Task>(storage, messenger, storage.getTasks(), EntityMode.TASK);
-            if(prefix.equals("assign")){}else if(prefix.equals("drop")){}
+            if (prefix.equals("assign")) {
+            } else if (prefix.equals("drop")) {
+            }
         }
         return false;
     }
 
-    private void processFindUserCommand(String argsk){}
 
+    /**
+     * Goes through cases of command line commands. Resolve each case, perform actions.
+     * @param args command line
+     */
     @Override
     public void execute(String args) {
         int id = -1;
         String command = getCommand(args, messenger);
-        switch (command){
-            case "-a": case"--all":
-                messenger.print((List<User>)repository.findAll());
+        switch (command) {
+            case "-a":
+            case "--all":
+                messenger.print((List<User>) repository.findAll());
                 break;
             case "-d":
                 id = getId(args, messenger);
-                if(id != 0){
+                if (id != 0) {
                     repository.deleteById(id);
                 }
                 break;
@@ -222,63 +127,20 @@ class UserCommand implements Commander {
             case "-id":
                 id = getId(args, messenger);
                 Matcher mtchr = Pattern.compile("^user\\s+-id\\s+(\\d+)$").matcher(args.trim());
-                if(mtchr.find()){
+                if (mtchr.find()) {
                     Optional opti = repository.findById(id);
-                    if(opti.isPresent()){
+                    if (opti.isPresent()) {
                         messenger.print(List.of(opti.get()));
                         break;
                     }
                 }
-                if(processTaskCommand(args,"--assign", id)){break;}
-                else if(processTaskCommand(args, "--drop", id)){break;}
-                else{break;}
-
-
-                // check for drop-task
-                    // process
-                // check for assign-task
-                    //process
-                // else findById
-                // print result.
+                if (processTaskCommand(args, "--assign", id)) {
+                    break;
+                } else if (processTaskCommand(args, "--drop", id)) {
+                    break;
+                } else {
+                    break;
+                }
         }
-        /* String z = args[0];
-        switch (z) {
-            case "-a":
-            case "--all":
-                messenger.print(getAll());
-            case "-d":
-            case "--delete":
-                try {
-                    int id = Integer.parseInt(util.getParameter("id", args));
-                    messenger.print(deleteUser(id));
-                } catch (Exception e) {
-                    messenger.printError("Error while deleting user.");
-                }
-            case "-id":
-                try {
-                    int id = Integer.parseInt(util.getParameter("id", args));
-                    messenger.print(getUser(id));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    messenger.printError("Error while searching for user.");
-                }
-            case "--save":
-                try {
-                    messenger.print(saveUser(args));
-                } catch (NoSuchElementException e) {
-                    messenger.printError(wrongParameter);
-                } catch (IllegalArgumentException    @Autowired
-    Messenger messenger; e) {
-                    messenger.printError(e.getMessage());
-                }
-            case "--update":
-                try {
-                    messenger.print(updateUser(args));
-                } catch (NoSuchElementException e){
-                    messenger.printError(wrongParameter);
-                }
-
-        }
-    */
     }
 }

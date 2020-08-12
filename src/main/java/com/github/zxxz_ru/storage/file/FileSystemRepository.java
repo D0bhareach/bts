@@ -142,22 +142,46 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         return opti;
     }
 
+    private int getNextCounter(){
+        int id = -1;
+        switch (mode) {
+            case USER:
+                id = storage.getNextUserId();
+                break;
+            case TASK:
+                id = storage.getNextTaskId();
+                break;
+            case PROJECT:
+                id = storage.getNextProjectId();
+                break;
+        }
+      return id;
+    }
+
+    private int getNextCounter(int id){
+        int counter = -1;
+        switch (mode) {
+            case USER:
+                counter = storage.getUserCounter();
+                if(id >= counter + 1) storage.setUserCounter(id);
+                break;
+            case TASK:
+                counter = storage.getTaskCounter();
+                if(id >= counter + 1) storage.setTaskCounter(id);
+                break;
+            case PROJECT:
+                counter = storage.getProjectCounter();
+                if(id >= counter + 1) storage.setProjectCounter(id);
+                break;
+        }
+        return id;
+    }
+
     public <S1 extends S>S1 save(S1 entity) {
             int id = entity.getId();
         // add new Entity
         if (id <= 0) {
-            switch (mode) {
-                case USER:
-                    id = storage.getNextUserId();
-                    break;
-                case TASK:
-                    id = storage.getNextTaskId();
-                    break;
-                case PROJECT:
-                    id = storage.getNextProjectId();
-                    break;
-            }
-            entity.setId(id);
+            entity.setId(getNextCounter());
             list.add(entity);
         }else {
             // must replace
@@ -174,6 +198,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
                 e =  e.from(entity);
                 list.set(idx, e);
             } else {
+                id = getNextCounter(id);
                 list.add(entity);
             }
         }
