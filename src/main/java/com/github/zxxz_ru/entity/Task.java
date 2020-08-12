@@ -71,6 +71,7 @@ public class Task implements StoreUnit {
         return opti;
     }
 
+
     @Override
     public <T extends StoreUnit> T from(T t) {
         Task n = new Task();
@@ -96,7 +97,8 @@ public class Task implements StoreUnit {
             for (User u : users) {
                 Optional opti = getUserById(u.getId());
                 if (!opti.isPresent()) {
-                    this.userList.add(u);
+                    if (!this.userList.contains(u))
+                        this.userList.add(u);
                 }
             }
 
