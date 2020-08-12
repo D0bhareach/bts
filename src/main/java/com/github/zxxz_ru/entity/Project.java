@@ -35,12 +35,18 @@ public class Project implements StoreUnit {
 
     @Override
     public String toString() {
-        return new StringBuilder()
-                .append("\n\t\t------Project---------")
-                .append("\nProject ID: ").append(this.id)
+        StringBuilder bld = new StringBuilder();
+                bld.append("\nProject ID: ").append(this.id)
                 .append("\nProject Name: ").append(this.projectName)
-                .append("\nDescription: ").append(this.description)
-                .substring(0);
+                .append("\nDescription: ").append(this.description);
+        if (taskList.size() > 0) {
+            bld.append("\nTasks: {");
+            for (Task t : taskList) {
+                bld.append(t.getId()).append(", ");
+            }
+            bld.replace(bld.length() - 2, bld.length(), "}\n");
+        }
+        return bld.append("\n").substring(0);
     }
 
     public Optional<Task> getTaskById(int id) {

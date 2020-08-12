@@ -53,6 +53,7 @@ public class InitialDataInserter {
         list.add(project);
         project = new Project(3, "Enigma", "SecretProject");
         project.setTaskList(List.of(tasks.get(2)));
+        list.add(project);
         project = new Project(4, "Project_2", "Very important Project");
         list.add(project);
         return list;

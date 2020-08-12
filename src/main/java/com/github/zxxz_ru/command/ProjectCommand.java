@@ -46,7 +46,7 @@ class ProjectCommand implements Commander {
                 // repository.save(task);
             case "-id":
                 id = getId(args, messenger);
-                Matcher mtchr = Pattern.compile("^task\\s+-id\\s+(\\d+)$").matcher(args.trim());
+                Matcher mtchr = Pattern.compile("^project\\s+-id\\s+(\\d+)$").matcher(args.trim());
                 if (mtchr.find()) {
                     Optional<Project> opti = repository.findById(id);
                     opti.ifPresent(project -> messenger.print(List.of(project)));
