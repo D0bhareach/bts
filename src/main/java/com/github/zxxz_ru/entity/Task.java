@@ -1,7 +1,10 @@
 package com.github.zxxz_ru.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "TASK")
@@ -27,6 +30,7 @@ public class Task implements StoreUnit {
     private List<User> userList;
 
     public Task() {
+        this.userList = new ArrayList<User>();
     }
 
     public Task(Integer id, String thema, String priority, String taskType, String description) {
@@ -35,6 +39,7 @@ public class Task implements StoreUnit {
         this.priority = priority;
         this.taskType = taskType;
         this.description = description;
+        this.userList = new ArrayList<User>();
     }
 
     @Override
@@ -48,9 +53,48 @@ public class Task implements StoreUnit {
                 .append("\n").substring(0);
     }
 
+    public Optional<User> getUserById(int id) {
+        Optional opti = Optional.empty();
+        if (this.userList.size() > 0) {
+            List<User> users = userList.stream().filter(u -> u.getId() == id).collect(Collectors.toList());
+            if (users.size() > 0) {
+                opti = Optional.of(users.get(0));
+            }
+        }
+        return opti;
+    }
+
     @Override
     public <T extends StoreUnit> T from(T t) {
-        return null;
+        Task n = new Task();
+        Task task = (Task) t;
+        if ((task.getId() != null)) {
+            this.id = task.getId();
+        }
+        if (task.getThema() != null) {
+            this.thema = task.getThema();
+        }
+        if (task.getPriority() != null) {
+            this.priority = task.getPriority();
+        }
+        if (task.getTaskType() != null) {
+            this.taskType = task.getTaskType();
+        }
+        if (task.getDescription() != null) {
+            this.description = task.getDescription();
+        }
+        if (task.getUserList().size() > 0) {
+            // add only if not in list
+            List<User> users = task.getUserList();
+            for (User u : users) {
+                Optional opti = getUserById(u.getId());
+                if (!opti.isPresent()) {
+                    this.userList.add(u);
+                }
+            }
+
+        }
+        return (T) this;
     }
     // setters & getters
 
