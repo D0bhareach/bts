@@ -1,6 +1,5 @@
 package com.github.zxxz_ru.command;
 
-import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
 import com.github.zxxz_ru.storage.file.EntityMode;
 import com.github.zxxz_ru.storage.file.FileSystemRepository;
@@ -15,6 +14,9 @@ import java.util.regex.Pattern;
 
 @Component
 class UserCommand implements Commander {
+
+    @Autowired
+    TaskCommand taskCommand;
 
     private final FileSystemRepository<User> repository;
     private final Messenger messenger;
@@ -85,17 +87,33 @@ class UserCommand implements Commander {
 
         Matcher m1 = p1.matcher(args);
         if (m1.find()) {
-            String IdString = m1.group(1);
+            String idString = m1.group(1).trim();
+            messenger.print(4, "idString: ", idString);
+            /*
             try {
-                int taskId = Integer.parseInt(IdString.trim());
+                int taskId = Integer.parseInt(idString.trim());
             } catch (NumberFormatException e) {
                 messenger.print(4, "Check task id value.");
                 return false;
             }
             FileSystemRepository<Task> taskRepository =
                     new FileSystemRepository<Task>(storage, messenger, storage.getTasks(), EntityMode.TASK);
-            if (prefix.equals("assign")) {
-            } else if (prefix.equals("drop")) {
+
+             */
+            if (prefix.equals("--assign")) {
+                messenger.print(4, "Got to assign task.");
+                taskCommand.execute(
+                        new StringBuilder("task -id ")
+                                .append(idString)
+                                .append(" --add-user ").append(id).substring(0));
+                return true;
+            } else if (prefix.equals("--drop")) {
+                taskCommand.execute(
+                        new StringBuilder("task -id ")
+                                .append(idString)
+                                .append(" --remove-user ").append(id).substring(0));
+                return true;
+
             }
         }
         return false;
