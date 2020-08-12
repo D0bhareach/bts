@@ -8,6 +8,7 @@ import com.github.zxxz_ru.storage.file.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -18,6 +19,9 @@ class TaskCommand implements Commander {
     private final Messenger messenger;
     private final FileSystemRepository repository;
     private final Storage storage;
+
+    @Autowired
+    UserCommand userCommand;
 
     @Autowired
     public TaskCommand(Storage storage, Messenger messenger) {
@@ -86,6 +90,66 @@ class TaskCommand implements Commander {
         return false;
     }
 
+    private Task setTaskForUpdate(String args) {
+        List<String> parameters = List.of("id", "theme", "priority", "type", "description", "users");
+        Task task = new Task();
+        for (String parameter : parameters) {
+            Pattern pattern = preparePattern(parameter);
+            Matcher matcher = pattern.matcher(args);
+            if (matcher.find()) {
+                switch (parameter) {
+                    case "id":
+                        String id = matcher.group(3);
+                        if (id != null) {
+                            task.setId(Integer.parseInt(id));
+                        } else {
+                            // in save method it will trigger new User
+                            task.setId(-1);
+                        }
+                        break;
+                    case "theme":
+                        task.setThema(matcher.group(3));
+                        break;
+                    case "priority":
+                        task.setPriority(matcher.group(3));
+                        break;
+                    case "type":
+                        task.setTaskType(matcher.group(3));
+                        break;
+                    case "description":
+                        task.setDescription(matcher.group(3));
+                        break;
+                    case "users":
+                        List<User> ulist = new ArrayList<>();
+                        FileSystemRepository userRepository = new FileSystemRepository(
+                                storage, messenger, storage.getUsers(), EntityMode.USER
+                        );
+                        String ids = matcher.group(2);
+                        String[] uids = ids.split(",");
+                        for (String s : uids) {
+                            try {
+                                int userId = Integer.parseInt(s);
+                                Optional<User> opti = userRepository.findById(userId);
+                                if (opti.isPresent()) {
+                                    ulist.add(opti.get());
+                                }
+                            } catch (NumberFormatException e) {
+                                messenger.print(4, "Check users parameter");
+
+                            }
+                            task.setUserList(ulist);
+                        }
+
+
+                }
+            }
+
+        }
+        // trigger new task in save method
+        if (task.getId() == null) task.setId(-1);
+        return task;
+    }
+
     @Override
     public void execute(String args) {
         int id = -1;
@@ -102,8 +166,8 @@ class TaskCommand implements Commander {
                 }
                 break;
             case "--update":
-                //    User user = setUserForUpdate(args);
-                //  repository.save(user);
+                Task task = setTaskForUpdate(args);
+                repository.save(task);
             case "-id":
                 id = getId(args, messenger);
                 Matcher mtchr = Pattern.compile("^task\\s+-id\\s+(\\d+)$").matcher(args.trim());

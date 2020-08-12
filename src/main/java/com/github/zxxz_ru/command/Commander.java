@@ -48,6 +48,8 @@ public interface Commander {
         return value;
     }
 
+    // group(2)
+// users\s?=\s?(\{\s?)(.+,?)+(\s?\})
     String end = ")\\s?=\\s?('(\\w+\\s?\\w+)')";
     String idEnd = ")\\s?=\\s?((\\d+))";
 
@@ -57,7 +59,10 @@ public interface Commander {
         if (parameter.equals("id")) {
             builder.append("id").append(idEnd);
             return Pattern.compile(builder.substring(0));
+        } else if (parameter.equals("users")) {
+            return Pattern.compile("users\\s?=\\s?(\\{\\s?)(.+,?)+(\\s?\\})");
         }
+
         builder.append(parameter).append(end);
         return Pattern.compile(builder.substring(0));
     }
