@@ -44,13 +44,20 @@ public class Task implements StoreUnit {
 
     @Override
     public String toString() {
-        return new StringBuilder()
-                .append("\nTask ID: ").append(this.id)
-                .append("\nTask Thema: ").append(this.thema)
+        StringBuilder bld = new StringBuilder();
+        bld.append("\nTask ID: ").append(this.id)
+                .append("\nTheme: ").append(this.thema)
                 .append("\nPriority: ").append(this.priority)
-                .append("\nTask Type: ").append(this.taskType)
-                .append("\nDescription: ").append(this.description)
-                .append("\n").substring(0);
+                .append("\nType: ").append(this.taskType)
+                .append("\nDescription: ").append(this.description);
+        if (userList.size() > 0) {
+            bld.append("\nUsers: {");
+            for (User u : userList) {
+                bld.append(u.getId()).append(", ");
+            }
+            bld.replace(bld.length() - 2, bld.length(), "}\n");
+        }
+        return bld.append("\n").substring(0);
     }
 
     public Optional<User> getUserById(int id) {
