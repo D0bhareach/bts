@@ -109,7 +109,7 @@ public class Storage {
     }
 
     public List<Project> getProjects() {
-        return getProjects();
+        return data.getProjects();
     }
 
     // Methods to set specific List of Entities

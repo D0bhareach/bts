@@ -135,6 +135,7 @@ class UserCommand implements Commander {
                 messenger.print((List<User>) repository.findAll());
                 break;
             case "-d":
+            case "--delete":
                 id = getId(args, messenger);
                 if (id != 0) {
                     repository.deleteById(id);

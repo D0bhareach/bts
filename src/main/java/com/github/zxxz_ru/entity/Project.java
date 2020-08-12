@@ -1,7 +1,10 @@
 package com.github.zxxz_ru.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "PROJECT")
@@ -18,7 +21,7 @@ public class Project implements StoreUnit {
     private String description;
 
     @OneToMany(targetEntity = Task.class)
-    private List taskList;
+    private List<Task> taskList = new ArrayList<>();
 
     public Project() {
     }
@@ -28,6 +31,7 @@ public class Project implements StoreUnit {
         this.projectName = projectName;
         this.description = description;
     }
+
 
     @Override
     public String toString() {
@@ -39,9 +43,42 @@ public class Project implements StoreUnit {
                 .substring(0);
     }
 
+    public Optional<Task> getTaskById(int id) {
+        Optional opti = Optional.empty();
+        if (this.taskList.size() > 0) {
+            List<Task> tasks = this.taskList.stream().filter(t -> t.getId() == id).collect(Collectors.toList());
+            if (tasks.size() > 0) {
+                opti = Optional.of(tasks.get(0));
+            }
+        }
+        return opti;
+    }
+
     @Override
     public <T extends StoreUnit> T from(T t) {
-        return null;
+        Project n = new Project();
+        Project p = (Project) t;
+        if ((p.getId() != null)) {
+            this.id = p.getId();
+        }
+        if (p.getProjectName() != null) {
+            this.projectName = p.getProjectName();
+        }
+        if (p.getDescription() != null) {
+            this.description = p.getDescription();
+        }
+        if (p.getTaskList().size() > 0) {
+            // add only if not in list
+            List<Task> tasks = p.getTaskList();
+            for (Task ts : tasks) {
+                Optional opti = getTaskById(ts.getId());
+                if (!opti.isPresent()) {
+                    this.taskList.add(ts);
+                }
+            }
+
+        }
+        return (T)this;
     }
     // setters & getters
 
