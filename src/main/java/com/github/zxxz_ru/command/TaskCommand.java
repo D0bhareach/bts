@@ -185,8 +185,30 @@ class TaskCommand implements Commander {
                 }
                 break;
             case "-uid":
-                messenger.print(4, "Got to uid command");
+                Matcher matcher = Pattern.compile("(-uid)\\s+(\\d+)").matcher(args.trim());
+                List<Task> res = new ArrayList<>();
+                int searchId = -1;
+                if (matcher.find()) {
+                    List<Task> tasks = (List) repository.findAll();
+                    try {
+                        searchId = Integer.parseInt(matcher.group(2));
+                        for (Task t : tasks) {
+                            List<User> users = t.getUserList();
+                            for (User u : users) {
+                                if (u.getId() == searchId) {
+                                    res.add(t);
+                                    break;
+                                }
+                            }
 
+                        }
+                        messenger.print(res);
+                    } catch (NumberFormatException e) {
+                        messenger.print(4, "Check -uid parameter");
+                    }
+
+                }
+                break;
         }
     }
 }
