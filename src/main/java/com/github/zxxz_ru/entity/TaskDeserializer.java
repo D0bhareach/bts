@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.io.IOException;
@@ -14,8 +15,8 @@ import java.util.List;
 public class TaskDeserializer extends JsonDeserializer<Task> {
     @Override
     public Task deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
         List<User> userList = new ArrayList<>();
-        // ObjectNode node = ctxt.getNodeFactory().objectNode();
         JsonNode node = p.getCodec().readTree(p);
         int id = (node.get("id")).asInt();
         String theme = node.get("thema").asText();
@@ -24,13 +25,11 @@ public class TaskDeserializer extends JsonDeserializer<Task> {
         String description = node.get("description").asText();
         Task res = new Task(id, theme, priority, taskType, description);
         ArrayNode users = (ArrayNode) node.get("userList");
-        p.setCurrentValue(users);
-        Iterator<User> iter = p.readValuesAs(User.class);
-        if (iter == null) {
-            return res;
-        }
-        while (iter.hasNext()) {
-            userList.add(iter.next());
+        Iterator<JsonNode> uiterator = users.elements();
+        while (uiterator.hasNext()) {
+            JsonNode n = uiterator.next();
+            User usr = mapper.treeToValue(n, User.class);
+            userList.add(usr);
         }
         res.setUserList(userList);
         return res;
