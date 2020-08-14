@@ -1,9 +1,12 @@
 package com.github.zxxz_ru.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "USER")
+@JsonDeserialize(using = UserDeserializer.class)
 public class User implements StoreUnit {
     @Id
     @Column(name = "USER_ID")

@@ -1,5 +1,7 @@
 package com.github.zxxz_ru.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "PROJECT")
+@JsonDeserialize(using = ProjectDeserializer.class)
 public class Project implements StoreUnit {
     @Id
     @Column(name = "PROJECT_ID")
@@ -21,22 +24,24 @@ public class Project implements StoreUnit {
     private String description;
 
     @OneToMany(targetEntity = Task.class)
-    private List<Task> taskList = new ArrayList<>();
+    private List<Task> taskList;
 
     public Project() {
+        this.taskList = new ArrayList<>();
     }
 
     public Project(Integer id, String projectName, String description) {
         this.id = id;
         this.projectName = projectName;
         this.description = description;
+        this.taskList = new ArrayList<>();
     }
 
 
     @Override
     public String toString() {
         StringBuilder bld = new StringBuilder();
-                bld.append("\nProject ID: ").append(this.id)
+        bld.append("\nProject ID: ").append(this.id)
                 .append("\nProject Name: ").append(this.projectName)
                 .append("\nDescription: ").append(this.description);
         if (taskList.size() > 0) {
@@ -84,7 +89,7 @@ public class Project implements StoreUnit {
             }
 
         }
-        return (T)this;
+        return (T) this;
     }
     // setters & getters
 

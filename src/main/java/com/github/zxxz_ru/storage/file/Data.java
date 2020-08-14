@@ -1,5 +1,6 @@
 package com.github.zxxz_ru.storage.file;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.github.zxxz_ru.entity.Project;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
@@ -11,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Class to hold App's data
  */
+@JsonDeserialize(using = DataDeserializer.class)
 public class Data {
     List<User> users;
     List<Task> tasks;
@@ -20,10 +22,17 @@ public class Data {
     AtomicInteger projectCounter;
 
     public Data() {
-        clear();
+        projects = new ArrayList<Project>();
+        tasks = new ArrayList<Task>();
+        users = new ArrayList<User>();
         userCounter = new AtomicInteger(0);
         taskCounter = new AtomicInteger(0);
         projectCounter = new AtomicInteger(0);
+
+        //  clear();
+        //  userCounter = new AtomicInteger(0);
+        //  taskCounter = new AtomicInteger(0);
+        //  projectCounter = new AtomicInteger(0);
     }
 
     public final void clear() {

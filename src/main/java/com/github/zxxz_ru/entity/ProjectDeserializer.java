@@ -11,28 +11,26 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class TaskDeserializer extends JsonDeserializer<Task> {
+public class ProjectDeserializer extends JsonDeserializer<Project> {
     @Override
-    public Task deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        List<User> userList = new ArrayList<>();
+    public Project deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        List<Task> taskList = new ArrayList<>();
         // ObjectNode node = ctxt.getNodeFactory().objectNode();
         JsonNode node = p.getCodec().readTree(p);
         int id = (node.get("id")).asInt();
-        String theme = node.get("thema").asText();
-        String priority = node.get("priority").asText();
-        String taskType = node.get("taskType").asText();
+        String name = node.get("projectName").asText();
         String description = node.get("description").asText();
-        Task res = new Task(id, theme, priority, taskType, description);
-        ArrayNode users = (ArrayNode) node.get("userList");
-        p.setCurrentValue(users);
-        Iterator<User> iter = p.readValuesAs(User.class);
+        Project res = new Project(id, name, description);
+        ArrayNode tasks = (ArrayNode) node.get("taskList");
+        p.setCurrentValue(tasks);
+        Iterator<Task> iter = p.readValuesAs(Task.class);
         if (iter == null) {
             return res;
         }
         while (iter.hasNext()) {
-            userList.add(iter.next());
+            taskList.add(iter.next());
         }
-        res.setUserList(userList);
+        res.setTaskList(taskList);
         return res;
     }
 }

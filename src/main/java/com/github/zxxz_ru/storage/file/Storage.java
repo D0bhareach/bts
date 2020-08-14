@@ -1,8 +1,8 @@
 package com.github.zxxz_ru.storage.file;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.command.Messenger;
 import com.github.zxxz_ru.entity.Project;
@@ -60,6 +60,7 @@ public class Storage {
             this.data.setTaskCounter(new AtomicInteger(tasks.size()));
             this.data.setProjects(projects);
             this.data.setProjectCounter(new AtomicInteger(projects.size()));
+            this.writeData();
         } else {
             this.data = readData();
         }
@@ -73,7 +74,9 @@ public class Storage {
 
     public void writeData() {
         try {
-            mapper.writeValue(file, data);
+            ObjectWriter writer = mapper.writerFor(Data.class);
+            writer.writeValue(file, data);
+            // mapper.writeValue(file, data);
         } catch (IOException e) {
             messenger.printError("Error writing data to: " + file.getAbsolutePath());
             System.exit(1);
@@ -88,8 +91,8 @@ public class Storage {
         }
         if (file.length() > 0) {
             try {
-                return mapper.readValue(file, new TypeReference<>() {
-                });
+                Data data = mapper.readValue(file, Data.class);
+                return data;
             } catch (IOException e) {
                 e.printStackTrace();
                 messenger.printError("Error reading Data from: " + file.getPath());

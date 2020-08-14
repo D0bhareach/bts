@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "TASK")
-@JsonDeserialize(using=TaskDeserializer.class)
+@JsonDeserialize(using = TaskDeserializer.class)
 public class Task implements StoreUnit {
     @Id
     @Column(name = "TASK_ID")
