@@ -1,5 +1,7 @@
 package com.github.zxxz_ru.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "TASK")
+@JsonDeserialize(using=TaskDeserializer.class)
 public class Task implements StoreUnit {
     @Id
     @Column(name = "TASK_ID")
@@ -30,7 +33,7 @@ public class Task implements StoreUnit {
     private List<User> userList;
 
     public Task() {
-        this.userList = new ArrayList<User>();
+        this.userList = new ArrayList<>();
     }
 
     public Task(Integer id, String thema, String priority, String taskType, String description) {
