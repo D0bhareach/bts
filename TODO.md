@@ -21,4 +21,4 @@
 [] 3.3 Test Entities Command Files.
 # General
 [] 4.1 Need to use profiles like 'development' and 'production'.
-[] 4.2 Update README file to current state.
+[X] 4.2 Update README file to current state.
