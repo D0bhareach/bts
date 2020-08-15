@@ -1,10 +1,14 @@
 package com.github.zxxz_ru.command;
 
+import com.github.zxxz_ru.entity.StoreUnit;
+
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public interface Commander {
-    void execute(String a);
+public interface Commander<T extends StoreUnit> {
+    Optional<List<T>> execute(String a);
 
     default String getCommand(String args, Messenger messenger) {
         Pattern pattern = Pattern.compile("(-{1,2}\\w+)");

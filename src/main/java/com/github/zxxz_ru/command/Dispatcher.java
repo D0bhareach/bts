@@ -2,12 +2,11 @@ package com.github.zxxz_ru.command;
 
 import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.ApplicationCloser;
+import com.github.zxxz_ru.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,12 +103,6 @@ public class Dispatcher {
         }
     }
 
-    //    \w{2,}\s*=\s*\w++
-    // aa=bb
-    //aa = bb
-    //id=1 firstname  = Slavka
-    // --{1,2}\w++
-    // search for command with dashes
 
     public void dispatch() {
         Scanner scan = new Scanner(System.in);
@@ -136,13 +129,13 @@ public class Dispatcher {
             while (matcher.find()) {
                 switch (matcher.group().trim()) {
                     case "user":
-                        userCommand.execute(str);
+                        userCommand.execute(str).ifPresent(messenger::print);
                         break;
                     case "task":
-                        taskCommand.execute(str);
+                        taskCommand.execute(str).ifPresent(messenger::print);
                         break;
                     case "project":
-                        projectCommand.execute(str);
+                        projectCommand.execute(str).ifPresent(messenger::print);
                         break;
                     case "help":
                         messenger.printHelp();

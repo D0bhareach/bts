@@ -19,9 +19,6 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
     private List<S> list;
     private EntityMode mode;
 
-    public List<S> getList() {
-        return list;
-    }
 
     public FileSystemRepository setList(List<S> list) {
         this.list = list;
@@ -53,10 +50,12 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         }
     }
 
+    @Override
     public long count() {
         return list.size();
     }
 
+    @Override
     public void delete(S entity) {
         if (list.contains(entity)) {
             list.remove(entity);
@@ -66,20 +65,20 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
 
     @Override
     public void deleteAll(Iterable<? extends S> entities) {
-
+        for (S s : entities) {
+            delete(s);
+        }
     }
 
+    @Override
     public void deleteAll() {
         list = new ArrayList<>();
         updateStorage();
 
     }
 
-    public void deleteAll(List<S> entities) {
-        entities.forEach(this::delete);
-        updateStorage();
-    }
 
+    @Override
     public void deleteById(Integer id) {
         Optional<S> opti = findById(id);
         if (opti.isPresent()) {
@@ -88,21 +87,23 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         }
     }
 
+    @Override
     public boolean existsById(Integer id) {
-        for (Object e : list) {
-            StoreUnit ent = (StoreUnit) e;
+        for (S e : list) {
+            StoreUnit ent = e;
             if (ent.getId().equals(id)) {
                 return true;
             }
         }
-
         return false;
     }
 
+    @Override
     public Iterable<S> findAll() {
         return list;
     }
 
+    @Override
     public Iterable<S> findAllById(Iterable<Integer> ids) {
         ArrayList<S> res = new ArrayList<>();
         for (S e : list) {
@@ -110,7 +111,6 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
             for (int i : ids) {
                 if (id == i) {
                     res.add(e);
-
                 }
             }
         }
@@ -118,6 +118,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
     }
 
 
+    @Override
     public Optional<S> findById(Integer id) {
         Optional<S> opti = Optional.empty();
         for (S e : list) {
@@ -163,6 +164,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         return id;
     }
 
+    @Override
     public <S1 extends S> S1 save(S1 entity) {
         int id = entity.getId();
         // add new Entity

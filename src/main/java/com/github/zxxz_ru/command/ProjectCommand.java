@@ -15,7 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-class ProjectCommand implements Commander {
+class ProjectCommand implements Commander<Project> {
     private final Messenger messenger;
     private final FileSystemRepository<Project> repository;
     private final Storage storage;
@@ -24,7 +24,7 @@ class ProjectCommand implements Commander {
     public ProjectCommand(Storage storage, Messenger messenger) {
         this.storage = storage;
         this.messenger = messenger;
-        repository = new FileSystemRepository<Project>(storage, messenger, storage.getProjects(), EntityMode.PROJECT);
+        repository = new FileSystemRepository<>(storage, messenger, storage.getProjects(), EntityMode.PROJECT);
     }
 
     private boolean processTaskCommand(String args, String prefix, int id) {
@@ -42,7 +42,7 @@ class ProjectCommand implements Commander {
                 return false;
             }
             FileSystemRepository<Task> taskRepository =
-                    new FileSystemRepository<Task>(storage, messenger, storage.getTasks(), EntityMode.TASK);
+                    new FileSystemRepository<>(storage, messenger, storage.getTasks(), EntityMode.TASK);
             Optional<Task> opti = taskRepository.findById(taskId);
             if (opti.isPresent()) {
                 List<Project> projects = storage.getProjects();
@@ -52,20 +52,20 @@ class ProjectCommand implements Commander {
                         Project newProject = new Project();
                         newProject.setTaskList(List.of(opti.get()));
                         Project old = optiOld.get();
-                        int indx = projects.indexOf(old);
+                        int index = projects.indexOf(old);
                         old = old.from(newProject);
-                        projects.set(indx, old);
+                        projects.set(index, old);
                     }
                     storage.setProjects(projects);
                     return true;
                 } else if (prefix.equals("--remove")) {
                     if (optiOld.isPresent()) {
                         Project old = optiOld.get();
-                        int indx = projects.indexOf(old);
-                        List<Project> tasks = old.getTaskList();
+                        int index = projects.indexOf(old);
+                        List<Task> tasks = old.getTaskList();
                         tasks.remove(opti.get());
                         old.setTaskList(tasks);
-                        projects.set(indx, old);
+                        projects.set(index, old);
                     }
                 }
                 storage.setProjects(projects);
@@ -100,7 +100,7 @@ class ProjectCommand implements Commander {
                         break;
                     case "tasks":
                         List<Task> list = new ArrayList<>();
-                        FileSystemRepository taskRepository = new FileSystemRepository(
+                        FileSystemRepository<Task> taskRepository = new FileSystemRepository<>(
                                 storage, messenger, storage.getTasks(), EntityMode.TASK
                         );
                         String ids = matcher.group(2);
@@ -109,9 +109,7 @@ class ProjectCommand implements Commander {
                             try {
                                 int taskId = Integer.parseInt(s);
                                 Optional<Task> opti = taskRepository.findById(taskId);
-                                if (opti.isPresent()) {
-                                    list.add(opti.get());
-                                }
+                                opti.ifPresent(list::add);
                             } catch (NumberFormatException e) {
                                 messenger.print("Check users parameter");
 
@@ -130,39 +128,42 @@ class ProjectCommand implements Commander {
     }
 
     @Override
-    public void execute(String args) {
+    public Optional<List<Project>> execute(String args) {
+        Optional<List<Project>> empty = Optional.empty();
         int id = -1;
         String command = getCommand(args, messenger);
         switch (command) {
             case "-a":
             case "--all":
-                messenger.print((List<Project>) repository.findAll());
-                break;
+                return Optional.of(((List<Project>) repository.findAll()));
             case "-d":
             case "--delete":
                 id = getId(args, messenger);
                 if (id != 0) {
                     repository.deleteById(id);
+                    return  empty;
                 }
                 break;
             case "--update":
                 Project p = setProjectForUpdate(args);
-                repository.save(p);
+                return Optional.of(List.of(repository.save(p)));
             case "-id":
                 id = getId(args, messenger);
                 Matcher mtchr = Pattern.compile("^project\\s+-id\\s+(\\d+)$").matcher(args.trim());
                 if (mtchr.find()) {
                     Optional<Project> opti = repository.findById(id);
-                    opti.ifPresent(project -> messenger.print(List.of(project)));
-                    break;
-                }
+                    if(opti.isPresent()) {
+                        return Optional.of(List.of(opti.get()));
+                    }
+                    }
                 if (processTaskCommand(args, "--add", id)) {
-                    break;
+                    return empty;
                 } else if (processTaskCommand(args, "--remove", id)) {
-                    break;
+                    return empty;
                 }
                 break;
         }
+        return empty;
     }
 
 }

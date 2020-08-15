@@ -13,19 +13,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-class UserCommand implements Commander {
+class UserCommand implements Commander<User> {
 
     @Autowired
     TaskCommand taskCommand;
 
     private final FileSystemRepository<User> repository;
     private final Messenger messenger;
-    private Storage storage;
+    // private Storage storage;
 
     @Autowired
     public UserCommand(Storage storage, Messenger messenger) {
         this.messenger = messenger;
-        repository = new FileSystemRepository<User>(storage, messenger, storage.getUsers(), EntityMode.USER);
+        repository = new FileSystemRepository<>(storage, messenger, storage.getUsers(), EntityMode.USER);
     }
 
     /**
@@ -111,41 +111,40 @@ class UserCommand implements Commander {
      * @param args command line
      */
     @Override
-    public void execute(String args) {
+    public Optional<List<User>> execute(String args) {
+        Optional<List<User>> empty = Optional.empty();
         int id = -1;
         String command = getCommand(args, messenger);
         switch (command) {
             case "-a":
             case "--all":
-                messenger.print((List<User>) repository.findAll());
-                break;
+                return Optional.of((List<User>) repository.findAll());
             case "-d":
             case "--delete":
                 id = getId(args, messenger);
                 if (id != 0) {
                     repository.deleteById(id);
+                    return  empty;
                 }
                 break;
             case "--update":
                 User user = setUserForUpdate(args);
-                repository.save(user);
+                return Optional.of(List.of(repository.save(user)));
             case "-id":
                 id = getId(args, messenger);
                 Matcher mtchr = Pattern.compile("^user\\s+-id\\s+(\\d+)$").matcher(args.trim());
                 if (mtchr.find()) {
-                    Optional opti = repository.findById(id);
+                    Optional<User> opti = repository.findById(id);
                     if (opti.isPresent()) {
-                        messenger.print(List.of(opti.get()));
-                        break;
+                        return Optional.of((List.of(opti.get())));
                     }
                 }
                 if (processTaskCommand(args, "--assign", id)) {
-                    break;
+                    return  empty;
                 } else if (processTaskCommand(args, "--drop", id)) {
-                    break;
-                } else {
-                    break;
+                    return empty;
                 }
         }
+        return empty;
     }
 }

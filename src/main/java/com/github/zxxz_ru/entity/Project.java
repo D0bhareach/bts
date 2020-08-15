@@ -57,7 +57,7 @@ public class Project implements StoreUnit {
     }
 
     public Optional<Task> getTaskById(int id) {
-        Optional opti = Optional.empty();
+        Optional<Task> opti = Optional.empty();
         if (this.taskList.size() > 0) {
             List<Task> tasks = this.taskList.stream().filter(t -> t.getId() == id).collect(Collectors.toList());
             if (tasks.size() > 0) {
@@ -69,7 +69,6 @@ public class Project implements StoreUnit {
 
     @Override
     public <T extends StoreUnit> T from(T t) {
-        Project n = new Project();
         Project p = (Project) t;
         if ((p.getId() != null)) {
             this.id = p.getId();
@@ -84,8 +83,8 @@ public class Project implements StoreUnit {
             // add only if not in list
             List<Task> tasks = p.getTaskList();
             for (Task ts : tasks) {
-                Optional opti = getTaskById(ts.getId());
-                if (!opti.isPresent()) {
+                Optional<Task> opti = getTaskById(ts.getId());
+                if (opti.isEmpty()) {
                     this.taskList.add(ts);
                 }
             }
@@ -120,7 +119,7 @@ public class Project implements StoreUnit {
         this.description = description;
     }
 
-    public List getTaskList() {
+    public List<Task> getTaskList() {
         return taskList;
     }
 

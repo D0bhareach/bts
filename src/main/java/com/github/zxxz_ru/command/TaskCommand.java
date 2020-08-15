@@ -15,9 +15,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-class TaskCommand implements Commander {
+class TaskCommand implements Commander<Task> {
     private final Messenger messenger;
-    private final FileSystemRepository repository;
+    private final FileSystemRepository<Task> repository;
     private final Storage storage;
 
     @Autowired
@@ -27,14 +27,16 @@ class TaskCommand implements Commander {
     public TaskCommand(Storage storage, Messenger messenger) {
         this.storage = storage;
         this.messenger = messenger;
-        repository = new FileSystemRepository<Task>(storage, messenger, storage.getTasks(), EntityMode.TASK);
+        repository = new FileSystemRepository<>(storage, messenger, storage.getTasks(), EntityMode.TASK);
     }
-
+/*
     private void addUser(int id) {
     }
 
     private void deleteUser(int id) {
     }
+
+ */
 
     /**
      * @param args   command line
@@ -57,7 +59,7 @@ class TaskCommand implements Commander {
                 return false;
             }
             FileSystemRepository<User> userRepository =
-                    new FileSystemRepository<User>(storage, messenger, storage.getUsers(), EntityMode.USER);
+                    new FileSystemRepository<>(storage, messenger, storage.getUsers(), EntityMode.USER);
             Optional<User> opti = userRepository.findById(userId);
             if (opti.isPresent()) {
                 List<Task> tasks = storage.getTasks();
@@ -121,7 +123,7 @@ class TaskCommand implements Commander {
                         break;
                     case "users":
                         List<User> ulist = new ArrayList<>();
-                        FileSystemRepository userRepository = new FileSystemRepository(
+                        FileSystemRepository<User> userRepository = new FileSystemRepository<>(
                                 storage, messenger, storage.getUsers(), EntityMode.USER
                         );
                         String ids = matcher.group(2);
@@ -130,9 +132,7 @@ class TaskCommand implements Commander {
                             try {
                                 int userId = Integer.parseInt(s);
                                 Optional<User> opti = userRepository.findById(userId);
-                                if (opti.isPresent()) {
-                                    ulist.add(opti.get());
-                                }
+                                opti.ifPresent(ulist::add);
                             } catch (NumberFormatException e) {
                                 messenger.print("Check users parameter");
 
@@ -151,38 +151,39 @@ class TaskCommand implements Commander {
     }
 
     @Override
-    public void execute(String args) {
+    public Optional<List<Task>> execute(String args) {
+        Optional<List<Task>> empty = Optional.empty();
         int id = -1;
         String command = getCommand(args, messenger);
         switch (command) {
             case "-a":
             case "--all":
-                messenger.print((List<User>) repository.findAll());
-                break;
+                return Optional.of((List<Task>) repository.findAll());
             case "-d":
             case "--delete":
                 id = getId(args, messenger);
                 if (id != 0) {
                     repository.deleteById(id);
+                    return empty;
                 }
                 break;
             case "--update":
                 Task task = setTaskForUpdate(args);
-                repository.save(task);
+                return Optional.of(List.of(repository.save(task)));
             case "-id":
                 id = getId(args, messenger);
                 Matcher mtchr = Pattern.compile("^task\\s+-id\\s+(\\d+)$").matcher(args.trim());
                 if (mtchr.find()) {
-                    Optional opti = repository.findById(id);
+                    Optional<Task> opti = repository.findById(id);
                     if (opti.isPresent()) {
-                        messenger.print(List.of(opti.get()));
+                        return Optional.of(List.of(opti.get()));
                     }
                     break;
                 }
                 if (processUserCommand(args, "--add", id)) {
-                    break;
+                    return empty;
                 } else if (processUserCommand(args, "--remove", id)) {
-                    break;
+                    return empty;
                 }
                 break;
             case "-uid":
@@ -190,7 +191,7 @@ class TaskCommand implements Commander {
                 List<Task> res = new ArrayList<>();
                 int searchId = -1;
                 if (matcher.find()) {
-                    List<Task> tasks = (List) repository.findAll();
+                    List<Task> tasks = (List<Task>) repository.findAll();
                     try {
                         searchId = Integer.parseInt(matcher.group(2));
                         for (Task t : tasks) {
@@ -203,7 +204,7 @@ class TaskCommand implements Commander {
                             }
 
                         }
-                        messenger.print(res);
+                        return Optional.of(res);
                     } catch (NumberFormatException e) {
                         messenger.print("Check -uid parameter");
                     }
@@ -211,5 +212,6 @@ class TaskCommand implements Commander {
                 }
                 break;
         }
+        return empty;
     }
 }
