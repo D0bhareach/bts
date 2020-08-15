@@ -60,6 +60,8 @@ public interface Commander {
             return Pattern.compile(builder.substring(0));
         } else if (parameter.equals("users")) {
             return Pattern.compile("users\\s?=\\s?(\\{\\s?)(.+,?)+(\\s?\\})");
+        }else if(parameter.equals("tasks")){
+            return Pattern.compile("tasks\\s?=\\s?(\\{\\s?)(.+,?)+(\\s?\\})");
         }
 
         builder.append(parameter).append(end);
