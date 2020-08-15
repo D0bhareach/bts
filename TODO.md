@@ -18,7 +18,7 @@
 [X] 3.0 Need Central Component to set, hold, return Application State Values.
 [X] 3.1 Implement Command Classes for Entities.
 [X] 3.2 Update HelpCommandBuilder to represent new changes. Make it more clear.
-[] 3.3 Test Entities Command Files.
+[X] 3.3 Test Entities Command Files.
 # General
 [] 4.1 Need to use profiles like 'development' and 'production'.
 [X] 4.2 Update README file to current state.

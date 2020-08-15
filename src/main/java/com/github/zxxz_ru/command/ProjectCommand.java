@@ -27,7 +27,9 @@ class ProjectCommand implements Commander<Project> {
         repository = new FileSystemRepository<>(storage, messenger, storage.getProjects(), EntityMode.PROJECT);
     }
 
-    private boolean processTaskCommand(String args, String prefix, int id) {
+    private Optional<List<Project>> processTaskCommand(String args, String prefix, int id) {
+        Optional<List<Project>> empty = Optional.empty();
+        Optional<List<Project>> result = Optional.empty();
         int taskId = 0;
         String pattern = new StringBuilder(prefix).append("-task\\s+(\\d+)").substring(0);
         Pattern p1 = Pattern.compile(pattern);
@@ -39,7 +41,7 @@ class ProjectCommand implements Commander<Project> {
                 taskId = Integer.parseInt(IdString.trim());
             } catch (NumberFormatException e) {
                 messenger.print("Check task id value.");
-                return false;
+                return empty;
             }
             FileSystemRepository<Task> taskRepository =
                     new FileSystemRepository<>(storage, messenger, storage.getTasks(), EntityMode.TASK);
@@ -54,10 +56,11 @@ class ProjectCommand implements Commander<Project> {
                         Project old = optiOld.get();
                         int index = projects.indexOf(old);
                         old = old.from(newProject);
+                        result = Optional.of(List.of(old));
                         projects.set(index, old);
                     }
                     storage.setProjects(projects);
-                    return true;
+                    return result;
                 } else if (prefix.equals("--remove")) {
                     if (optiOld.isPresent()) {
                         Project old = optiOld.get();
@@ -66,13 +69,14 @@ class ProjectCommand implements Commander<Project> {
                         tasks.remove(opti.get());
                         old.setTaskList(tasks);
                         projects.set(index, old);
+                        result = Optional.of(List.of(old));
                     }
                 }
                 storage.setProjects(projects);
-                return true;
+                return result;
             }
         }
-        return false;
+        return empty;
     }
 
     private Project setProjectForUpdate(String args) {
@@ -156,10 +160,13 @@ class ProjectCommand implements Commander<Project> {
                         return Optional.of(List.of(opti.get()));
                     }
                     }
-                if (processTaskCommand(args, "--add", id)) {
-                    return empty;
-                } else if (processTaskCommand(args, "--remove", id)) {
-                    return empty;
+                Optional<List<Project>> res = processTaskCommand(args, "--add", id);
+                if (!res.isEmpty()) {
+                    return res;
+                }
+                res = processTaskCommand(args, "--remove", id);
+                if (!res.isEmpty()) {
+                    return res;
                 }
                 break;
         }

@@ -1,5 +1,6 @@
 package com.github.zxxz_ru.command;
 
+import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.User;
 import com.github.zxxz_ru.storage.file.EntityMode;
 import com.github.zxxz_ru.storage.file.FileSystemRepository;
@@ -118,7 +119,7 @@ class UserCommand implements Commander<User> {
         switch (command) {
             case "-a":
             case "--all":
-                return Optional.of((List<User>) repository.findAll());
+                return Optional.of( (List<User>)repository.findAll());
             case "-d":
             case "--delete":
                 id = getId(args, messenger);

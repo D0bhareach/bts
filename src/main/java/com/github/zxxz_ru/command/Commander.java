@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public interface Commander<T extends StoreUnit> {
+public interface Commander <T extends  StoreUnit>{
     Optional<List<T>> execute(String a);
 
     default String getCommand(String args, Messenger messenger) {

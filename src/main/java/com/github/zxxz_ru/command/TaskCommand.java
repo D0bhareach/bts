@@ -44,7 +44,9 @@ class TaskCommand implements Commander<Task> {
      * @param id     id extracted from user's command line
      * @return true if all goes well, false otherwise
      */
-    private boolean processUserCommand(String args, String prefix, int id) {
+    private Optional<List<Task>> processUserCommand(String args, String prefix, int id) {
+        Optional<List<Task>> empty = Optional.empty();
+        Optional<List<Task>> result = Optional.empty();
         int userId = 0;
         String pattern = new StringBuilder(prefix).append("-user\\s+(\\d+)").substring(0);
         Pattern p1 = Pattern.compile(pattern);
@@ -56,7 +58,7 @@ class TaskCommand implements Commander<Task> {
                 userId = Integer.parseInt(IdString.trim());
             } catch (NumberFormatException e) {
                 messenger.print("Check task id value.");
-                return false;
+                return empty;
             }
             FileSystemRepository<User> userRepository =
                     new FileSystemRepository<>(storage, messenger, storage.getUsers(), EntityMode.USER);
@@ -72,9 +74,10 @@ class TaskCommand implements Commander<Task> {
                         int indx = tasks.indexOf(old);
                         old = old.from(newTask);
                         tasks.set(indx, old);
+                        result = Optional.of(List.of(old));
                     }
                     storage.setTasks(tasks);
-                    return true;
+                    return result;
                 } else if (prefix.equals("--remove")) {
                     if (optiOld.isPresent()) {
                         Task old = optiOld.get();
@@ -83,13 +86,14 @@ class TaskCommand implements Commander<Task> {
                         users.remove(opti.get());
                         old.setUserList(users);
                         tasks.set(indx, old);
+                        result = Optional.of(List.of(old));
                     }
                 }
                 storage.setTasks(tasks);
-                return true;
+                return result;
             }
         }
-        return false;
+        return empty;
     }
 
     private Task setTaskForUpdate(String args) {
@@ -180,10 +184,14 @@ class TaskCommand implements Commander<Task> {
                     }
                     break;
                 }
-                if (processUserCommand(args, "--add", id)) {
-                    return empty;
-                } else if (processUserCommand(args, "--remove", id)) {
-                    return empty;
+
+                Optional<List<Task>> result = processUserCommand(args, "--add", id);
+                if (!result.isEmpty()) {
+                    return result;
+                }
+                result = processUserCommand(args, "--remove", id);
+                if (!result.isEmpty()) {
+                    return result;
                 }
                 break;
             case "-uid":
