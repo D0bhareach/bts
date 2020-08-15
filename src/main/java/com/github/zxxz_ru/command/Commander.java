@@ -30,12 +30,12 @@ public interface Commander {
      * @return POSSIBLE ZERO check function result before use!
      */
     default int getId(String args, Messenger messenger) {
-        Pattern pattern = Pattern.compile("(-{1,2}(id|d))(\\s(\\d+))?");
+        Pattern pattern = Pattern.compile("((-id|-d)|(--delete))+(\\s+(\\d+))?");
         Matcher matcher = pattern.matcher(args);
         int value = 0;
         if (matcher.find()) {
             try {
-                String tmp = matcher.group(3);
+                String tmp = matcher.group(4);
                 tmp = tmp != null ? tmp.trim() : "No integer!"; // do not pass null to parser
                 value = Integer.parseInt(tmp);
             } catch (RuntimeException e) {
