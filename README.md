@@ -1,6 +1,7 @@
 ## BTS Bug tracking System Project
 
-For Project specification see spec.md file in root directory.
+For Project's Specification see specs.md file in root directory.
+For Project's Specification in Russian Language see specs.ru.md.
 
 #### Details:
 * Java 11.0.7
@@ -17,8 +18,14 @@ Run jar file `java -jar build/libs/bts.jar`
 Read usage advise `java -jar build/libs/bts.jar -h`. 
 #### Database:
 Database is persistent. Script creates tables if not exists. Information stored
-in Db stay there until Db removed.
+in Db stay there until Db removed. Database feature is not implemented yet.
+
+#### File System Storage: 
+Application storing data to disk for full path see Cleanup after use.
 
 #### Cleanup after use:
 Application persistent DataBase is stored in ~/opt/databases/h2/epam/epam_bt.  
-After use run `rm -rf ~/opt/databases/h2/epam/` from terminal.
+After use run `rm -rf ~/opt/databases/h2/epam/` from terminal to delete Database from disk.
+If Application has been working in File Storage mode  Data stored
+in ~/opt/storage/epam/epam File. To delete files from disk run
+`rm -rf ~/opt/storage/epam` .
