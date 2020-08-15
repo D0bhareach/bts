@@ -14,6 +14,11 @@
 [X] 2.6 Need some Sort of Application Closer. Must write Data to File System before the Exit.
 [X] 2.7 Need Component to read and write data to File System.
 [X] 2.8 Need Counter to increase Entities indexes.
-[] 2.9 Update Application Dispatcher to work with user input.
+[X] 2.9 Update Application Dispatcher to work with user input.
 [X] 3.0 Need Central Component to set, hold, return Application State Values.
-[] 3.1 UserCommand implement.
+[X] 3.1 Implement Command Classes for Entities.
+[] 3.2 Update HelpCommandBuilder to represent new changes. Make it more clear.
+[] 3.3 Test Entities Command Files.
+# General
+[] 4.1 Need to use profiles like 'development' and 'production'.
+[] 4.2 Update README file to current state.

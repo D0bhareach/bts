@@ -73,8 +73,6 @@ class UserCommand implements Commander {
         return user;
     }
 
-    // TODO: Make it return boolean finish method.
-
     /**
      * @param args   command line
      * @param prefix prefix to regexp for finding task part in user's command line
