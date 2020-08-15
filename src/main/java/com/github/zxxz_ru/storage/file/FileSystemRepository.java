@@ -120,7 +120,6 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
 
     public Optional<S> findById(Integer id) {
         Optional<S> opti = Optional.empty();
-        S res = null;
         for (S e : list) {
             if (e.getId().equals(id)) {
                 opti = Optional.of(e);
