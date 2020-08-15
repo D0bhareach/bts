@@ -18,7 +18,7 @@ public class Messenger {
 
     public <T> void print(List<T> list) {
         if (list.size() == 0) {
-            out.println("No Result.");
+            out.println("Empty result found.");
             return;
         }
         for (T ent : list) {
@@ -26,7 +26,15 @@ public class Messenger {
         }
     }
 
-    public void print(int i, String... messages) {
+    public void print(String... messages) {
+        if (messages != null && messages.length > 0) {
+            for (String s : messages) {
+                out.println(s);
+            }
+        }
+    }
+
+    public void print(int i) {
         switch (i) {
             case 1:
                 out.println(help);
@@ -37,32 +45,11 @@ public class Messenger {
             case 3:
                 out.println("Wrong usage! See help. [-h; help]");
                 break;
-            case 4:
-                // Java really lacks dynamic varargs!
-                // But this is the only crappy way to make optional arguments.
-                if (messages != null && messages.length > 0) {
-                    for (String s : messages) {
-                        out.println(s);
-                    }
-                }
-                break;
         }
     }
 
-    public void printMessage(String s) {
-        out.println(s);
-    }
-
-    public void printAdvice() {
-        String advice = "Use -h or help for advice. To exit type: quit or Ctrl-C.";
-        out.println(advice);
-    }
 
     public void printHelp() {
         out.println(help);
-    }
-
-    public void printError(String s) {
-        err.println(s);
     }
 }

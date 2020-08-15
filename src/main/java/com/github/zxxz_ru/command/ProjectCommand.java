@@ -38,7 +38,7 @@ class ProjectCommand implements Commander {
             try {
                 taskId = Integer.parseInt(IdString.trim());
             } catch (NumberFormatException e) {
-                messenger.print(4, "Check task id value.");
+                messenger.print("Check task id value.");
                 return false;
             }
             FileSystemRepository<Task> taskRepository =
@@ -113,7 +113,7 @@ class ProjectCommand implements Commander {
                                     list.add(opti.get());
                                 }
                             } catch (NumberFormatException e) {
-                                messenger.print(4, "Check users parameter");
+                                messenger.print("Check users parameter");
 
                             }
                             project.setTaskList(list);

@@ -66,7 +66,7 @@ public class User implements StoreUnit {
                 .append("\nFirst Name: ").append(this.firstname)
                 .append("\nLast Name: ").append(this.lastname)
                 .append("\nUser Role: ").append(this.role)
-                .append("\n").substring(0);
+                .append("\n\n").substring(0);
     }
 
     // setters & getters

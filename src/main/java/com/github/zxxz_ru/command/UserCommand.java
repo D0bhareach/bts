@@ -88,20 +88,7 @@ class UserCommand implements Commander {
         Matcher m1 = p1.matcher(args);
         if (m1.find()) {
             String idString = m1.group(1).trim();
-            messenger.print(4, "idString: ", idString);
-            /*
-            try {
-                int taskId = Integer.parseInt(idString.trim());
-            } catch (NumberFormatException e) {
-                messenger.print(4, "Check task id value.");
-                return false;
-            }
-            FileSystemRepository<Task> taskRepository =
-                    new FileSystemRepository<Task>(storage, messenger, storage.getTasks(), EntityMode.TASK);
-
-             */
             if (prefix.equals("--assign")) {
-                messenger.print(4, "Got to assign task.");
                 taskCommand.execute(
                         new StringBuilder("task -id ")
                                 .append(idString)

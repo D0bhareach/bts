@@ -78,7 +78,7 @@ public class Storage {
             writer.writeValue(file, data);
             // mapper.writeValue(file, data);
         } catch (IOException e) {
-            messenger.printError("Error writing data to: " + file.getAbsolutePath());
+            messenger.print("Error writing data to: " + file.getAbsolutePath());
             System.exit(1);
         }
     }
@@ -86,7 +86,7 @@ public class Storage {
 
     private Data readData() {
         if (!file.exists()) {
-            messenger.printError("Cannot read Storage File. File not exists.");
+            messenger.print("Cannot read Storage File. File not exists.");
             return null;
         }
         if (file.length() > 0) {
@@ -95,7 +95,7 @@ public class Storage {
                 return data;
             } catch (IOException e) {
                 e.printStackTrace();
-                messenger.printError("Error reading Data from: " + file.getPath());
+                messenger.print("Error reading Data from: " + file.getPath());
                 System.exit(1);
             }
         }

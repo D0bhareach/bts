@@ -81,7 +81,7 @@ public class Dispatcher {
      */
     public void dispatch(String... args) {
         if (args.length == 0) {
-            messenger.printAdvice();
+            messenger.print(2);
             return;
         }
         String command;
@@ -100,7 +100,7 @@ public class Dispatcher {
         } else if (args.length > 1) {
             Map<String, String> map = getArgsMap(args);
             processCommandMap(map);
-            messenger.printAdvice();
+            messenger.print(2);
         }
     }
 

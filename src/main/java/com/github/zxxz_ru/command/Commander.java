@@ -41,8 +41,7 @@ public interface Commander {
             } catch (RuntimeException e) {
                 // do not want to fall will ask user to check input.
                 messenger.print(3);
-                String[] messages = {"Check id parameter's value"};
-                messenger.print(4, messages);
+                messenger.print("Check id parameter's value");
             }
         }
         return value;

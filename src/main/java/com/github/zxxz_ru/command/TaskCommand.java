@@ -53,7 +53,7 @@ class TaskCommand implements Commander {
             try {
                 userId = Integer.parseInt(IdString.trim());
             } catch (NumberFormatException e) {
-                messenger.print(4, "Check task id value.");
+                messenger.print("Check task id value.");
                 return false;
             }
             FileSystemRepository<User> userRepository =
@@ -134,7 +134,7 @@ class TaskCommand implements Commander {
                                     ulist.add(opti.get());
                                 }
                             } catch (NumberFormatException e) {
-                                messenger.print(4, "Check users parameter");
+                                messenger.print("Check users parameter");
 
                             }
                             task.setUserList(ulist);
@@ -205,7 +205,7 @@ class TaskCommand implements Commander {
                         }
                         messenger.print(res);
                     } catch (NumberFormatException e) {
-                        messenger.print(4, "Check -uid parameter");
+                        messenger.print("Check -uid parameter");
                     }
 
                 }

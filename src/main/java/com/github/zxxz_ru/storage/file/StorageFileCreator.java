@@ -29,7 +29,7 @@ public class StorageFileCreator {
         try {
             Files.createDirectories(dir, PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-----")));
         } catch (IOException e) {
-            messenger.printError("Error during creating directory: " + dir.toString());
+            messenger.print("Error during creating directory: " + dir.toString());
             e.printStackTrace();
         }
     }
@@ -44,7 +44,7 @@ public class StorageFileCreator {
                 filePath = Files.createFile(path, PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-----")));
                 file = new File(filePath.toUri());
             } catch (IOException e) {
-                messenger.printError("Error while creating file: " + path);
+                messenger.print("Error while creating file: " + path);
             }
         } else if (Files.exists(path)) {
             file = new File(path.toUri());

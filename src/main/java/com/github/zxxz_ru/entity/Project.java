@@ -50,6 +50,8 @@ public class Project implements StoreUnit {
                 bld.append(t.getId()).append(", ");
             }
             bld.replace(bld.length() - 2, bld.length(), "}\n");
+        } else {
+            bld.append("\n");
         }
         return bld.append("\n").substring(0);
     }
