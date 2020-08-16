@@ -90,8 +90,7 @@ public class Storage {
         }
         if (file.length() > 0) {
             try {
-                Data data = mapper.readValue(file, Data.class);
-                return data;
+                return mapper.readValue(file, Data.class);
             } catch (IOException e) {
                 e.printStackTrace();
                 messenger.print("Error reading Data from: " + file.getPath());
@@ -172,7 +171,7 @@ public class Storage {
         data.setUserCounter(new AtomicInteger(i));
     }
 
-    public List<?> getList(EntityMode mode){
+    public List<? extends StoreUnit> getList(EntityMode mode){
         switch (mode){
             case USER:
                 return this.getUsers();
@@ -184,6 +183,7 @@ public class Storage {
         return List.of();
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends  StoreUnit>void  updateStorageList(List<T> list, EntityMode mode){
         switch(mode){
             case USER:

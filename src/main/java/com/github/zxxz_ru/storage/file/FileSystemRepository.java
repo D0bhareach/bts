@@ -1,10 +1,6 @@
 package com.github.zxxz_ru.storage.file;
 
-import com.github.zxxz_ru.command.Messenger;
-import com.github.zxxz_ru.entity.Project;
 import com.github.zxxz_ru.entity.StoreUnit;
-import com.github.zxxz_ru.entity.Task;
-import com.github.zxxz_ru.entity.User;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.ArrayList;
@@ -12,14 +8,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("NullableProblems")
 public class FileSystemRepository<S extends StoreUnit> implements CrudRepository<S, Integer> {
 
-    private final Messenger messenger;
+   //  private final Messenger messenger;
     private final Storage storage;
     private List<S> list;
-    private EntityMode mode;
+    private final EntityMode mode;
 
-
+/*
     public FileSystemRepository setList(List<S> list) {
         this.list = list;
         return this;
@@ -30,24 +27,18 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         return this;
     }
 
+ */
+
     // public FileSystemRepository(){}
-    public FileSystemRepository(Storage storage, Messenger messenger, List list, EntityMode mode) {
+    public FileSystemRepository(Storage storage, EntityMode mode) {
         this.storage = storage;
-        this.messenger = messenger;
-        this.list = list;
+        // this.messenger = messenger;
+        this.list = (List<S>) storage.getList(mode);
         this.mode = mode;
     }
 
-    @SuppressWarnings("unchecked")
     private void updateStorage() {
-        switch (mode) {
-            case USER:
-                storage.setUsers((List<User>) list);
-            case TASK:
-                storage.setTasks((List<Task>) list);
-            case PROJECT:
-                storage.setProjects((List<Project>) list);
-        }
+        storage.updateStorageList(list, mode);
     }
 
     @Override
@@ -55,6 +46,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         return list.size();
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public void delete(S entity) {
         if (list.contains(entity)) {
@@ -90,8 +82,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
     @Override
     public boolean existsById(Integer id) {
         for (S e : list) {
-            StoreUnit ent = e;
-            if (ent.getId().equals(id)) {
+            if (e.getId().equals(id)) {
                 return true;
             }
         }
@@ -146,7 +137,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
     }
 
     private int getNextCounter(int id) {
-        int counter = -1;
+        int counter;
         switch (mode) {
             case USER:
                 counter = storage.getUserCounter();
@@ -164,6 +155,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         return id;
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public <S1 extends S> S1 save(S1 entity) {
         int id = entity.getId();
@@ -174,7 +166,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         } else {
             // must replace
             int finalId = id;
-            int idx = 0;
+            int idx;
             List<S> filtered = list.stream().filter(e -> e.getId() == finalId).collect(Collectors.toList());
             try {
                 idx = list.indexOf(filtered.get(0));
@@ -196,6 +188,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public <S1 extends S> Iterable<S1> saveAll(Iterable<S1> entities) {
         for (S1 e : entities) save(e);
         return (List<S1>) list;
