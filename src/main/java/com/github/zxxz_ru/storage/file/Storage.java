@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.command.Messenger;
 import com.github.zxxz_ru.entity.Project;
+import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
 import com.github.zxxz_ru.storage.InitialDataInserter;
@@ -27,9 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Component
 public class Storage {
-    // enum Mode {USER, TASK, PROJECT}
 
-    ;
     /**
      * Path to Storage File. Path is either default value or can be set from
      * Application Parameters.
@@ -171,5 +170,31 @@ public class Storage {
 
     public void setUserCounter(int i) {
         data.setUserCounter(new AtomicInteger(i));
+    }
+
+    public List<?> getList(EntityMode mode){
+        switch (mode){
+            case USER:
+                return this.getUsers();
+            case TASK:
+                return this.getTasks();
+            case PROJECT:
+                return this.getProjects();
+        }
+        return List.of();
+    }
+
+    public <T extends  StoreUnit>void  updateStorageList(List<T> list, EntityMode mode){
+        switch(mode){
+            case USER:
+                this.setUsers((List<User>)list);
+                break;
+            case TASK:
+                this.setTasks((List<Task>)list);
+                break;
+            case PROJECT:
+                this.setProjects((List<Project>)list);
+                break;
+        }
     }
 }
