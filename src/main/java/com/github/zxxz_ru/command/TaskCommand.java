@@ -2,9 +2,7 @@ package com.github.zxxz_ru.command;
 
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
-import com.github.zxxz_ru.storage.file.EntityMode;
-import com.github.zxxz_ru.storage.file.FileSystemRepository;
-import com.github.zxxz_ru.storage.file.Storage;
+import com.github.zxxz_ru.storage.file.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,27 +14,12 @@ import java.util.regex.Pattern;
 
 @Component
 class TaskCommand implements Commander<Task> {
-    private final Messenger messenger;
-    private final FileSystemRepository<Task> repository;
-    private final Storage storage;
-
     @Autowired
-    UserCommand userCommand;
-
+    private Messenger messenger;
     @Autowired
-    public TaskCommand(Storage storage, Messenger messenger) {
-        this.storage = storage;
-        this.messenger = messenger;
-        repository = new FileSystemRepository<>(storage, messenger, storage.getTasks(), EntityMode.TASK);
-    }
-/*
-    private void addUser(int id) {
-    }
-
-    private void deleteUser(int id) {
-    }
-
- */
+    private TaskFileRepository repository;
+    @Autowired
+    private UserFileRepository userRepository;
 
     /**
      * @param args   command line
@@ -60,11 +43,9 @@ class TaskCommand implements Commander<Task> {
                 messenger.print("Check task id value.");
                 return empty;
             }
-            FileSystemRepository<User> userRepository =
-                    new FileSystemRepository<>(storage, messenger, storage.getUsers(), EntityMode.USER);
             Optional<User> opti = userRepository.findById(userId);
             if (opti.isPresent()) {
-                List<Task> tasks = storage.getTasks();
+                List<Task> tasks = (List<Task>)repository.findAll();
                 Optional<Task> optiOld = repository.findById(id);
                 if (prefix.equals("--add")) {
                     if (optiOld.isPresent()) {
@@ -76,7 +57,8 @@ class TaskCommand implements Commander<Task> {
                         tasks.set(indx, old);
                         result = Optional.of(List.of(old));
                     }
-                    storage.setTasks(tasks);
+
+                    repository.updateStorage(tasks);
                     return result;
                 } else if (prefix.equals("--remove")) {
                     if (optiOld.isPresent()) {
@@ -89,7 +71,7 @@ class TaskCommand implements Commander<Task> {
                         result = Optional.of(List.of(old));
                     }
                 }
-                storage.setTasks(tasks);
+                repository.updateStorage(tasks);
                 return result;
             }
         }
@@ -127,9 +109,6 @@ class TaskCommand implements Commander<Task> {
                         break;
                     case "users":
                         List<User> ulist = new ArrayList<>();
-                        FileSystemRepository<User> userRepository = new FileSystemRepository<>(
-                                storage, messenger, storage.getUsers(), EntityMode.USER
-                        );
                         String ids = matcher.group(2);
                         String[] uids = ids.split(",");
                         for (String s : uids) {
@@ -184,12 +163,14 @@ class TaskCommand implements Commander<Task> {
                     }
                     break;
                 }
-
+                // isEmpty() here because it may be empty.
                 Optional<List<Task>> result = processUserCommand(args, "--add", id);
+                //noinspection SimplifyOptionalCallChains
                 if (!result.isEmpty()) {
                     return result;
                 }
                 result = processUserCommand(args, "--remove", id);
+                //noinspection SimplifyOptionalCallChains
                 if (!result.isEmpty()) {
                     return result;
                 }

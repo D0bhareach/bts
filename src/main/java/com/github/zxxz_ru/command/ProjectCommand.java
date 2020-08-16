@@ -2,9 +2,7 @@ package com.github.zxxz_ru.command;
 
 import com.github.zxxz_ru.entity.Project;
 import com.github.zxxz_ru.entity.Task;
-import com.github.zxxz_ru.storage.file.EntityMode;
-import com.github.zxxz_ru.storage.file.FileSystemRepository;
-import com.github.zxxz_ru.storage.file.Storage;
+import com.github.zxxz_ru.storage.file.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,16 +14,13 @@ import java.util.regex.Pattern;
 
 @Component
 class ProjectCommand implements Commander<Project> {
-    private final Messenger messenger;
-    private final FileSystemRepository<Project> repository;
-    private final Storage storage;
-
     @Autowired
-    public ProjectCommand(Storage storage, Messenger messenger) {
-        this.storage = storage;
-        this.messenger = messenger;
-        repository = new FileSystemRepository<>(storage, messenger, storage.getProjects(), EntityMode.PROJECT);
-    }
+    private Messenger messenger;
+    @Autowired
+    private ProjectFileRepository repository;
+    @Autowired
+    private TaskFileRepository taskRepository;
+
 
     private Optional<List<Project>> processTaskCommand(String args, String prefix, int id) {
         Optional<List<Project>> empty = Optional.empty();
@@ -43,11 +38,9 @@ class ProjectCommand implements Commander<Project> {
                 messenger.print("Check task id value.");
                 return empty;
             }
-            FileSystemRepository<Task> taskRepository =
-                    new FileSystemRepository<>(storage, messenger, storage.getTasks(), EntityMode.TASK);
             Optional<Task> opti = taskRepository.findById(taskId);
             if (opti.isPresent()) {
-                List<Project> projects = storage.getProjects();
+                List<Project> projects = (List<Project>)repository.findAll();
                 Optional<Project> optiOld = repository.findById(id);
                 if (prefix.equals("--add")) {
                     if (optiOld.isPresent()) {
@@ -59,7 +52,7 @@ class ProjectCommand implements Commander<Project> {
                         result = Optional.of(List.of(old));
                         projects.set(index, old);
                     }
-                    storage.setProjects(projects);
+                    repository.updateStorage(projects);
                     return result;
                 } else if (prefix.equals("--remove")) {
                     if (optiOld.isPresent()) {
@@ -72,7 +65,7 @@ class ProjectCommand implements Commander<Project> {
                         result = Optional.of(List.of(old));
                     }
                 }
-                storage.setProjects(projects);
+                repository.updateStorage(projects);
                 return result;
             }
         }
@@ -104,9 +97,6 @@ class ProjectCommand implements Commander<Project> {
                         break;
                     case "tasks":
                         List<Task> list = new ArrayList<>();
-                        FileSystemRepository<Task> taskRepository = new FileSystemRepository<>(
-                                storage, messenger, storage.getTasks(), EntityMode.TASK
-                        );
                         String ids = matcher.group(2);
                         String[] tids = ids.split(",");
                         for (String s : tids) {
@@ -160,11 +150,14 @@ class ProjectCommand implements Commander<Project> {
                         return Optional.of(List.of(opti.get()));
                     }
                     }
+                // isEmpty() here because it may be empty.
                 Optional<List<Project>> res = processTaskCommand(args, "--add", id);
+                //noinspection SimplifyOptionalCallChains
                 if (!res.isEmpty()) {
                     return res;
                 }
                 res = processTaskCommand(args, "--remove", id);
+                //noinspection SimplifyOptionalCallChains
                 if (!res.isEmpty()) {
                     return res;
                 }

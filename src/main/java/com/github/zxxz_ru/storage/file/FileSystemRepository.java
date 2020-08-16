@@ -16,12 +16,11 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
     private List<S> list;
     private final EntityMode mode;
 
-/*
-    public FileSystemRepository setList(List<S> list) {
+    public void setList(List<S> list) {
         this.list = list;
-        return this;
     }
 
+/*
     public FileSystemRepository setMode(EntityMode mode) {
         this.mode = mode;
         return this;
@@ -37,7 +36,12 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         this.mode = mode;
     }
 
-    private void updateStorage() {
+    public void updateStorage() {
+        storage.updateStorageList(list, mode);
+    }
+
+    public void updateStorage(List<S> l){
+        setList(l);
         storage.updateStorageList(list, mode);
     }
 

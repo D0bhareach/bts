@@ -1,10 +1,7 @@
 package com.github.zxxz_ru.command;
 
-import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.User;
-import com.github.zxxz_ru.storage.file.EntityMode;
-import com.github.zxxz_ru.storage.file.FileSystemRepository;
-import com.github.zxxz_ru.storage.file.Storage;
+import com.github.zxxz_ru.storage.file.UserFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,16 +15,10 @@ class UserCommand implements Commander<User> {
 
     @Autowired
     TaskCommand taskCommand;
-
-    private final FileSystemRepository<User> repository;
-    private final Messenger messenger;
-    // private Storage storage;
-
     @Autowired
-    public UserCommand(Storage storage, Messenger messenger) {
-        this.messenger = messenger;
-        repository = new FileSystemRepository<>(storage, messenger, storage.getUsers(), EntityMode.USER);
-    }
+    UserFileRepository repository;
+    @Autowired
+    Messenger messenger;
 
     /**
      * Get parameters from --update command arguments, create new user and set fields to argument's values
