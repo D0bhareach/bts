@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public interface Commander <T extends  StoreUnit>{
-    Optional<List<T>> execute(String a);
+    Optional<List<? extends  StoreUnit>> execute(String a);
 
     default String getCommand(String args, Messenger messenger) {
         Pattern pattern = Pattern.compile("(-{1,2}\\w+)");

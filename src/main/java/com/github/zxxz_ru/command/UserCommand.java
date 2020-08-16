@@ -1,6 +1,9 @@
 package com.github.zxxz_ru.command;
 
+import com.github.zxxz_ru.entity.StoreUnit;
+import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
+import com.github.zxxz_ru.storage.file.TaskFileRepository;
 import com.github.zxxz_ru.storage.file.UserFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,12 +14,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-class UserCommand implements Commander<User> {
+public class UserCommand implements Commander<User> {
 
     @Autowired
     TaskCommand taskCommand;
     @Autowired
     UserFileRepository repository;
+    @Autowired
+    TaskFileRepository taskRepository;
     @Autowired
     Messenger messenger;
 
@@ -71,29 +76,53 @@ class UserCommand implements Commander<User> {
      * @param id     id extracted from user's command line
      * @return true if all goes well, false otherwise
      */
-    private boolean processTaskCommand(String args, String prefix, int id) {
+    @SuppressWarnings("OptionalIsPresent")
+    private Optional<List<? extends StoreUnit>> processTaskCommand(String args, String prefix, int id) {
+        Optional<List<? extends StoreUnit>> empty = Optional.empty();
         String pattern = new StringBuilder(prefix).append("-task\\s+(\\d+)").substring(0);
+        int taskId;
         Pattern p1 = Pattern.compile(pattern);
-
         Matcher m1 = p1.matcher(args);
         if (m1.find()) {
             String idString = m1.group(1).trim();
+            try {
+                taskId = Integer.parseInt(idString);
+            } catch (NumberFormatException e) {
+                messenger.print("Check task id.");
+                return empty;
+            }
+            if (taskId == 0) {
+                messenger.print(3);
+                messenger.print("Check task id.");
+                return empty;
+            }
             if (prefix.equals("--assign")) {
                 taskCommand.execute(
                         new StringBuilder("task -id ")
                                 .append(idString)
                                 .append(" --add-user ").append(id).substring(0));
-                return true;
+                Optional<Task> optionalTask = taskRepository.findById(taskId);
+                if (optionalTask.isPresent()) {
+                    return Optional.of(List.of(optionalTask.get()));
+                }
+                return empty;
             } else if (prefix.equals("--drop")) {
                 taskCommand.execute(
                         new StringBuilder("task -id ")
                                 .append(idString)
                                 .append(" --remove-user ").append(id).substring(0));
-                return true;
+                Optional<Task> optionalTask = taskRepository.findById(taskId);
+                if (optionalTask.isPresent()) {
+                    return Optional.of(List.of(optionalTask.get()));
+                }
+
+                return empty;
 
             }
         }
-        return false;
+        messenger.print(3);
+        messenger.print("Check task id.");
+        return empty;
     }
 
 
@@ -103,20 +132,23 @@ class UserCommand implements Commander<User> {
      * @param args command line
      */
     @Override
-    public Optional<List<User>> execute(String args) {
-        Optional<List<User>> empty = Optional.empty();
+    public Optional<List<? extends StoreUnit>> execute(String args) {
+        Matcher idMatcher = Pattern.compile("^user\\s+-id\\s+(\\d+)$").matcher(args.trim());
+        Matcher assignMatcher = Pattern.compile("^user\\s+-id\\s+(\\d+)\\s+--assign-task\\s+\\d+").matcher(args.trim());
+        Matcher dropMatcher = Pattern.compile("^user\\s+-id\\s+(\\d+)\\s+--drop-task\\s+\\d+").matcher(args.trim());
+        Optional<List<? extends StoreUnit>> empty = Optional.empty();
         int id = -1;
         String command = getCommand(args, messenger);
         switch (command) {
             case "-a":
             case "--all":
-                return Optional.of( (List<User>)repository.findAll());
+                return Optional.of((List<User>) repository.findAll());
             case "-d":
             case "--delete":
                 id = getId(args, messenger);
                 if (id != 0) {
                     repository.deleteById(id);
-                    return  empty;
+                    return empty;
                 }
                 break;
             case "--update":
@@ -124,17 +156,26 @@ class UserCommand implements Commander<User> {
                 return Optional.of(List.of(repository.save(user)));
             case "-id":
                 id = getId(args, messenger);
-                Matcher mtchr = Pattern.compile("^user\\s+-id\\s+(\\d+)$").matcher(args.trim());
-                if (mtchr.find()) {
+                if (id == 0) {
+                    return empty;
+                }
+                if (idMatcher.find()) {
                     Optional<User> opti = repository.findById(id);
                     if (opti.isPresent()) {
                         return Optional.of((List.of(opti.get())));
                     }
                 }
-                if (processTaskCommand(args, "--assign", id)) {
-                    return  empty;
-                } else if (processTaskCommand(args, "--drop", id)) {
-                    return empty;
+                if (assignMatcher.find()) {
+                    Optional<List<? extends StoreUnit>> res = processTaskCommand(args, "--assign", id);
+                    if (!res.isEmpty()) {
+                        return res;
+                    }
+                }
+                if (dropMatcher.find()) {
+                    Optional<List<? extends StoreUnit>> res = processTaskCommand(args, "--drop", id);
+                    if (!res.isEmpty()) {
+                        return res;
+                    }
                 }
         }
         return empty;

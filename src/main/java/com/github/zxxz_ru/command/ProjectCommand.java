@@ -1,6 +1,7 @@
 package com.github.zxxz_ru.command;
 
 import com.github.zxxz_ru.entity.Project;
+import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.storage.file.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,9 @@ class ProjectCommand implements Commander<Project> {
     private TaskFileRepository taskRepository;
 
 
-    private Optional<List<Project>> processTaskCommand(String args, String prefix, int id) {
-        Optional<List<Project>> empty = Optional.empty();
-        Optional<List<Project>> result = Optional.empty();
+    private Optional<List<? extends StoreUnit>> processTaskCommand(String args, String prefix, int id) {
+        Optional<List<? extends StoreUnit>> empty = Optional.empty();
+        Optional<List<? extends  StoreUnit>> result = Optional.empty();
         int taskId = 0;
         String pattern = new StringBuilder(prefix).append("-task\\s+(\\d+)").substring(0);
         Pattern p1 = Pattern.compile(pattern);
@@ -122,8 +123,8 @@ class ProjectCommand implements Commander<Project> {
     }
 
     @Override
-    public Optional<List<Project>> execute(String args) {
-        Optional<List<Project>> empty = Optional.empty();
+    public Optional<List<? extends StoreUnit>> execute(String args) {
+        Optional<List<? extends  StoreUnit>> empty = Optional.empty();
         int id = -1;
         String command = getCommand(args, messenger);
         switch (command) {
@@ -143,6 +144,9 @@ class ProjectCommand implements Commander<Project> {
                 return Optional.of(List.of(repository.save(p)));
             case "-id":
                 id = getId(args, messenger);
+                if(id == 0){
+                    return empty;
+                }
                 Matcher mtchr = Pattern.compile("^project\\s+-id\\s+(\\d+)$").matcher(args.trim());
                 if (mtchr.find()) {
                     Optional<Project> opti = repository.findById(id);
@@ -151,7 +155,7 @@ class ProjectCommand implements Commander<Project> {
                     }
                     }
                 // isEmpty() here because it may be empty.
-                Optional<List<Project>> res = processTaskCommand(args, "--add", id);
+                Optional<List<? extends StoreUnit>> res = processTaskCommand(args, "--add", id);
                 //noinspection SimplifyOptionalCallChains
                 if (!res.isEmpty()) {
                     return res;

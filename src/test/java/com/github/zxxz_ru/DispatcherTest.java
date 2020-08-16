@@ -16,9 +16,11 @@ import com.github.zxxz_ru.BtsConfig;
 import java.util.HashMap;
 import java.util.Map;
 
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = BtsConfig.class)
 public class DispatcherTest {
+
     @Autowired
     Dispatcher dispatcher;
 

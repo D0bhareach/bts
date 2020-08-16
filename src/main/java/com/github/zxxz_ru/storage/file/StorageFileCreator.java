@@ -19,7 +19,7 @@ public class StorageFileCreator {
     @Autowired
     Messenger messenger;
 
-    private Path createAbsolutePath() {
+    public Path createAbsolutePath() {
         return Paths.get(System.getProperty("user.home"), state.getPath());
     }
 

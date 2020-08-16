@@ -1,5 +1,6 @@
 package com.github.zxxz_ru.command;
 
+import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
 import com.github.zxxz_ru.storage.file.*;
@@ -27,9 +28,9 @@ class TaskCommand implements Commander<Task> {
      * @param id     id extracted from user's command line
      * @return true if all goes well, false otherwise
      */
-    private Optional<List<Task>> processUserCommand(String args, String prefix, int id) {
-        Optional<List<Task>> empty = Optional.empty();
-        Optional<List<Task>> result = Optional.empty();
+    private Optional<List<? extends  StoreUnit>> processUserCommand(String args, String prefix, int id) {
+        Optional<List<? extends  StoreUnit>> empty = Optional.empty();
+        Optional<List<? extends  StoreUnit>> result = Optional.empty();
         int userId = 0;
         String pattern = new StringBuilder(prefix).append("-user\\s+(\\d+)").substring(0);
         Pattern p1 = Pattern.compile(pattern);
@@ -134,8 +135,11 @@ class TaskCommand implements Commander<Task> {
     }
 
     @Override
-    public Optional<List<Task>> execute(String args) {
-        Optional<List<Task>> empty = Optional.empty();
+    public Optional<List<? extends StoreUnit>> execute(String args) {
+        Matcher idMatcher = Pattern.compile("^task\\s+-id\\s+(\\d+)$").matcher(args.trim());
+        Matcher addMatcher = Pattern.compile("^task\\s+-id\\s+(\\d+)\\s+--add-user\\s+(\\d+)").matcher(args.trim());
+        Matcher removeMatcher = Pattern.compile("^task\\s+-id\\s+(\\d+)\\s+--remove-user\\s+(\\d+)").matcher(args.trim());
+        Optional<List<? extends StoreUnit>> empty = Optional.empty();
         int id = -1;
         String command = getCommand(args, messenger);
         switch (command) {
@@ -155,24 +159,29 @@ class TaskCommand implements Commander<Task> {
                 return Optional.of(List.of(repository.save(task)));
             case "-id":
                 id = getId(args, messenger);
-                Matcher mtchr = Pattern.compile("^task\\s+-id\\s+(\\d+)$").matcher(args.trim());
-                if (mtchr.find()) {
+                if (id == 0) {
+                    return empty;
+                }
+                if (idMatcher.find()) {
                     Optional<Task> opti = repository.findById(id);
                     if (opti.isPresent()) {
                         return Optional.of(List.of(opti.get()));
                     }
-                    break;
                 }
-                // isEmpty() here because it may be empty.
-                Optional<List<Task>> result = processUserCommand(args, "--add", id);
+                if (addMatcher.find()){
+                    // isEmpty() here because it may be empty.
+                    Optional<List<? extends StoreUnit>> result = processUserCommand(args, "--add", id);
                 //noinspection SimplifyOptionalCallChains
                 if (!result.isEmpty()) {
                     return result;
                 }
-                result = processUserCommand(args, "--remove", id);
-                //noinspection SimplifyOptionalCallChains
-                if (!result.isEmpty()) {
-                    return result;
+        }
+                if(removeMatcher.find()) {
+                    Optional<List<? extends StoreUnit>> result = processUserCommand(args, "--remove", id);
+                    //noinspection SimplifyOptionalCallChains
+                    if (!result.isEmpty()) {
+                        return result;
+                    }
                 }
                 break;
             case "-uid":
