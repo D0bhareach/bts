@@ -124,6 +124,9 @@ class ProjectCommand implements Commander<Project> {
 
     @Override
     public Optional<List<? extends StoreUnit>> execute(String args) {
+        Matcher idMatcher = Pattern.compile("^project\\s+-id\\s+(\\d+)$").matcher(args.trim());
+        Matcher addMatcher = Pattern.compile("^project\\s+-id\\s+(\\d+)\\s+--add-task\\s+(\\d+)").matcher(args.trim());
+        Matcher removeMatcher = Pattern.compile("^project\\s+-id\\s+(\\d+)\\s--remove-task\\s+(\\d+)").matcher(args.trim());
         Optional<List<? extends  StoreUnit>> empty = Optional.empty();
         int id = -1;
         String command = getCommand(args, messenger);
@@ -147,23 +150,26 @@ class ProjectCommand implements Commander<Project> {
                 if(id == 0){
                     return empty;
                 }
-                Matcher mtchr = Pattern.compile("^project\\s+-id\\s+(\\d+)$").matcher(args.trim());
-                if (mtchr.find()) {
+                if (idMatcher.find()) {
                     Optional<Project> opti = repository.findById(id);
                     if(opti.isPresent()) {
                         return Optional.of(List.of(opti.get()));
                     }
                     }
-                // isEmpty() here because it may be empty.
-                Optional<List<? extends StoreUnit>> res = processTaskCommand(args, "--add", id);
-                //noinspection SimplifyOptionalCallChains
-                if (!res.isEmpty()) {
-                    return res;
+                if(addMatcher.find()) {
+                    // isEmpty() here because it may be empty.
+                    Optional<List<? extends StoreUnit>> res = processTaskCommand(args, "--add", id);
+                    //noinspection SimplifyOptionalCallChains
+                    if (!res.isEmpty()) {
+                        return res;
+                    }
                 }
-                res = processTaskCommand(args, "--remove", id);
-                //noinspection SimplifyOptionalCallChains
-                if (!res.isEmpty()) {
-                    return res;
+                if(removeMatcher.find()) {
+                    Optional<List<? extends StoreUnit>> res = processTaskCommand(args, "--remove", id);
+                    //noinspection SimplifyOptionalCallChains
+                    if (!res.isEmpty()) {
+                        return res;
+                    }
                 }
                 break;
         }
