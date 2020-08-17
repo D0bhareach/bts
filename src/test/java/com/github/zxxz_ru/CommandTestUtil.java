@@ -37,6 +37,6 @@ public class CommandTestUtil {
     }
 
     void createDataFile(){
-        Storage storage = new Storage(state, messenger, fileCreator, inserter);
+        Storage storage = new Storage(messenger, fileCreator, inserter);
     }
 }

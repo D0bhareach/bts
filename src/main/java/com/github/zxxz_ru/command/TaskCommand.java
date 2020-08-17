@@ -3,7 +3,8 @@ package com.github.zxxz_ru.command;
 import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
-import com.github.zxxz_ru.storage.file.*;
+import com.github.zxxz_ru.storage.file.TaskFileRepository;
+import com.github.zxxz_ru.storage.file.UserFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,9 +29,9 @@ class TaskCommand implements Commander<Task> {
      * @param id     id extracted from user's command line
      * @return true if all goes well, false otherwise
      */
-    private Optional<List<? extends  StoreUnit>> processUserCommand(String args, String prefix, int id) {
-        Optional<List<? extends  StoreUnit>> empty = Optional.empty();
-        Optional<List<? extends  StoreUnit>> result = Optional.empty();
+    private Optional<List<? extends StoreUnit>> processUserCommand(String args, String prefix, int id) {
+        Optional<List<? extends StoreUnit>> empty = Optional.empty();
+        Optional<List<? extends StoreUnit>> result = Optional.empty();
         int userId = 0;
         String pattern = new StringBuilder(prefix).append("-user\\s+(\\d+)").substring(0);
         Pattern p1 = Pattern.compile(pattern);
@@ -46,7 +47,7 @@ class TaskCommand implements Commander<Task> {
             }
             Optional<User> opti = userRepository.findById(userId);
             if (opti.isPresent()) {
-                List<Task> tasks = (List<Task>)repository.findAll();
+                List<Task> tasks = (List<Task>) repository.findAll();
                 Optional<Task> optiOld = repository.findById(id);
                 if (prefix.equals("--add")) {
                     if (optiOld.isPresent()) {
@@ -168,15 +169,15 @@ class TaskCommand implements Commander<Task> {
                         return Optional.of(List.of(opti.get()));
                     }
                 }
-                if (addMatcher.find()){
+                if (addMatcher.find()) {
                     // isEmpty() here because it may be empty.
                     Optional<List<? extends StoreUnit>> result = processUserCommand(args, "--add", id);
-                //noinspection SimplifyOptionalCallChains
-                if (!result.isEmpty()) {
-                    return result;
+                    //noinspection SimplifyOptionalCallChains
+                    if (!result.isEmpty()) {
+                        return result;
+                    }
                 }
-        }
-                if(removeMatcher.find()) {
+                if (removeMatcher.find()) {
                     Optional<List<? extends StoreUnit>> result = processUserCommand(args, "--remove", id);
                     //noinspection SimplifyOptionalCallChains
                     if (!result.isEmpty()) {

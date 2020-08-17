@@ -1,7 +1,5 @@
 package com.github.zxxz_ru;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,15 +11,42 @@ import org.springframework.stereotype.Component;
  * File correctly.
  */
 @Component
-@PropertySource("classpath:/application.properties")
 public class AppState {
+    /*
+    private final UserFileRepository userFileRepository;
+    private final TaskFileRepository taskFileRepository;
+    private final ProjectFileRepository projectFileRepository;
+    private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
+    private final ProjectRepository projectRepository;
+*/
+    //   @Autowired
+    /*
+    public AppState(
+            UserFileRepository uf,
+            TaskFileRepository tf,
+            ProjectFileRepository pf,
+            UserRepository ur,
+            TaskRepository tr,
+            ProjectRepository pr
+
+    ) {
+        this.userRepository = ur;
+        this.taskRepository = tr;
+        this.projectRepository = pr;
+        this.userFileRepository = uf;
+        this.taskFileRepository = tf;
+        this.projectFileRepository = pf;
+
+    }
+
+     */
+
     public enum AppMode {DATABASE, FILESYSTEM}
 
     // Application Storage Mode. App can use Database ar File System.
     // Default is File System
     private AppMode mode = AppMode.FILESYSTEM;
-    @Value("${default.file.path}")
-    private String path;
 
     public AppMode getMode() {
         return mode;
@@ -31,11 +56,34 @@ public class AppState {
         this.mode = mode;
     }
 
-    public String getPath() {
-        return path;
+/*
+    public <T extends CrudRepository<? extends StoreUnit, Integer>> T getUserRepository() {
+        switch (mode) {
+            case DATABASE:
+                return (T) userRepository;
+            case FILESYSTEM:
+                return (T) userFileRepository;
+        }
+        return null;
+    }
+    public <T extends CrudRepository<? extends StoreUnit, Integer>> T getTaskRepository() {
+        switch (mode) {
+            case DATABASE:
+                return (T) taskRepository;
+            case FILESYSTEM:
+                return (T) taskFileRepository;
+        }
+        return null;
+    }
+    public <T extends CrudRepository<? extends StoreUnit, Integer>> T getProjectRepository() {
+        switch (mode) {
+            case DATABASE:
+                return (T) projectRepository;
+            case FILESYSTEM:
+                return (T) projectFileRepository;
+        }
+        return null;
     }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
+ */
 }

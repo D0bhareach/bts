@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("NullableProblems")
 public class FileSystemRepository<S extends StoreUnit> implements CrudRepository<S, Integer> {
 
-   //  private final Messenger messenger;
+    //  private final Messenger messenger;
     private final Storage storage;
     private List<S> list;
     private final EntityMode mode;
@@ -40,7 +40,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         storage.updateStorageList(list, mode);
     }
 
-    public void updateStorage(List<S> l){
+    public void updateStorage(List<S> l) {
         setList(l);
         storage.updateStorageList(list, mode);
     }

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {BtsConfig.class, FileSystemRepositoryConfig.class})
+@Ignore
 public class UserCommandTest {
     @Autowired
     private UserCommand command;

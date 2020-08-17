@@ -1,8 +1,9 @@
 package com.github.zxxz_ru.storage.file;
 
-import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.command.Messenger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -13,14 +14,18 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
 
 @Component
+@PropertySource("classpath:/application.properties")
 public class StorageFileCreator {
-    @Autowired
-    AppState state;
+    //@Autowired
+    // AppState state;
     @Autowired
     Messenger messenger;
 
+    @Value("${default.file.path}")
+    private String path;
+
     public Path createAbsolutePath() {
-        return Paths.get(System.getProperty("user.home"), state.getPath());
+        return Paths.get(System.getProperty("user.home"), path);
     }
 
     private void createDir(Path path) {

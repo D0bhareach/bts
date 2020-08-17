@@ -3,7 +3,6 @@ package com.github.zxxz_ru.storage.file;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.command.Messenger;
 import com.github.zxxz_ru.entity.Project;
 import com.github.zxxz_ru.entity.StoreUnit;
@@ -35,30 +34,23 @@ public class Storage {
      */
     private final File file;
     private final Messenger messenger;
-    private final AppState state;
     private final StorageFileCreator creator;
     private final ObjectMapper mapper = new ObjectMapper().
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private final Data data;
 
+    // Instead of elaborate creation and insertion just need to set data.
     @Autowired
-    public Storage(AppState state, Messenger messenger, StorageFileCreator creator, InitialDataInserter inserter) {
+    public Storage(Messenger messenger, StorageFileCreator creator, InitialDataInserter inserter) {
         this.creator = creator;
-        this.state = state;
         this.messenger = messenger;
         file = creator.createStorageFile();
-        // insert data in file change it when find how to use profiles.
         if (file.length() <= 0) {
-            List<User> users = inserter.createUserList();
-            List<Task> tasks = inserter.createTaskList(users);
-            List<Project> projects = inserter.createProjectList(tasks);
-            this.data = new Data();
-            this.data.setUsers(users);
-            this.data.setUserCounter(new AtomicInteger(users.size()));
-            this.data.setTasks(tasks);
-            this.data.setTaskCounter(new AtomicInteger(tasks.size()));
-            this.data.setProjects(projects);
-            this.data.setProjectCounter(new AtomicInteger(projects.size()));
+            if (inserter != null) {
+                data = inserter.getData();
+            } else {
+                data = new Data();
+            }
             this.writeData();
         } else {
             this.data = readData();
@@ -171,8 +163,8 @@ public class Storage {
         data.setUserCounter(new AtomicInteger(i));
     }
 
-    public List<? extends StoreUnit> getList(EntityMode mode){
-        switch (mode){
+    public List<? extends StoreUnit> getList(EntityMode mode) {
+        switch (mode) {
             case USER:
                 return this.getUsers();
             case TASK:
@@ -184,16 +176,16 @@ public class Storage {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends  StoreUnit>void  updateStorageList(List<T> list, EntityMode mode){
-        switch(mode){
+    public <T extends StoreUnit> void updateStorageList(List<T> list, EntityMode mode) {
+        switch (mode) {
             case USER:
-                this.setUsers((List<User>)list);
+                this.setUsers((List<User>) list);
                 break;
             case TASK:
-                this.setTasks((List<Task>)list);
+                this.setTasks((List<Task>) list);
                 break;
             case PROJECT:
-                this.setProjects((List<Project>)list);
+                this.setProjects((List<Project>) list);
                 break;
         }
     }

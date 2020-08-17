@@ -2,11 +2,11 @@ package com.github.zxxz_ru.command;
 
 import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.ApplicationCloser;
-import com.github.zxxz_ru.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,12 +21,13 @@ public class Dispatcher {
     private final ApplicationCloser closer;
 
     @Autowired
-    Dispatcher(ProjectCommand pc, TaskCommand tc, UserCommand uc, Messenger ms, AppState appst, ApplicationCloser closer) {
+    Dispatcher(AppState appState, ProjectCommand pc, TaskCommand tc, UserCommand uc, Messenger ms, ApplicationCloser closer) {
         this.projectCommand = pc;
         this.taskCommand = tc;
         this.userCommand = uc;
+        userCommand.init();
         this.messenger = ms;
-        this.appState = appst;
+        this.appState = appState;
         this.closer = closer;
     }
 
@@ -57,7 +58,7 @@ public class Dispatcher {
         }
         return map;
     }
-
+/*
     public void processCommandMap(Map<String, String> map) {
         if (map.containsKey("--filepath")) {
             // even if it's empty parameter --filepath File System is about to be used with default file
@@ -68,10 +69,12 @@ public class Dispatcher {
             }
         }
         if (map.containsKey("--database")) {
-            appState.setMode(AppState.AppMode.DATABASE);
             // do db stuff
         }
     }
+
+
+ */
 
     /**
      * Used to dispatch user input when Application is started.
@@ -85,9 +88,23 @@ public class Dispatcher {
         }
         String command;
         // One argument it's either help or quit.
-        if (args.length == 1) {
+        if (args.length >= 1) {
             command = args[0];
-            if (command.equals("-h") || command.equals("--help") || command.equals("help")) {
+            if (command.equals("--database")) {
+                appState.setMode(AppState.AppMode.DATABASE);
+                messenger.print(2);
+                return;
+            } else if (command.equals("--filepath")) {
+                appState.setMode(AppState.AppMode.FILESYSTEM);
+                if (args.length == 2) {
+                    String path = args[1];
+                    if (!path.equals("")) {
+                        //appState.setPath(path);
+                    }
+                }
+                messenger.print(2);
+                return;
+            } else if (command.equals("-h") || command.equals("--help") || command.equals("help")) {
                 messenger.printHelp();
                 closer.closeApp(0);
             }
@@ -96,10 +113,6 @@ public class Dispatcher {
             else if (command.equals("quit") || command.equals("--quit")) {
                 closer.closeApp(0);
             }
-        } else if (args.length > 1) {
-            Map<String, String> map = getArgsMap(args);
-            processCommandMap(map);
-            messenger.print(2);
         }
     }
 

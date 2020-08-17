@@ -3,7 +3,8 @@ package com.github.zxxz_ru.command;
 import com.github.zxxz_ru.entity.Project;
 import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
-import com.github.zxxz_ru.storage.file.*;
+import com.github.zxxz_ru.storage.file.ProjectFileRepository;
+import com.github.zxxz_ru.storage.file.TaskFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ class ProjectCommand implements Commander<Project> {
 
     private Optional<List<? extends StoreUnit>> processTaskCommand(String args, String prefix, int id) {
         Optional<List<? extends StoreUnit>> empty = Optional.empty();
-        Optional<List<? extends  StoreUnit>> result = Optional.empty();
+        Optional<List<? extends StoreUnit>> result = Optional.empty();
         int taskId = 0;
         String pattern = new StringBuilder(prefix).append("-task\\s+(\\d+)").substring(0);
         Pattern p1 = Pattern.compile(pattern);
@@ -41,7 +42,7 @@ class ProjectCommand implements Commander<Project> {
             }
             Optional<Task> opti = taskRepository.findById(taskId);
             if (opti.isPresent()) {
-                List<Project> projects = (List<Project>)repository.findAll();
+                List<Project> projects = (List<Project>) repository.findAll();
                 Optional<Project> optiOld = repository.findById(id);
                 if (prefix.equals("--add")) {
                     if (optiOld.isPresent()) {
@@ -127,7 +128,7 @@ class ProjectCommand implements Commander<Project> {
         Matcher idMatcher = Pattern.compile("^project\\s+-id\\s+(\\d+)$").matcher(args.trim());
         Matcher addMatcher = Pattern.compile("^project\\s+-id\\s+(\\d+)\\s+--add-task\\s+(\\d+)").matcher(args.trim());
         Matcher removeMatcher = Pattern.compile("^project\\s+-id\\s+(\\d+)\\s--remove-task\\s+(\\d+)").matcher(args.trim());
-        Optional<List<? extends  StoreUnit>> empty = Optional.empty();
+        Optional<List<? extends StoreUnit>> empty = Optional.empty();
         int id = -1;
         String command = getCommand(args, messenger);
         switch (command) {
@@ -139,7 +140,7 @@ class ProjectCommand implements Commander<Project> {
                 id = getId(args, messenger);
                 if (id != 0) {
                     repository.deleteById(id);
-                    return  empty;
+                    return empty;
                 }
                 break;
             case "--update":
@@ -147,16 +148,16 @@ class ProjectCommand implements Commander<Project> {
                 return Optional.of(List.of(repository.save(p)));
             case "-id":
                 id = getId(args, messenger);
-                if(id == 0){
+                if (id == 0) {
                     return empty;
                 }
                 if (idMatcher.find()) {
                     Optional<Project> opti = repository.findById(id);
-                    if(opti.isPresent()) {
+                    if (opti.isPresent()) {
                         return Optional.of(List.of(opti.get()));
                     }
-                    }
-                if(addMatcher.find()) {
+                }
+                if (addMatcher.find()) {
                     // isEmpty() here because it may be empty.
                     Optional<List<? extends StoreUnit>> res = processTaskCommand(args, "--add", id);
                     //noinspection SimplifyOptionalCallChains
@@ -164,7 +165,7 @@ class ProjectCommand implements Commander<Project> {
                         return res;
                     }
                 }
-                if(removeMatcher.find()) {
+                if (removeMatcher.find()) {
                     Optional<List<? extends StoreUnit>> res = processTaskCommand(args, "--remove", id);
                     //noinspection SimplifyOptionalCallChains
                     if (!res.isEmpty()) {

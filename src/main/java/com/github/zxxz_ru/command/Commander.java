@@ -7,8 +7,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public interface Commander <T extends  StoreUnit>{
-    Optional<List<? extends  StoreUnit>> execute(String a);
+public interface Commander<T extends StoreUnit> {
+    Optional<List<? extends StoreUnit>> execute(String a);
 
     default String getCommand(String args, Messenger messenger) {
         Pattern pattern = Pattern.compile("(-{1,2}\\w+)");
@@ -64,7 +64,7 @@ public interface Commander <T extends  StoreUnit>{
             return Pattern.compile(builder.substring(0));
         } else if (parameter.equals("users")) {
             return Pattern.compile("users\\s?=\\s?(\\{\\s?)(.+,?)+(\\s?\\})");
-        }else if(parameter.equals("tasks")){
+        } else if (parameter.equals("tasks")) {
             return Pattern.compile("tasks\\s?=\\s?(\\{\\s?)(.+,?)+(\\s?\\})");
         }
 

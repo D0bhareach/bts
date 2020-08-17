@@ -22,13 +22,6 @@ public class AppStateTest {
     AppState state;
     private static final Logger logger = LoggerFactory.getLogger(AppStateTest.class);
 
-    // This tests testing API mostly, but it was error during runs in development
-    // so I've made this tests. Decided to keep them just to be sure.
-    @Test
-    public void testPathValue(){
-        logger.info("path is: " + state.getPath());
-        assertEquals("AppState has not default path value.", state.getPath(),  "opt/storage/epam/epam");
-    }
 
     @Test
     public void testDefaultMode(){

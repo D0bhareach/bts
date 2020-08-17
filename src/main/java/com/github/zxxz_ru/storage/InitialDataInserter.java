@@ -1,19 +1,24 @@
 package com.github.zxxz_ru.storage;
 
-import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.entity.Project;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
 import com.github.zxxz_ru.storage.dao.ProjectRepository;
 import com.github.zxxz_ru.storage.dao.TaskRepository;
 import com.github.zxxz_ru.storage.dao.UserRepository;
+import com.github.zxxz_ru.storage.file.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+// Data inserter will need store and some component that returns Database repositories.
 @Component
+@Profile("development")
 public class InitialDataInserter {
     @Autowired
     UserRepository ure;
@@ -22,8 +27,26 @@ public class InitialDataInserter {
     @Autowired
     TaskRepository tre;
     // Fields required for File System Storage
-    @Autowired
-    AppState state;
+    // @Autowired
+    // AppState state;
+    @Value("${spring.active.profile}")
+    private String profile;
+
+    public Data getData() {
+        Data data = new Data();
+        if (profile.equals("development")) {
+            List<User> users = createUserList();
+            List<Task> tasks = createTaskList(users);
+            List<Project> projects = createProjectList(tasks);
+            data.setUsers(users);
+            data.setTasks(tasks);
+            data.setProjects(projects);
+            data.setUserCounter(new AtomicInteger(users.size()));
+            data.setTaskCounter(new AtomicInteger(tasks.size()));
+            data.setProjectCounter(new AtomicInteger(projects.size()));
+        }
+        return data;
+    }
 
     public List<User> createUserList() {
         List<User> list = new ArrayList<>(5);

@@ -16,12 +16,12 @@ public class FileSystemRepositoryConfig {
     }
 
     @Bean
-    TaskFileRepository taskFileRepository(){
+    TaskFileRepository taskFileRepository() {
         return new TaskFileRepository(storage, EntityMode.TASK);
     }
 
     @Bean
-    ProjectFileRepository projectFileRepository(){
+    ProjectFileRepository projectFileRepository() {
         return new ProjectFileRepository(storage, EntityMode.PROJECT);
     }
 }

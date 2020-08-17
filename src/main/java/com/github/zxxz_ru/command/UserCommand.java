@@ -16,14 +16,24 @@ import java.util.regex.Pattern;
 @Component
 public class UserCommand implements Commander<User> {
 
+    private final TaskCommand taskCommand;
+    private UserFileRepository repository;
+    private final TaskFileRepository taskRepository;
+    private final Messenger messenger;
+    // private final AppState state;
+
     @Autowired
-    TaskCommand taskCommand;
-    @Autowired
-    UserFileRepository repository;
-    @Autowired
-    TaskFileRepository taskRepository;
-    @Autowired
-    Messenger messenger;
+    public UserCommand(TaskCommand tc, TaskFileRepository tf, Messenger m) {
+        taskCommand = tc;
+        taskRepository = tf;
+        messenger = m;
+        // state = s;
+    }
+
+    public UserCommand init() {
+//         repository = state.getUserRepository();
+        return this;
+    }
 
     /**
      * Get parameters from --update command arguments, create new user and set fields to argument's values
