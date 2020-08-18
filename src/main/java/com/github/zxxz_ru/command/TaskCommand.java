@@ -88,7 +88,13 @@ class TaskCommand implements Commander<Task> {
                 switch (parameter) {
                     case "id":
                         if (str != null) {
-                            task.setId(Integer.parseInt(str));
+                            Integer taskId =Integer.parseInt(str);
+                            Optional<Task> taskOptional = repository.findById(taskId);
+                            if(taskOptional.isPresent()){
+                                task = taskOptional.get();
+                            }else {
+                                task.setId(taskId);
+                            }
                         } else {
                             // in save method it will trigger new User
                             task.setId(-1);

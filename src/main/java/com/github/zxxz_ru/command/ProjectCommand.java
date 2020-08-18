@@ -51,7 +51,7 @@ class ProjectCommand implements Commander<Project> {
                 Project project = projectOptional.get();
                 if (prefix.equals("--add")) {
                     List<Task> tasks = project.getTaskList();
-                    if(! tasks.contains(task)){
+                    if (!tasks.contains(task)) {
                         tasks.add(task);
                         project.setTaskList(tasks);
                     }
@@ -74,21 +74,21 @@ class ProjectCommand implements Commander<Project> {
     private Project setProjectForUpdate(String args) {
         List<String> parameters = List.of("id", "name", "description", "tasks");
         Project project = new Project();
-        Project existing;
+        String str;
         for (String parameter : parameters) {
             Pattern pattern = preparePattern(parameter);
             Matcher matcher = pattern.matcher(args);
             if (matcher.find()) {
+                str = matcher.group(3);
                 switch (parameter) {
                     case "id":
-                        String id = matcher.group(3);
-                        if (id != null) {
-                            Integer projectId = Integer.parseInt(id);
+                        if (str != null) {
+                            Integer projectId = Integer.parseInt(str);
                             Optional<Project> projectOptional = repository.findById(projectId);
-                            if(projectOptional.isPresent()) {
+                            if (projectOptional.isPresent()) {
                                 project = projectOptional.get();
                             } else {
-                                project.setId(Integer.parseInt(id));
+                                project.setId(projectId);
                             }
                         } else {
                             // in save method it will trigger new User
@@ -96,14 +96,12 @@ class ProjectCommand implements Commander<Project> {
                         }
                         break;
                     case "name":
-                        String str = matcher.group(3);
-                        if(str != null)
-                        project.setProjectName(str);
+                        if (str != null)
+                            project.setProjectName(str);
                         break;
                     case "description":
-                        str = matcher.group(3);
-                        if(str != null)
-                        project.setDescription(str);
+                        if (str != null)
+                            project.setDescription(str);
                         break;
                     case "tasks":
                         List<Task> list = new ArrayList<>();
