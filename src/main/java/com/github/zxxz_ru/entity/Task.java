@@ -3,9 +3,7 @@ package com.github.zxxz_ru.entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -30,10 +28,10 @@ public class Task implements StoreUnit {
     private String description;
 
     @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
-    private List<User> userList;
+    private Set<User> userList;
 
     public Task() {
-        this.userList = new ArrayList<>();
+        this.userList = new HashSet<>();
     }
 
     public Task(Integer id, String thema, String priority, String taskType, String description) {
@@ -42,7 +40,7 @@ public class Task implements StoreUnit {
         this.priority = priority;
         this.taskType = taskType;
         this.description = description;
-        this.userList = new ArrayList<User>();
+        this.userList = new HashSet<>();
     }
 
     @Override
@@ -97,7 +95,7 @@ public class Task implements StoreUnit {
         }
         if (task.getUserList().size() > 0) {
             // add only if not in list
-            List<User> users = task.getUserList();
+            Set<User> users = task.getUserList();
             for (User u : users) {
                 Optional opti = getUserById(u.getId());
                 if (!opti.isPresent()) {
@@ -152,11 +150,11 @@ public class Task implements StoreUnit {
         this.description = description;
     }
 
-    public List<User> getUserList() {
+    public Set<User> getUserList() {
         return userList;
     }
 
-    public void setUserList(List<User> userList) {
+    public void setUserList(Set<User> userList) {
         this.userList = userList;
     }
 

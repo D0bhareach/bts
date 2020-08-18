@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,13 +56,13 @@ class TaskCommand implements Commander<Task> {
                 User user = userOptional.get();
                 if (prefix.equals("--add")) {
                     Task newTask = new Task();
-                    newTask.setUserList(List.of(user));
+                    newTask.setUserList(Set.of(user));
                     task = task.from(newTask);
                     task = (Task) repository.save(task);
                     result = Optional.of(List.of(task));
                     return result;
                 } else if (prefix.equals("--remove")) {
-                    List<User> users = task.getUserList();
+                    Set<User> users = task.getUserList();
                     users.remove(user);
                     task.setUserList(users);
                     task = (Task) repository.save(task);
@@ -114,7 +112,7 @@ class TaskCommand implements Commander<Task> {
                         task.setDescription(str);
                         break;
                     case "users":
-                        List<User> ulist = new ArrayList<>();
+                        Set<User> ulist = new HashSet<>();
                         String ids = matcher.group(2);
                         String[] uids = ids.split(",");
                         for (String s : uids) {
@@ -198,7 +196,7 @@ class TaskCommand implements Commander<Task> {
                     try {
                         searchId = Integer.parseInt(matcher.group(2));
                         for (Task t : tasks) {
-                            List<User> users = t.getUserList();
+                            Set<User> users = t.getUserList();
                             for (User u : users) {
                                 if (u.getId() == searchId) {
                                     res.add(t);

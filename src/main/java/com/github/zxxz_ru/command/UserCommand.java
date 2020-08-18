@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -117,12 +118,12 @@ public class UserCommand implements Commander<User> {
                 User user = userOptional.get();
                 if (prefix.equals("--assign")) {
                     Task newTask = new Task();
-                    newTask.setUserList(List.of(user));
+                    newTask.setUserList(Set.of(user));
                     task = task.from(newTask);
                     task = (Task) taskRepository.save(task);
                     result = Optional.of(List.of(task));
                 } else if (prefix.equals("--drop")) {
-                    List<User> users = task.getUserList();
+                    Set<User> users = task.getUserList();
                     users.remove(user);
                     task.setUserList(users);
                     task = (Task) taskRepository.save(task);

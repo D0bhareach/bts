@@ -8,15 +8,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class TaskDeserializer extends JsonDeserializer<Task> {
     @Override
     public Task deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        List<User> userList = new ArrayList<>();
+        Set<User> userList = new HashSet<>();
         JsonNode node = p.getCodec().readTree(p);
         int id = (node.get("id")).asInt();
         String theme = node.get("thema").asText();
