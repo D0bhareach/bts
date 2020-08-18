@@ -79,31 +79,33 @@ class TaskCommand implements Commander<Task> {
     private Task setTaskForUpdate(String args) {
         List<String> parameters = List.of("id", "theme", "priority", "type", "description", "users");
         Task task = new Task();
+        String str;
         for (String parameter : parameters) {
             Pattern pattern = preparePattern(parameter);
             Matcher matcher = pattern.matcher(args);
             if (matcher.find()) {
+                str = matcher.group(3);
                 switch (parameter) {
                     case "id":
-                        String id = matcher.group(3);
-                        if (id != null) {
-                            task.setId(Integer.parseInt(id));
+                        if (str != null) {
+                            task.setId(Integer.parseInt(str));
                         } else {
                             // in save method it will trigger new User
                             task.setId(-1);
                         }
                         break;
                     case "theme":
-                        task.setThema(matcher.group(3));
+                        if(str != null)
+                        task.setThema(str);
                         break;
                     case "priority":
-                        task.setPriority(matcher.group(3));
+                        task.setPriority(str);
                         break;
                     case "type":
-                        task.setTaskType(matcher.group(3));
+                        task.setTaskType(str);
                         break;
                     case "description":
-                        task.setDescription(matcher.group(3));
+                        task.setDescription(str);
                         break;
                     case "users":
                         List<User> ulist = new ArrayList<>();

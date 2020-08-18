@@ -45,24 +45,27 @@ public class UserCommand implements Commander<User> {
             Pattern pattern = preparePattern(parameter);
             Matcher matcher = pattern.matcher(args);
             if (matcher.find()) {
+                String str = matcher.group(3);
                 switch (parameter) {
                     case "id":
-                        String id = matcher.group(3);
-                        if (id != null) {
-                            user.setId(Integer.parseInt(id));
+                        if (str != null) {
+                            user.setId(Integer.parseInt(str));
                         } else {
                             // in save method it will trigger new User
                             user.setId(-1);
                         }
                         break;
                     case "firstname":
-                        user.setFirstName(matcher.group(3));
+                        if(str != null)
+                        user.setFirstName(str);
                         break;
                     case "lastname":
-                        user.setLastName(matcher.group(3));
+                        if(str != null)
+                        user.setLastName(str);
                         break;
                     case "role":
-                        user.setRole(matcher.group(3));
+                        if(str != null)
+                        user.setRole(str);
                         break;
                 }
             }

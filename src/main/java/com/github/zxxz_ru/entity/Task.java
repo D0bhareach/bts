@@ -79,7 +79,6 @@ public class Task implements StoreUnit {
 
     @Override
     public <T extends StoreUnit> T from(T t) {
-        Task n = new Task();
         Task task = (Task) t;
         if ((task.getId() != null)) {
             this.id = task.getId();

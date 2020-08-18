@@ -50,9 +50,11 @@ class ProjectCommand implements Commander<Project> {
                 Task task = taskOptional.get();
                 Project project = projectOptional.get();
                 if (prefix.equals("--add")) {
-                    Project newProject = new Project();
-                    newProject.setTaskList(List.of(taskOptional.get()));
-                    project = project.from(newProject);
+                    List<Task> tasks = project.getTaskList();
+                    if(! tasks.contains(task)){
+                        tasks.add(task);
+                        project.setTaskList(tasks);
+                    }
                     project = (Project) repository.save(project);
                     result = Optional.of(List.of(project));
                     return result;
@@ -72,6 +74,7 @@ class ProjectCommand implements Commander<Project> {
     private Project setProjectForUpdate(String args) {
         List<String> parameters = List.of("id", "name", "description", "tasks");
         Project project = new Project();
+        Project existing;
         for (String parameter : parameters) {
             Pattern pattern = preparePattern(parameter);
             Matcher matcher = pattern.matcher(args);
@@ -80,17 +83,27 @@ class ProjectCommand implements Commander<Project> {
                     case "id":
                         String id = matcher.group(3);
                         if (id != null) {
-                            project.setId(Integer.parseInt(id));
+                            Integer projectId = Integer.parseInt(id);
+                            Optional<Project> projectOptional = repository.findById(projectId);
+                            if(projectOptional.isPresent()) {
+                                project = projectOptional.get();
+                            } else {
+                                project.setId(Integer.parseInt(id));
+                            }
                         } else {
                             // in save method it will trigger new User
                             project.setId(-1);
                         }
                         break;
                     case "name":
-                        project.setProjectName(matcher.group(3));
+                        String str = matcher.group(3);
+                        if(str != null)
+                        project.setProjectName(str);
                         break;
                     case "description":
-                        project.setDescription(matcher.group(3));
+                        str = matcher.group(3);
+                        if(str != null)
+                        project.setDescription(str);
                         break;
                     case "tasks":
                         List<Task> list = new ArrayList<>();
