@@ -4,14 +4,9 @@ import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
 import com.github.zxxz_ru.storage.RepositoryCreator;
-import com.github.zxxz_ru.storage.file.EntityMode;
-import com.github.zxxz_ru.storage.file.Storage;
-import com.github.zxxz_ru.storage.file.TaskFileRepository;
-import com.github.zxxz_ru.storage.file.UserFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +19,12 @@ class TaskCommand implements Commander<Task> {
 
     @Autowired
     private Messenger messenger;
-    @Autowired
-    private Storage storage;
 
     private CrudRepository repository;
     private CrudRepository userRepository;
 
 
-    public void init(RepositoryCreator repositoryCreator){
+    public void init(RepositoryCreator repositoryCreator) {
         repository = repositoryCreator.getTaskRepository();
         userRepository = repositoryCreator.getUserRepository();
     }
@@ -39,7 +32,7 @@ class TaskCommand implements Commander<Task> {
     /**
      * @param args   command line
      * @param prefix prefix to regexp for finding task part in user's command line
-     * @param id     id extracted from user's command line
+     * @param id     id Task Id from command parameter -id
      * @return true if all goes well, false otherwise
      */
     private Optional<List<? extends StoreUnit>> processUserCommand(String args, String prefix, int id) {
@@ -58,35 +51,25 @@ class TaskCommand implements Commander<Task> {
                 messenger.print("Check task id value.");
                 return empty;
             }
-            Optional<User> opti = userRepository.findById(userId);
-            if (opti.isPresent()) {
-                List<Task> tasks = (List<Task>) repository.findAll();
-                Optional<Task> optiOld = repository.findById(id);
+            Optional<User> userOptional = userRepository.findById(userId);
+            Optional<Task> taskOptional = repository.findById(id);
+            if (userOptional.isPresent() && taskOptional.isPresent()) {
+                Task task = taskOptional.get();
+                User user = userOptional.get();
                 if (prefix.equals("--add")) {
-                    if (optiOld.isPresent()) {
-                        Task newTask = new Task();
-                        newTask.setUserList(List.of(opti.get()));
-                        Task old = optiOld.get();
-                        int indx = tasks.indexOf(old);
-                        old = old.from(newTask);
-                        tasks.set(indx, old);
-                        result = Optional.of(List.of(old));
-                    }
-
-                    storage.updateStorageList(tasks, EntityMode.TASK);
+                    Task newTask = new Task();
+                    newTask.setUserList(List.of(user));
+                    task = task.from(newTask);
+                    task = (Task) repository.save(task);
+                    result = Optional.of(List.of(task));
                     return result;
                 } else if (prefix.equals("--remove")) {
-                    if (optiOld.isPresent()) {
-                        Task old = optiOld.get();
-                        int indx = tasks.indexOf(old);
-                        List<User> users = old.getUserList();
-                        users.remove(opti.get());
-                        old.setUserList(users);
-                        tasks.set(indx, old);
-                        result = Optional.of(List.of(old));
-                    }
+                    List<User> users = task.getUserList();
+                    users.remove(user);
+                    task.setUserList(users);
+                    task = (Task) repository.save(task);
+                    result = Optional.of(List.of(task));
                 }
-                storage.updateStorageList(tasks, EntityMode.TASK);
                 return result;
             }
         }
@@ -170,7 +153,7 @@ class TaskCommand implements Commander<Task> {
                 break;
             case "--update":
                 Task task = setTaskForUpdate(args);
-                return Optional.of(List.of((Task)repository.save(task)));
+                return Optional.of(List.of((Task) repository.save(task)));
             case "-id":
                 id = getId(args, messenger);
                 if (id == 0) {
