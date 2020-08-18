@@ -2,6 +2,9 @@ package com.github.zxxz_ru.command;
 
 import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.ApplicationCloser;
+import com.github.zxxz_ru.storage.RepositoryCreator;
+import com.github.zxxz_ru.storage.dao.DatabaseRepositoryCreator;
+import com.github.zxxz_ru.storage.file.FileSystemRepositoryCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,24 +16,14 @@ import java.util.regex.Pattern;
 
 @Component
 public class Dispatcher {
-    private final ProjectCommand projectCommand;
-    private final TaskCommand taskCommand;
-    private final UserCommand userCommand;
-    private final Messenger messenger;
-    private final AppState appState;
-    private final ApplicationCloser closer;
-
     @Autowired
-    Dispatcher(AppState appState, ProjectCommand pc, TaskCommand tc, UserCommand uc, Messenger ms, ApplicationCloser closer) {
-        this.projectCommand = pc;
-        this.taskCommand = tc;
-        this.userCommand = uc;
-        userCommand.init();
-        this.messenger = ms;
-        this.appState = appState;
-        this.closer = closer;
-    }
+    private Messenger messenger;
+    @Autowired
+    private AppState appState;
+    @Autowired
+    private ApplicationCloser closer;
 
+    private RepositoryCreator repositoryCreator = new FileSystemRepositoryCreator();
 
     /**
      * Maps commands recognized by double dash (--), makes dashes obligatory for parameters at
@@ -92,6 +85,7 @@ public class Dispatcher {
             command = args[0];
             if (command.equals("--database")) {
                 appState.setMode(AppState.AppMode.DATABASE);
+                repositoryCreator = new DatabaseRepositoryCreator();
                 messenger.print(2);
                 return;
             } else if (command.equals("--filepath")) {
@@ -118,6 +112,9 @@ public class Dispatcher {
 
 
     public void dispatch() {
+        final ProjectCommand projectCommand = new ProjectCommand(repositoryCreator);
+        final TaskCommand taskCommand = new TaskCommand(repositoryCreator);
+        final UserCommand userCommand = new UserCommand(repositoryCreator);
         Scanner scan = new Scanner(System.in);
         String str = scan.nextLine();
         if (str.trim().equals("")) {

@@ -3,9 +3,11 @@ package com.github.zxxz_ru.command;
 import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
+import com.github.zxxz_ru.storage.RepositoryCreator;
 import com.github.zxxz_ru.storage.file.TaskFileRepository;
 import com.github.zxxz_ru.storage.file.UserFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,18 +18,17 @@ import java.util.regex.Pattern;
 @Component
 public class UserCommand implements Commander<User> {
 
-    private final TaskCommand taskCommand;
-    private UserFileRepository repository;
-    private final TaskFileRepository taskRepository;
-    private final Messenger messenger;
-    // private final AppState state;
-
     @Autowired
-    public UserCommand(TaskCommand tc, TaskFileRepository tf, Messenger m) {
-        taskCommand = tc;
-        taskRepository = tf;
-        messenger = m;
-        // state = s;
+    private Messenger messenger;
+    @Autowired
+    TaskCommand taskCommand;
+
+    private final CrudRepository repository;
+    private final CrudRepository taskRepository;
+
+    public UserCommand(RepositoryCreator repositoryCreator) {
+        repository = repositoryCreator.getUserRepository();
+        taskRepository = repositoryCreator.getTaskRepository();
     }
 
     public UserCommand init() {
@@ -163,7 +164,7 @@ public class UserCommand implements Commander<User> {
                 break;
             case "--update":
                 User user = setUserForUpdate(args);
-                return Optional.of(List.of(repository.save(user)));
+                return Optional.of(List.of((User)repository.save(user)));
             case "-id":
                 id = getId(args, messenger);
                 if (id == 0) {

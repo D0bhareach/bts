@@ -3,7 +3,7 @@
 [X] 1.2 Make Entities connected(one-to-many, many-to-many ect.)  
 [] 1.3 Finish rough implementation of Commands.  
 [X] 1.4 Make Component to insert table if table is empty.   
-[] 1.5 Make tables insertion work only when on development mode.  
+[X] 1.5 Make tables insertion work only when on development mode.  
 [] 1.6 Fix Transient Errors.
 # File Storage TODO
 [X] 2.1 Create Generic Class implementing CrudRepository for File Storage usage.
@@ -20,7 +20,7 @@
 [X] 3.2 Update HelpCommandBuilder to represent new changes. Make it more clear.
 [X] 3.3 Test Entities Command Files.
 # General
-[] 4.1 Need to use profiles like 'development' and 'production'.
+[X] 4.1 Need to use profiles like 'development' and 'production'.
 [X] 4.2 Update README file to current state.
 [X] 4.3 Create interface and files for repositories creation.
-[] 4.4 Finish Dispatcher database and filepath cases.
+[X] 4.4 Finish Dispatcher database and filepath cases.

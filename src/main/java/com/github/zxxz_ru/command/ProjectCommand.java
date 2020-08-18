@@ -3,10 +3,15 @@ package com.github.zxxz_ru.command;
 import com.github.zxxz_ru.entity.Project;
 import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
+import com.github.zxxz_ru.storage.RepositoryCreator;
+import com.github.zxxz_ru.storage.file.EntityMode;
 import com.github.zxxz_ru.storage.file.ProjectFileRepository;
+import com.github.zxxz_ru.storage.file.Storage;
 import com.github.zxxz_ru.storage.file.TaskFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +24,15 @@ class ProjectCommand implements Commander<Project> {
     @Autowired
     private Messenger messenger;
     @Autowired
-    private ProjectFileRepository repository;
-    @Autowired
-    private TaskFileRepository taskRepository;
+    Storage storage;
+
+    private final CrudRepository repository;
+    private final CrudRepository taskRepository;
+
+    public ProjectCommand(RepositoryCreator repositoryCreator){
+        repository = repositoryCreator.getProjectRepository();
+        taskRepository = repositoryCreator.getTaskRepository();
+    }
 
 
     private Optional<List<? extends StoreUnit>> processTaskCommand(String args, String prefix, int id) {
@@ -54,7 +65,7 @@ class ProjectCommand implements Commander<Project> {
                         result = Optional.of(List.of(old));
                         projects.set(index, old);
                     }
-                    repository.updateStorage(projects);
+                    storage.updateStorageList(projects, EntityMode.PROJECT);
                     return result;
                 } else if (prefix.equals("--remove")) {
                     if (optiOld.isPresent()) {
@@ -67,7 +78,7 @@ class ProjectCommand implements Commander<Project> {
                         result = Optional.of(List.of(old));
                     }
                 }
-                repository.updateStorage(projects);
+                storage.updateStorageList(projects, EntityMode.PROJECT);
                 return result;
             }
         }
@@ -145,7 +156,7 @@ class ProjectCommand implements Commander<Project> {
                 break;
             case "--update":
                 Project p = setProjectForUpdate(args);
-                return Optional.of(List.of(repository.save(p)));
+                return Optional.of(List.of((Project)repository.save(p)));
             case "-id":
                 id = getId(args, messenger);
                 if (id == 0) {

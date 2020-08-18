@@ -3,10 +3,15 @@ package com.github.zxxz_ru.command;
 import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
+import com.github.zxxz_ru.storage.RepositoryCreator;
+import com.github.zxxz_ru.storage.file.EntityMode;
+import com.github.zxxz_ru.storage.file.Storage;
 import com.github.zxxz_ru.storage.file.TaskFileRepository;
 import com.github.zxxz_ru.storage.file.UserFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +21,20 @@ import java.util.regex.Pattern;
 
 @Component
 class TaskCommand implements Commander<Task> {
+
     @Autowired
     private Messenger messenger;
     @Autowired
-    private TaskFileRepository repository;
-    @Autowired
-    private UserFileRepository userRepository;
+    private Storage storage;
+
+    private final CrudRepository repository;
+    private final CrudRepository userRepository;
+
+
+    public TaskCommand(RepositoryCreator repositoryCreator){
+        repository = repositoryCreator.getTaskRepository();
+        userRepository = repositoryCreator.getUserRepository();
+    }
 
     /**
      * @param args   command line
@@ -60,7 +73,7 @@ class TaskCommand implements Commander<Task> {
                         result = Optional.of(List.of(old));
                     }
 
-                    repository.updateStorage(tasks);
+                    storage.updateStorageList(tasks, EntityMode.TASK);
                     return result;
                 } else if (prefix.equals("--remove")) {
                     if (optiOld.isPresent()) {
@@ -73,7 +86,7 @@ class TaskCommand implements Commander<Task> {
                         result = Optional.of(List.of(old));
                     }
                 }
-                repository.updateStorage(tasks);
+                storage.updateStorageList(tasks, EntityMode.TASK);
                 return result;
             }
         }
@@ -157,7 +170,7 @@ class TaskCommand implements Commander<Task> {
                 break;
             case "--update":
                 Task task = setTaskForUpdate(args);
-                return Optional.of(List.of(repository.save(task)));
+                return Optional.of(List.of((Task)repository.save(task)));
             case "-id":
                 id = getId(args, messenger);
                 if (id == 0) {
