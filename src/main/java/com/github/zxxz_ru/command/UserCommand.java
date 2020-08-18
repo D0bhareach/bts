@@ -49,7 +49,14 @@ public class UserCommand implements Commander<User> {
                 switch (parameter) {
                     case "id":
                         if (str != null) {
-                            user.setId(Integer.parseInt(str));
+                            Integer userId = Integer.parseInt(str);
+                            Optional<User> userOptional = repository.findById(userId);
+                            if(userOptional.isPresent()){
+                                user = userOptional.get();
+                            }else{
+                                user.setId(userId);
+                            }
+
                         } else {
                             // in save method it will trigger new User
                             user.setId(-1);
