@@ -27,11 +27,11 @@ class TaskCommand implements Commander<Task> {
     @Autowired
     private Storage storage;
 
-    private final CrudRepository repository;
-    private final CrudRepository userRepository;
+    private CrudRepository repository;
+    private CrudRepository userRepository;
 
 
-    public TaskCommand(RepositoryCreator repositoryCreator){
+    public void init(RepositoryCreator repositoryCreator){
         repository = repositoryCreator.getTaskRepository();
         userRepository = repositoryCreator.getUserRepository();
     }

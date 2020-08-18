@@ -26,10 +26,10 @@ class ProjectCommand implements Commander<Project> {
     @Autowired
     Storage storage;
 
-    private final CrudRepository repository;
-    private final CrudRepository taskRepository;
+    private CrudRepository repository;
+    private CrudRepository taskRepository;
 
-    public ProjectCommand(RepositoryCreator repositoryCreator){
+    public void init(RepositoryCreator repositoryCreator){
         repository = repositoryCreator.getProjectRepository();
         taskRepository = repositoryCreator.getTaskRepository();
     }

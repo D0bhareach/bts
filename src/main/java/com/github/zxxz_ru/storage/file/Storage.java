@@ -10,6 +10,7 @@ import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
 import com.github.zxxz_ru.storage.InitialDataInserter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -27,6 +28,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Component
 public class Storage {
+    @Autowired
+    private InitialDataInserter inserter;
 
     /**
      * Path to Storage File. Path is either default value or can be set from
@@ -41,7 +44,7 @@ public class Storage {
 
     // Instead of elaborate creation and insertion just need to set data.
     @Autowired
-    public Storage(Messenger messenger, StorageFileCreator creator, InitialDataInserter inserter) {
+    public Storage(Messenger messenger, StorageFileCreator creator) {
         this.creator = creator;
         this.messenger = messenger;
         file = creator.createStorageFile();

@@ -23,18 +23,14 @@ public class UserCommand implements Commander<User> {
     @Autowired
     TaskCommand taskCommand;
 
-    private final CrudRepository repository;
-    private final CrudRepository taskRepository;
+    private CrudRepository repository;
+    private CrudRepository taskRepository;
 
-    public UserCommand(RepositoryCreator repositoryCreator) {
-        repository = repositoryCreator.getUserRepository();
-        taskRepository = repositoryCreator.getTaskRepository();
+    public void init(RepositoryCreator repositoryCreator) {
+        this.repository = repositoryCreator.getUserRepository();
+        this.taskRepository = repositoryCreator.getTaskRepository();
     }
 
-    public UserCommand init() {
-//         repository = state.getUserRepository();
-        return this;
-    }
 
     /**
      * Get parameters from --update command arguments, create new user and set fields to argument's values

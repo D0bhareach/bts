@@ -2,12 +2,16 @@ package com.github.zxxz_ru.command;
 
 import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.ApplicationCloser;
+import com.github.zxxz_ru.storage.InitialDataInserter;
 import com.github.zxxz_ru.storage.RepositoryCreator;
 import com.github.zxxz_ru.storage.dao.DatabaseRepositoryCreator;
 import com.github.zxxz_ru.storage.file.FileSystemRepositoryCreator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -22,8 +26,22 @@ public class Dispatcher {
     private AppState appState;
     @Autowired
     private ApplicationCloser closer;
+    @Autowired
+    private InitialDataInserter inserter;
+    @Autowired
+    FileSystemRepositoryCreator fileSystemRepositoryCreator;
+    @Autowired
+    DatabaseRepositoryCreator databaseRepositoryCreator;
+    @Autowired
+    UserCommand userCommand;
+    @Autowired
+    TaskCommand taskCommand;
+    @Autowired
+    ProjectCommand projectCommand;
 
-    private RepositoryCreator repositoryCreator = new FileSystemRepositoryCreator();
+    @Value("${default.database.path}")
+    private String databasePath;
+
 
     /**
      * Maps commands recognized by double dash (--), makes dashes obligatory for parameters at
@@ -76,6 +94,10 @@ public class Dispatcher {
      */
     public void dispatch(String... args) {
         if (args.length == 0) {
+            userCommand.init(fileSystemRepositoryCreator);
+            taskCommand.init(fileSystemRepositoryCreator);
+            projectCommand.init(fileSystemRepositoryCreator);
+            databaseRepositoryCreator = null;
             messenger.print(2);
             return;
         }
@@ -85,11 +107,24 @@ public class Dispatcher {
             command = args[0];
             if (command.equals("--database")) {
                 appState.setMode(AppState.AppMode.DATABASE);
-                repositoryCreator = new DatabaseRepositoryCreator();
+                userCommand.init(databaseRepositoryCreator);
+                taskCommand.init(databaseRepositoryCreator);
+                projectCommand.init(databaseRepositoryCreator);
+                fileSystemRepositoryCreator = null;
+                if(databasePath != null){
+                    if (! Files.exists(Paths.get(databasePath))){
+                        inserter.insert();
+                    }
+                }
+
                 messenger.print(2);
                 return;
             } else if (command.equals("--filepath")) {
                 appState.setMode(AppState.AppMode.FILESYSTEM);
+                userCommand.init(fileSystemRepositoryCreator);
+                taskCommand.init(fileSystemRepositoryCreator);
+                projectCommand.init(fileSystemRepositoryCreator);
+                databaseRepositoryCreator = null;
                 if (args.length == 2) {
                     String path = args[1];
                     if (!path.equals("")) {
@@ -112,9 +147,6 @@ public class Dispatcher {
 
 
     public void dispatch() {
-        final ProjectCommand projectCommand = new ProjectCommand(repositoryCreator);
-        final TaskCommand taskCommand = new TaskCommand(repositoryCreator);
-        final UserCommand userCommand = new UserCommand(repositoryCreator);
         Scanner scan = new Scanner(System.in);
         String str = scan.nextLine();
         if (str.trim().equals("")) {

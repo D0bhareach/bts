@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 // Data inserter will need store and some component that returns Database repositories.
 @Component
-@Profile("development")
 public class InitialDataInserter {
     @Autowired
     UserRepository ure;
@@ -121,14 +120,16 @@ public class InitialDataInserter {
     }
 
     public void insert() {
-        List users = createUserList();
-        List tasks = createTaskList(users);
-        List projects = createProjectList(tasks);
-        // these three lines places are important
-        // users-tasks-projects, DO NOT CHANGE.
-        insertUsers(users);
-        insertTasks(tasks);
-        insertProjects(projects);
+        if (profile.equals("development")) {
+            List users = createUserList();
+            List tasks = createTaskList(users);
+            List projects = createProjectList(tasks);
+            // these three lines places are important
+            // users-tasks-projects, DO NOT CHANGE.
+            insertUsers(users);
+            insertTasks(tasks);
+            insertProjects(projects);
+        }
     }
 
 }

@@ -16,11 +16,7 @@ public class CommandTestUtil {
     @Autowired
     StorageFileCreator fileCreator;
     @Autowired
-    InitialDataInserter inserter;
-    @Autowired
     Messenger messenger;
-    @Autowired
-    AppState state;
 
     public CommandTestUtil() {
     }
@@ -37,6 +33,6 @@ public class CommandTestUtil {
     }
 
     void createDataFile(){
-        Storage storage = new Storage(messenger, fileCreator, inserter);
+        Storage storage = new Storage(messenger, fileCreator);
     }
 }
