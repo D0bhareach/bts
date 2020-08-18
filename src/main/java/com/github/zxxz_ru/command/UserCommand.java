@@ -4,8 +4,6 @@ import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
 import com.github.zxxz_ru.storage.RepositoryCreator;
-import com.github.zxxz_ru.storage.file.TaskFileRepository;
-import com.github.zxxz_ru.storage.file.UserFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
@@ -20,8 +18,6 @@ public class UserCommand implements Commander<User> {
 
     @Autowired
     private Messenger messenger;
-    @Autowired
-    TaskCommand taskCommand;
 
     private CrudRepository repository;
     private CrudRepository taskRepository;
@@ -85,6 +81,7 @@ public class UserCommand implements Commander<User> {
      */
     @SuppressWarnings("OptionalIsPresent")
     private Optional<List<? extends StoreUnit>> processTaskCommand(String args, String prefix, int id) {
+        Optional<List<? extends StoreUnit>> result = Optional.empty();
         Optional<List<? extends StoreUnit>> empty = Optional.empty();
         String pattern = new StringBuilder(prefix).append("-task\\s+(\\d+)").substring(0);
         int taskId;
@@ -103,30 +100,30 @@ public class UserCommand implements Commander<User> {
                 messenger.print("Check task id.");
                 return empty;
             }
-            if (prefix.equals("--assign")) {
-                taskCommand.execute(
-                        new StringBuilder("task -id ")
-                                .append(idString)
-                                .append(" --add-user ").append(id).substring(0));
-                Optional<Task> optionalTask = taskRepository.findById(taskId);
-                if (optionalTask.isPresent()) {
-                    return Optional.of(List.of(optionalTask.get()));
+            Optional<Task> taskOptional = taskRepository.findById(taskId);
+            Optional<User> userOptional = repository.findById(id);
+            if (taskOptional.isPresent() && userOptional.isPresent()) {
+                Task task = taskOptional.get();
+                User user = userOptional.get();
+                if (prefix.equals("--assign")) {
+                    Task newTask = new Task();
+                    newTask.setUserList(List.of(user));
+                    task = task.from(newTask);
+                    task = (Task) taskRepository.save(task);
+                    result = Optional.of(List.of(task));
+                } else if (prefix.equals("--drop")) {
+                    List<User> users = task.getUserList();
+                    users.remove(user);
+                    task.setUserList(users);
+                    task = (Task) taskRepository.save(task);
+                    result = Optional.of(List.of(task));
                 }
-                return empty;
-            } else if (prefix.equals("--drop")) {
-                taskCommand.execute(
-                        new StringBuilder("task -id ")
-                                .append(idString)
-                                .append(" --remove-user ").append(id).substring(0));
-                Optional<Task> optionalTask = taskRepository.findById(taskId);
-                if (optionalTask.isPresent()) {
-                    return Optional.of(List.of(optionalTask.get()));
-                }
-
-                return empty;
+                return result;
 
             }
+            return empty;
         }
+
         messenger.print(3);
         messenger.print("Check task id.");
         return empty;
@@ -160,7 +157,7 @@ public class UserCommand implements Commander<User> {
                 break;
             case "--update":
                 User user = setUserForUpdate(args);
-                return Optional.of(List.of((User)repository.save(user)));
+                return Optional.of(List.of((User) repository.save(user)));
             case "-id":
                 id = getId(args, messenger);
                 if (id == 0) {
