@@ -4,14 +4,9 @@ import com.github.zxxz_ru.entity.Project;
 import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.storage.RepositoryCreator;
-import com.github.zxxz_ru.storage.file.EntityMode;
-import com.github.zxxz_ru.storage.file.ProjectFileRepository;
-import com.github.zxxz_ru.storage.file.Storage;
-import com.github.zxxz_ru.storage.file.TaskFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +18,11 @@ import java.util.regex.Pattern;
 class ProjectCommand implements Commander<Project> {
     @Autowired
     private Messenger messenger;
-    @Autowired
-    Storage storage;
 
     private CrudRepository repository;
     private CrudRepository taskRepository;
 
-    public void init(RepositoryCreator repositoryCreator){
+    public void init(RepositoryCreator repositoryCreator) {
         repository = repositoryCreator.getProjectRepository();
         taskRepository = repositoryCreator.getTaskRepository();
     }
@@ -51,34 +44,25 @@ class ProjectCommand implements Commander<Project> {
                 messenger.print("Check task id value.");
                 return empty;
             }
-            Optional<Task> opti = taskRepository.findById(taskId);
-            if (opti.isPresent()) {
-                List<Project> projects = (List<Project>) repository.findAll();
-                Optional<Project> optiOld = repository.findById(id);
+            Optional<Task> taskOptional = taskRepository.findById(taskId);
+            Optional<Project> projectOptional = repository.findById(id);
+            if (taskOptional.isPresent() && projectOptional.isPresent()) {
+                Task task = taskOptional.get();
+                Project project = projectOptional.get();
                 if (prefix.equals("--add")) {
-                    if (optiOld.isPresent()) {
-                        Project newProject = new Project();
-                        newProject.setTaskList(List.of(opti.get()));
-                        Project old = optiOld.get();
-                        int index = projects.indexOf(old);
-                        old = old.from(newProject);
-                        result = Optional.of(List.of(old));
-                        projects.set(index, old);
-                    }
-                    storage.updateStorageList(projects, EntityMode.PROJECT);
+                    Project newProject = new Project();
+                    newProject.setTaskList(List.of(taskOptional.get()));
+                    project = project.from(newProject);
+                    project = (Project) repository.save(project);
+                    result = Optional.of(List.of(project));
                     return result;
                 } else if (prefix.equals("--remove")) {
-                    if (optiOld.isPresent()) {
-                        Project old = optiOld.get();
-                        int index = projects.indexOf(old);
-                        List<Task> tasks = old.getTaskList();
-                        tasks.remove(opti.get());
-                        old.setTaskList(tasks);
-                        projects.set(index, old);
-                        result = Optional.of(List.of(old));
-                    }
+                    List<Task> tasks = project.getTaskList();
+                    tasks.remove(task);
+                    project.setTaskList(tasks);
+                    project = (Project) repository.save(project);
+                    result = Optional.of(List.of(project));
                 }
-                storage.updateStorageList(projects, EntityMode.PROJECT);
                 return result;
             }
         }
@@ -156,7 +140,7 @@ class ProjectCommand implements Commander<Project> {
                 break;
             case "--update":
                 Project p = setProjectForUpdate(args);
-                return Optional.of(List.of((Project)repository.save(p)));
+                return Optional.of(List.of((Project) repository.save(p)));
             case "-id":
                 id = getId(args, messenger);
                 if (id == 0) {
