@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class Dispatcher {
     @Autowired
     ProjectCommand projectCommand;
 
-    @Value("${default.database.path}")
+    @Value("${default.database.dirpath}")
     private String databasePath;
 
 
@@ -112,8 +113,19 @@ public class Dispatcher {
                 projectCommand.init(databaseRepositoryCreator);
                 fileSystemRepositoryCreator = null;
                 if(databasePath != null){
-                    if (! Files.exists(Paths.get(databasePath))){
+                    // The very first time throws exception FileNotExist
+                    // so need this check.
+                    if(!Files.exists(Paths.get(databasePath))){
                         inserter.insert();
+                        messenger.print(2);
+                        return;
+                    }
+                    try {
+                        if (Files.list(Paths.get(databasePath)).count() <=0){
+                            inserter.insert();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
 

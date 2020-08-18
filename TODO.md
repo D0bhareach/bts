@@ -4,7 +4,7 @@
 [] 1.3 Finish rough implementation of Commands.  
 [X] 1.4 Make Component to insert table if table is empty.   
 [X] 1.5 Make tables insertion work only when on development mode.  
-[] 1.6 Fix Transient Errors.
+[X] 1.6 Fix Transient Errors.
 # File Storage TODO
 [X] 2.1 Create Generic Class implementing CrudRepository for File Storage usage.
 [X] 2.2 Make Application wait for User Input util quit.

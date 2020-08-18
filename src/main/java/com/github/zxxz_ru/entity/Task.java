@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class Task implements StoreUnit {
     @Id
     @Column(name = "TASK_ID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "THEMA")
@@ -29,7 +29,7 @@ public class Task implements StoreUnit {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @OneToMany(targetEntity = User.class)
+    @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
     private List<User> userList;
 
     public Task() {
