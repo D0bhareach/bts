@@ -3,9 +3,7 @@ package com.github.zxxz_ru.entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -24,17 +22,17 @@ public class Project implements StoreUnit {
     private String description;
 
     @ManyToMany(targetEntity = Task.class, fetch = FetchType.EAGER)
-    private List<Task> taskList;
+    private Set<Task> taskList;
 
     public Project() {
-        this.taskList = new ArrayList<>();
+        this.taskList = new HashSet<>();
     }
 
     public Project(Integer id, String projectName, String description) {
         this.id = id;
         this.projectName = projectName;
         this.description = description;
-        this.taskList = new ArrayList<>();
+        this.taskList = new HashSet<>();
     }
 
 
@@ -81,7 +79,7 @@ public class Project implements StoreUnit {
         }
         if (p.getTaskList().size() > 0) {
             // add only if not in list
-            List<Task> tasks = p.getTaskList();
+            Set<Task> tasks = p.getTaskList();
             for (Task ts : tasks) {
                 Optional<Task> opti = getTaskById(ts.getId());
                 if (opti.isEmpty()) {
@@ -119,11 +117,11 @@ public class Project implements StoreUnit {
         this.description = description;
     }
 
-    public List<Task> getTaskList() {
+    public Set<Task> getTaskList() {
         return taskList;
     }
 
-    public void setTaskList(List taskList) {
+    public void setTaskList(Set taskList) {
         this.taskList = taskList;
     }
 

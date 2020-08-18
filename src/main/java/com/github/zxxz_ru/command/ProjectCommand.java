@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,7 +48,7 @@ class ProjectCommand implements Commander<Project> {
                 Task task = taskOptional.get();
                 Project project = projectOptional.get();
                 if (prefix.equals("--add")) {
-                    List<Task> tasks = project.getTaskList();
+                    Set<Task> tasks = project.getTaskList();
                     if (!tasks.contains(task)) {
                         tasks.add(task);
                         project.setTaskList(tasks);
@@ -59,7 +57,7 @@ class ProjectCommand implements Commander<Project> {
                     result = Optional.of(List.of(project));
                     return result;
                 } else if (prefix.equals("--remove")) {
-                    List<Task> tasks = project.getTaskList();
+                    Set<Task> tasks = project.getTaskList();
                     tasks.remove(task);
                     project.setTaskList(tasks);
                     project = (Project) repository.save(project);
@@ -104,7 +102,7 @@ class ProjectCommand implements Commander<Project> {
                             project.setDescription(str);
                         break;
                     case "tasks":
-                        List<Task> list = new ArrayList<>();
+                        Set<Task> list = new HashSet<>();
                         String ids = matcher.group(2);
                         String[] tids = ids.split(",");
                         for (String s : tids) {

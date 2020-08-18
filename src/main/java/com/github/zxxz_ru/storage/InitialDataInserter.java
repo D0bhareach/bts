@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 // Data inserter will need store and some component that returns Database repositories.
@@ -68,13 +69,13 @@ public class InitialDataInserter {
     public List<Project> createProjectList(List tasks) {
         List<Project> list = new ArrayList<>();
         Project project = new Project(1, "BTS", "Bug tracking System");
-        project.setTaskList(List.of(tasks.get(0), tasks.get(1), tasks.get(2)));
+        project.setTaskList(Set.of(tasks.get(0), tasks.get(1), tasks.get(2)));
         list.add(project);
         project = new Project(2, "Project_1", "Good Idea Project");
-        project.setTaskList(List.of(tasks.get(3)));
+        project.setTaskList(Set.of(tasks.get(3)));
         list.add(project);
         project = new Project(3, "Enigma", "SecretProject");
-        project.setTaskList(List.of(tasks.get(2)));
+        project.setTaskList(Set.of(tasks.get(2)));
         list.add(project);
         project = new Project(4, "Project_2", "Very important Project");
         list.add(project);
