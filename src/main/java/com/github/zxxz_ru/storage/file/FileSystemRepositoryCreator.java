@@ -18,9 +18,6 @@ public class FileSystemRepositoryCreator implements RepositoryCreator {
 
     @Override
     public UserFileRepository getUserRepository() {
-
-        System.out.println(userFileRepository == null);
-        System.out.println("FileSystemRepository did not get autowired repo.");
         return userFileRepository;
     }
 
