@@ -52,9 +52,9 @@ public class UserCommand implements Commander<User> {
                         if (str != null) {
                             Integer userId = Integer.parseInt(str);
                             Optional<User> userOptional = repository.findById(userId);
-                            if(userOptional.isPresent()){
+                            if (userOptional.isPresent()) {
                                 user = userOptional.get();
-                            }else{
+                            } else {
                                 user.setId(userId);
                             }
 
@@ -64,16 +64,16 @@ public class UserCommand implements Commander<User> {
                         }
                         break;
                     case "firstname":
-                        if(str != null)
-                        user.setFirstName(str);
+                        if (str != null)
+                            user.setFirstName(str);
                         break;
                     case "lastname":
-                        if(str != null)
-                        user.setLastName(str);
+                        if (str != null)
+                            user.setLastName(str);
                         break;
                     case "role":
-                        if(str != null)
-                        user.setRole(str);
+                        if (str != null)
+                            user.setRole(str);
                         break;
                 }
             }

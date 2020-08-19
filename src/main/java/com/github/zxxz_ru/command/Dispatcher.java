@@ -3,7 +3,6 @@ package com.github.zxxz_ru.command;
 import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.ApplicationCloser;
 import com.github.zxxz_ru.storage.InitialDataInserter;
-import com.github.zxxz_ru.storage.RepositoryCreator;
 import com.github.zxxz_ru.storage.dao.DatabaseRepositoryCreator;
 import com.github.zxxz_ru.storage.file.FileSystemRepositoryCreator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,16 +94,16 @@ public class Dispatcher {
                 taskCommand.init(databaseRepositoryCreator);
                 projectCommand.init(databaseRepositoryCreator);
                 fileSystemRepositoryCreator = null;
-                if(databasePath != null){
+                if (databasePath != null) {
                     // The very first time throws exception FileNotExist
                     // so need this check.
-                    if(!Files.exists(Paths.get(databasePath))){
+                    if (!Files.exists(Paths.get(databasePath))) {
                         inserter.insert();
                         messenger.print(2);
                         return;
                     }
                     try {
-                        if (Files.list(Paths.get(databasePath)).count() <=0){
+                        if (Files.list(Paths.get(databasePath)).count() <= 0) {
                             inserter.insert();
                         }
                     } catch (IOException e) {

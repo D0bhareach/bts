@@ -1,9 +1,7 @@
 package com.github.zxxz_ru.storage.dao;
 
-import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.storage.RepositoryCreator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 
 
 public class DatabaseRepositoryCreator implements RepositoryCreator {
@@ -14,8 +12,10 @@ public class DatabaseRepositoryCreator implements RepositoryCreator {
     @Autowired
     ProjectRepository projectRepository;
 
-    public DatabaseRepositoryCreator(){}
-    public UserRepository getUserRepository(){
+    public DatabaseRepositoryCreator() {
+    }
+
+    public UserRepository getUserRepository() {
         return userRepository;
     }
 

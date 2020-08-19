@@ -1,9 +1,7 @@
 package com.github.zxxz_ru.storage.file;
 
-import com.github.zxxz_ru.entity.StoreUnit;
 import com.github.zxxz_ru.storage.RepositoryCreator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 
 public class FileSystemRepositoryCreator implements RepositoryCreator {
 
@@ -14,7 +12,8 @@ public class FileSystemRepositoryCreator implements RepositoryCreator {
     @Autowired
     ProjectFileRepository projectFileRepository;
 
-    public FileSystemRepositoryCreator(){}
+    public FileSystemRepositoryCreator() {
+    }
 
     @Override
     public UserFileRepository getUserRepository() {

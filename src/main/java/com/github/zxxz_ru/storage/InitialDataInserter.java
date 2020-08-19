@@ -9,7 +9,6 @@ import com.github.zxxz_ru.storage.dao.UserRepository;
 import com.github.zxxz_ru.storage.file.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

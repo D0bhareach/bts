@@ -86,11 +86,11 @@ class TaskCommand implements Commander<Task> {
                 switch (parameter) {
                     case "id":
                         if (str != null) {
-                            Integer taskId =Integer.parseInt(str);
+                            Integer taskId = Integer.parseInt(str);
                             Optional<Task> taskOptional = repository.findById(taskId);
-                            if(taskOptional.isPresent()){
+                            if (taskOptional.isPresent()) {
                                 task = taskOptional.get();
-                            }else {
+                            } else {
                                 task.setId(taskId);
                             }
                         } else {
@@ -99,8 +99,8 @@ class TaskCommand implements Commander<Task> {
                         }
                         break;
                     case "theme":
-                        if(str != null)
-                        task.setThema(str);
+                        if (str != null)
+                            task.setThema(str);
                         break;
                     case "priority":
                         task.setPriority(str);

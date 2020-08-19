@@ -10,7 +10,6 @@ import com.github.zxxz_ru.entity.Task;
 import com.github.zxxz_ru.entity.User;
 import com.github.zxxz_ru.storage.InitialDataInserter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
