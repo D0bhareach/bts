@@ -16,34 +16,46 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
     private List<S> list;
     private final EntityMode mode;
 
+
     public void setList(List<S> list) {
         this.list = list;
+    }
+
+    public void refresh() {
+        if (list == null)
+            this.list = (List<S>) storage.getList(mode);
     }
 
     public FileSystemRepository(Storage storage, EntityMode mode) {
         this.storage = storage;
         // this.messenger = messenger;
-        this.list = (List<S>) storage.getList(mode);
+        // this.list = (List<S>) storage.getList(mode);
         this.mode = mode;
     }
 
     public void updateStorage() {
+        refresh();
         storage.updateStorageList(list, mode);
     }
 
+    /*
     public void updateStorage(List<S> l) {
         setList(l);
         storage.updateStorageList(list, mode);
     }
 
+     */
+
     @Override
     public long count() {
+        refresh();
         return list.size();
     }
 
     @SuppressWarnings("NullableProblems")
     @Override
     public void delete(S entity) {
+        refresh();
         if (list.contains(entity)) {
             list.remove(entity);
             updateStorage();
@@ -52,6 +64,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
 
     @Override
     public void deleteAll(Iterable<? extends S> entities) {
+        refresh();
         for (S s : entities) {
             delete(s);
         }
@@ -59,6 +72,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
 
     @Override
     public void deleteAll() {
+        refresh();
         list = new ArrayList<>();
         updateStorage();
 
@@ -67,6 +81,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
 
     @Override
     public void deleteById(Integer id) {
+        refresh();
         Optional<S> opti = findById(id);
         if (opti.isPresent()) {
             S s = opti.get();
@@ -76,6 +91,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
 
     @Override
     public boolean existsById(Integer id) {
+        refresh();
         for (S e : list) {
             if (e.getId().equals(id)) {
                 return true;
@@ -86,11 +102,13 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
 
     @Override
     public Iterable<S> findAll() {
+        refresh();
         return list;
     }
 
     @Override
     public Iterable<S> findAllById(Iterable<Integer> ids) {
+        refresh();
         ArrayList<S> res = new ArrayList<>();
         for (S e : list) {
             int id = e.getId();
@@ -106,6 +124,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
 
     @Override
     public Optional<S> findById(Integer id) {
+        refresh();
         Optional<S> opti = Optional.empty();
         for (S e : list) {
             if (e.getId().equals(id)) {
@@ -153,6 +172,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
     @SuppressWarnings("NullableProblems")
     @Override
     public <S1 extends S> S1 save(S1 entity) {
+        refresh();
         int id = entity.getId();
         // add new Entity
         if (id <= 0) {
@@ -185,6 +205,7 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
     @Override
     @SuppressWarnings("unchecked")
     public <S1 extends S> Iterable<S1> saveAll(Iterable<S1> entities) {
+        refresh();
         for (S1 e : entities) save(e);
         return (List<S1>) list;
     }

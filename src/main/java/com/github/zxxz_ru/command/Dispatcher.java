@@ -4,11 +4,15 @@ import com.github.zxxz_ru.AppState;
 import com.github.zxxz_ru.ApplicationCloser;
 import com.github.zxxz_ru.storage.InitialDataInserter;
 import com.github.zxxz_ru.storage.dao.DatabaseRepositoryCreator;
+import com.github.zxxz_ru.storage.file.Data;
 import com.github.zxxz_ru.storage.file.FileSystemRepositoryCreator;
+import com.github.zxxz_ru.storage.file.Storage;
+import com.github.zxxz_ru.storage.file.StorageFileCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -32,6 +36,10 @@ public class Dispatcher {
     FileSystemRepositoryCreator fileSystemRepositoryCreator;
     @Autowired
     DatabaseRepositoryCreator databaseRepositoryCreator;
+    @Autowired
+    StorageFileCreator storageFileCreator;
+    @Autowired
+    Storage storage;
     @Autowired
     UserCommand userCommand;
     @Autowired
@@ -77,10 +85,19 @@ public class Dispatcher {
      */
     public void dispatch(String... args) {
         if (args.length == 0) {
+            Data data;
             userCommand.init(fileSystemRepositoryCreator);
             taskCommand.init(fileSystemRepositoryCreator);
             projectCommand.init(fileSystemRepositoryCreator);
             databaseRepositoryCreator = null;
+            File file = storageFileCreator.createStorageFile();
+            storage = storage.setFile(file);
+            if (file.length() > 0) {
+                data = storage.readData();
+            } else {
+                data = inserter.getData();
+            }
+            storage.setData(data);
             messenger.print(2);
             return;
         }
@@ -89,7 +106,7 @@ public class Dispatcher {
         if (args.length >= 1) {
             command = args[0];
             if (command.equals("--database")) {
-                // appState.setMode(AppState.AppMode.DATABASE);
+                appState.setMode(AppState.AppMode.DATABASE);
                 userCommand.init(databaseRepositoryCreator);
                 taskCommand.init(databaseRepositoryCreator);
                 projectCommand.init(databaseRepositoryCreator);
@@ -114,19 +131,32 @@ public class Dispatcher {
                 messenger.print(2);
                 return;
             } else if (command.equals("--filepath")) {
-                // appState.setMode(AppState.AppMode.FILESYSTEM);
+                Data data;
+                appState.setMode(AppState.AppMode.FILESYSTEM);
                 userCommand.init(fileSystemRepositoryCreator);
                 taskCommand.init(fileSystemRepositoryCreator);
                 projectCommand.init(fileSystemRepositoryCreator);
                 databaseRepositoryCreator = null;
+                // since Components are singletons will need to refresh list for repositories
                 if (args.length == 2) {
-                    String path = args[1];
-                    if (!path.equals("")) {
-                        messenger.print(path);
+                    String path = args[1].trim();
+                    File file = storageFileCreator.setPath(path).createStorageFile();
+                    storage = storage.setFile(file);
+                    if (file.length() > 0) {
+                        data = storage.readData();
+                    } else {
+                        data = inserter.getData();
                     }
+                    storage.setData(data);
+                } else {
+                    File file = storageFileCreator.createStorageFile();
+                    data = inserter.getData();
+                    storage.setFile(file).setData(data);
                 }
                 messenger.print(2);
                 return;
+
+
             } else if (command.equals("-h") || command.equals("--help") || command.equals("help")) {
                 messenger.printHelp();
                 closer.closeApp(0);

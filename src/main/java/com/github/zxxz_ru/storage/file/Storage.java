@@ -34,35 +34,28 @@ public class Storage {
      * Path to Storage File. Path is either default value or can be set from
      * Application Parameters.
      */
-    private final File file;
-    private final Messenger messenger;
-    private final StorageFileCreator creator;
+    @Autowired
+    private Messenger messenger;
+    // private final StorageFileCreator creator;
     private final ObjectMapper mapper = new ObjectMapper().
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    private final Data data;
 
-    // Instead of elaborate creation and insertion just need to set data.
-    @Autowired
-    public Storage(Messenger messenger, StorageFileCreator creator) {
-        this.creator = creator;
-        this.messenger = messenger;
-        file = creator.createStorageFile();
-        if (file.length() <= 0) {
-            if (inserter != null) {
-                data = inserter.getData();
-            } else {
-                data = new Data();
-            }
-            this.writeData();
-        } else {
-            this.data = readData();
-        }
+    private File file;
+    private Data data;
+
+    public Storage setFile(File file) {
+        this.file = file;
+        if (data != null)
+            writeData();
+        return this;
     }
 
-    // Since I do not want use map must keep inner Lists order constant
-    // data[0] - return ArrayList of Projects
-    // data[1] - return ArrayList of Tasks
-    // data[2] - return ArrayList of Users
+    public Storage setData(Data data) {
+        this.data = data;
+        if (file != null)
+            this.writeData();
+        return this;
+    }
 
 
     public void writeData() {
@@ -77,7 +70,7 @@ public class Storage {
     }
 
 
-    private Data readData() {
+    public Data readData() {
         if (!file.exists()) {
             messenger.print("Cannot read Storage File. File not exists.");
             return null;

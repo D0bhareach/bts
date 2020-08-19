@@ -24,4 +24,5 @@
 [X] 4.2 Update README file to current state.
 [X] 4.3 Create interface and files for repositories creation.
 [X] 4.4 Finish Dispatcher database and filepath cases.
-[] 4.5 InitialInserter will need to be rewritten to suite new API.
+[X] 4.5 InitialInserter will need to be rewritten to suite new API.
+[X] 4.6 File must be created at startup when use File System Storage.

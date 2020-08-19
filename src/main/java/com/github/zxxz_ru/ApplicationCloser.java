@@ -17,7 +17,8 @@ public class ApplicationCloser {
     Storage storage;
 
     public void closeApp(int status) {
-        storage.writeData();
+        if (state.getMode() == AppState.AppMode.FILESYSTEM)
+            storage.writeData();
         System.exit(status);
     }
 }
