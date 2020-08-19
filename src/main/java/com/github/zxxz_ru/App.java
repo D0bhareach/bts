@@ -12,9 +12,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class App implements CommandLineRunner {
-    Dispatcher disp;
+    Dispatcher dispatcher;
     Messenger messenger;
-    // InitialDataInserter inserter;
 
     public static void main(String[] args) {
         try {
@@ -26,18 +25,16 @@ public class App implements CommandLineRunner {
     }
 
     @Autowired
-    public App(Dispatcher d/*, InitialDataInserter i*/, Messenger msg) {
-        this.disp = d;
+    public App(Dispatcher d, Messenger msg) {
+        this.dispatcher = d;
         this.messenger = msg;
-        //  this.inserter = i;
     }
 
     @Override
     public void run(String... args) {
-        // inserter.insert();
-        disp.dispatch(args);
+        dispatcher.dispatch(args);
         while (true) {
-            disp.dispatch();
+            dispatcher.dispatch();
         }
     }
 }

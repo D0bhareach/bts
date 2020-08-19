@@ -16,8 +16,6 @@ import java.nio.file.attribute.PosixFilePermissions;
 @Component
 @PropertySource("classpath:/application.properties")
 public class StorageFileCreator {
-    //@Autowired
-    // AppState state;
     @Autowired
     Messenger messenger;
 

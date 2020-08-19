@@ -26,9 +26,6 @@ public class InitialDataInserter {
     ProjectRepository pre;
     @Autowired
     TaskRepository tre;
-    // Fields required for File System Storage
-    // @Autowired
-    // AppState state;
     @Value("${spring.active.profile}")
     private String profile;
 

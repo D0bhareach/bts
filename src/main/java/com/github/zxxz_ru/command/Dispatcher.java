@@ -70,23 +70,6 @@ public class Dispatcher {
         }
         return map;
     }
-/*
-    public void processCommandMap(Map<String, String> map) {
-        if (map.containsKey("--filepath")) {
-            // even if it's empty parameter --filepath File System is about to be used with default file
-            appState.setMode(AppState.AppMode.FILESYSTEM);
-            String path = map.get("--filepath");
-            if (!path.equals("")) {
-                appState.setPath(path);
-            }
-        }
-        if (map.containsKey("--database")) {
-            // do db stuff
-        }
-    }
-
-
- */
 
     /**
      * Used to dispatch user input when Application is started.
@@ -107,7 +90,7 @@ public class Dispatcher {
         if (args.length >= 1) {
             command = args[0];
             if (command.equals("--database")) {
-                appState.setMode(AppState.AppMode.DATABASE);
+                // appState.setMode(AppState.AppMode.DATABASE);
                 userCommand.init(databaseRepositoryCreator);
                 taskCommand.init(databaseRepositoryCreator);
                 projectCommand.init(databaseRepositoryCreator);
@@ -132,7 +115,7 @@ public class Dispatcher {
                 messenger.print(2);
                 return;
             } else if (command.equals("--filepath")) {
-                appState.setMode(AppState.AppMode.FILESYSTEM);
+                // appState.setMode(AppState.AppMode.FILESYSTEM);
                 userCommand.init(fileSystemRepositoryCreator);
                 taskCommand.init(fileSystemRepositoryCreator);
                 projectCommand.init(fileSystemRepositoryCreator);
@@ -140,7 +123,7 @@ public class Dispatcher {
                 if (args.length == 2) {
                     String path = args[1];
                     if (!path.equals("")) {
-                        //appState.setPath(path);
+                        messenger.print(path);
                     }
                 }
                 messenger.print(2);

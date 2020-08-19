@@ -12,35 +12,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AppState {
-    /*
-    private final UserFileRepository userFileRepository;
-    private final TaskFileRepository taskFileRepository;
-    private final ProjectFileRepository projectFileRepository;
-    private final UserRepository userRepository;
-    private final TaskRepository taskRepository;
-    private final ProjectRepository projectRepository;
-*/
-    //   @Autowired
-    /*
-    public AppState(
-            UserFileRepository uf,
-            TaskFileRepository tf,
-            ProjectFileRepository pf,
-            UserRepository ur,
-            TaskRepository tr,
-            ProjectRepository pr
-
-    ) {
-        this.userRepository = ur;
-        this.taskRepository = tr;
-        this.projectRepository = pr;
-        this.userFileRepository = uf;
-        this.taskFileRepository = tf;
-        this.projectFileRepository = pf;
-
-    }
-
-     */
 
     public enum AppMode {DATABASE, FILESYSTEM}
 
@@ -56,34 +27,4 @@ public class AppState {
         this.mode = mode;
     }
 
-/*
-    public <T extends CrudRepository<? extends StoreUnit, Integer>> T getUserRepository() {
-        switch (mode) {
-            case DATABASE:
-                return (T) userRepository;
-            case FILESYSTEM:
-                return (T) userFileRepository;
-        }
-        return null;
-    }
-    public <T extends CrudRepository<? extends StoreUnit, Integer>> T getTaskRepository() {
-        switch (mode) {
-            case DATABASE:
-                return (T) taskRepository;
-            case FILESYSTEM:
-                return (T) taskFileRepository;
-        }
-        return null;
-    }
-    public <T extends CrudRepository<? extends StoreUnit, Integer>> T getProjectRepository() {
-        switch (mode) {
-            case DATABASE:
-                return (T) projectRepository;
-            case FILESYSTEM:
-                return (T) projectFileRepository;
-        }
-        return null;
-    }
-
- */
 }

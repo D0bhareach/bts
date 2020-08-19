@@ -51,8 +51,6 @@ public interface Commander<T extends StoreUnit> {
         return value;
     }
 
-    // group(2)
-// users\s?=\s?(\{\s?)(.+,?)+(\s?\})
     String end = ")\\s?=\\s?('(\\w+\\s?\\w+)')";
     String idEnd = ")\\s?=\\s?((\\d+))";
 

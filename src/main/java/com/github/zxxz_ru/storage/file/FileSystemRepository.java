@@ -20,15 +20,6 @@ public class FileSystemRepository<S extends StoreUnit> implements CrudRepository
         this.list = list;
     }
 
-/*
-    public FileSystemRepository setMode(EntityMode mode) {
-        this.mode = mode;
-        return this;
-    }
-
- */
-
-    // public FileSystemRepository(){}
     public FileSystemRepository(Storage storage, EntityMode mode) {
         this.storage = storage;
         // this.messenger = messenger;
